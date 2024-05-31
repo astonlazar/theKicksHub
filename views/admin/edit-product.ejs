@@ -125,12 +125,12 @@
                     </li>
                     <li class="dropdown nav-item">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownLanguage" aria-expanded="false"><i class="material-icons md-public"></i></a>
-                        <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
+                        <!-- <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdownLanguage">
                             <a class="dropdown-item text-brand" href="#"><img src="/admin/assets/imgs/theme/flag-us.png" alt="English">English</a>
                             <a class="dropdown-item" href="#"><img src="/admin/assets/imgs/theme/flag-fr.png" alt="Français">Français</a>
                             <a class="dropdown-item" href="#"><img src="/admin/assets/imgs/theme/flag-jp.png" alt="Français">日本語</a>
                             <a class="dropdown-item" href="#"><img src="/admin/assets/imgs/theme/flag-cn.png" alt="Français">中国人</a>
-                        </div>
+                        </div> -->
                     </li>
                     <li class="dropdown nav-item">
                         <a class="dropdown-toggle" data-bs-toggle="dropdown" href="#" id="dropdownAccount" aria-expanded="false"> <img class="img-xs rounded-circle" src="/admin/assets/imgs/people/avatar2.jpg" alt="User"></a>
@@ -164,11 +164,11 @@
                             <form action="/admin/products/edit/<%= productData._id %>" method="post" enctype="multipart/form-data">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Product Name</label>
-                                    <input type="text" placeholder="<%= productData.productName %>" class="form-control" id="product_name" name="product_name">
+                                    <input type="text" value="<%= productData.productName %>" class="form-control" id="product_name" name="product_name">
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Full description</label>
-                                    <textarea placeholder="Type here" class="form-control" id="product_description" name="product_description" rows="4"></textarea>
+                                    <textarea placeholder="<%= productData.description %>" class="form-control" id="product_description" name="product_description" rows="4"></textarea>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-4">
@@ -225,7 +225,8 @@
                                 <div class="input-upload">
                                   <% for(let i = 1; i<= 4; i++) { %>
                                     <img src="/uploads/<%= productData.productImage[i-1] %>" alt="">
-                                    <input class="form-control" type="file" accept="image" id="product_img<%= i %>" name="product_img<%= i %>">
+                                    <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
+                                    <input class="form-control" type="file"  accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
                                   <% } %>
                                     <!-- <input class="form-control" type="file" accept="image" id="product_img1" name="product_img1">
                                     <input class="form-control" type="file" accept="image" id="product_img2" name="product_img2"> -->
@@ -263,6 +264,35 @@
     <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
+
+    <script>
+        // Get all input elements and preview images
+        const fileInputs = document.querySelectorAll('.input-upload input[type="file"]');
+        const previewImages = document.querySelectorAll('.input-upload img');
+        
+        // Add change event listener to each input
+        fileInputs.forEach((input, index) => {
+            input.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+        
+                // Check if the uploaded file is an image
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+        
+                    reader.onload = (e) => {
+                        // Set the preview image src to the data URL
+                        previewImages[index].src = e.target.result;
+                        previewImages[index].style.display = 'block'; // Show the preview
+                    };
+        
+                    reader.readAsDataURL(file);
+                } else {
+                    // Handle non-image files (e.g., display an error message)
+                    console.error('Please upload an image file.');
+                }
+            });
+        });
+    </script>
 
     <!-- <script>
         document.getElementById('publishBtn').addEventListener('click', async (event) => {

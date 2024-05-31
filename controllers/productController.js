@@ -114,8 +114,9 @@ const addedProduct = async (req, res) => {
       await Product.insertMany(productData);
       console.log("product inserted successfully");
     }
-
-    res.redirect("/admin/add-product");
+    // setTimeout(() => {
+    //   res.redirect("/admin/add-product");
+    // }, 3000);
   } catch (err) {
     console.log(`error in addedProduct ${err}`);
   }
@@ -148,10 +149,7 @@ const productStatus = async (req, res) => {
         { $set: { isActive: false } }
       );
     } else {
-      await Product.updateOne(
-        { _id: productId }, 
-        { $set: { isActive: true } }
-      );
+      await Product.updateOne({ _id: productId }, { $set: { isActive: true } });
     }
     res.redirect("/admin/products");
   } catch (err) {

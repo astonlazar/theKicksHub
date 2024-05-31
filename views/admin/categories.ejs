@@ -310,7 +310,39 @@
 
         unblockButton.addEventListener('click', () => {
         // Your logic to handle unblocking the product
-        // ...
+        console.log(unblockButton.value)
+            fetch('/admin/categories/status', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({id: unblockButton.value })
+            })
+            .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+            
+        }else{
+
+                // SweetAlert success message
+                Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: 'The category has been successfully unblocked!',
+                });
+            
+            return response.json();
+            }
+
+        })
+    .then(data => {
+        console.log('Success:', data);
+        // Handle success - update the UI or perform other actions
+    })
+    .catch((error) => {
+        console.error('Error:', error);
+        // Handle error
+    });
         });
 
 

@@ -224,9 +224,17 @@
                                 </div>
                                 <h4>Product Images</h4>
                                 <div class="input-upload">
-                                    <% for(let i = 1; i<= 4; i++) { %>
+                                    <!-- <% for(let i = 1; i<= 4; i++) { %>
                                         <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
-                                    <% } %>
+                                    <% } %> -->
+                                    <div class="input-upload">
+                                        <% for(let i = 1; i<= 4; i++) { %>
+                                            <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
+                                            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
+                                        <% } %>
+                                        <p class="text-danger"><%= imageError %></p>
+                                    </div>
+                                    
                                       <p class="text-danger"><%= imageError %></p>
                                 </div>
                                 <div>
@@ -262,6 +270,49 @@
     <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
+    <script>
+        document.getElementById('publishBtn').addEventListener('click', () => {
+                Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'The category has been successfully updated!',
+                    }).then((result) => {
+                if (result.isConfirmed) {
+                // Call your function to update the user here
+                window.location.href = "/admin/add-product"
+                }
+            })
+        })
+        
+
+        // Get all input elements and preview images
+        const fileInputs = document.querySelectorAll('.input-upload input[type="file"]');
+        const previewImages = document.querySelectorAll('.input-upload img');
+        
+        // Add change event listener to each input
+        fileInputs.forEach((input, index) => {
+            input.addEventListener('change', (event) => {
+                const file = event.target.files[0];
+        
+                // Check if the uploaded file is an image
+                if (file && file.type.startsWith('image/')) {
+                    const reader = new FileReader();
+        
+                    reader.onload = (e) => {
+                        // Set the preview image src to the data URL
+                        previewImages[index].src = e.target.result;
+                        previewImages[index].style.display = 'block'; // Show the preview
+                    };
+        
+                    reader.readAsDataURL(file);
+                } else {
+                    // Handle non-image files (e.g., display an error message)
+                    console.error('Please upload an image file.');
+                }
+            });
+        });
+        </script>
+        
 
     <!-- <script>
         document.getElementById('publishBtn').addEventListener('click', (event) => {

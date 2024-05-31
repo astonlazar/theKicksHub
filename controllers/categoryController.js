@@ -29,10 +29,10 @@ const categoryInsert = async (req, res) => {
   try {
     let categoryData = await Category.find({});
     console.log(categoryData);
-    let { category_name, category_slug } = req.body;
+    let { category_name } = req.body;
     category_name = category_name.toUpperCase();
-    // category_slug = category_slug.toLowerCase();
-    console.log(category_name, category_slug);
+
+    console.log(category_name);
     if (category_name == "") {
       res.render("categories", {
         errorName: "Enter the Category Name",
@@ -46,7 +46,7 @@ const categoryInsert = async (req, res) => {
       });
     }
     let categoryCheck = await Category.find({
-      $and: [{ categoryName: category_name }, { slug: category_slug }],
+      $and: [{ categoryName: category_name }],
     });
     console.log(`-- categoryCheck --${categoryCheck}--`);
     if (categoryCheck == "") {
@@ -65,8 +65,9 @@ const categoryInsert = async (req, res) => {
 const statusUpdate = async (req, res) => {
   let { id } = req.body;
   console.log(`-- category id- ${id}`);
-  let categoryData = await Category.findById({ _id: id });
-  if (categoryData.isActive === true) {
+  let categoryD = await Category.findById({ _id: id });
+  let categoryData = await Category.find();
+  if (categoryD.isActive === true) {
     await Category.findByIdAndUpdate(
       { _id: id },
       { $set: { isActive: false } }
@@ -74,7 +75,12 @@ const statusUpdate = async (req, res) => {
   } else {
     await Category.findByIdAndUpdate({ _id: id }, { $set: { isActive: true } });
   }
-  res.status(200).redirect("/admin/categories");
+  res.status(200).render("categories", {
+    errorName: "",
+    categoryData,
+    page,
+    totalPages,
+  });
 };
 
 const editCategory = async (req, res) => {
