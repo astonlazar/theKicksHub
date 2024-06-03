@@ -75,12 +75,7 @@ const statusUpdate = async (req, res) => {
   } else {
     await Category.findByIdAndUpdate({ _id: id }, { $set: { isActive: true } });
   }
-  res.status(200).render("categories", {
-    errorName: "",
-    categoryData,
-    page,
-    totalPages,
-  });
+  res.redirect("/categories");
 };
 
 const editCategory = async (req, res) => {

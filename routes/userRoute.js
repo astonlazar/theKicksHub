@@ -38,4 +38,8 @@ userRoute.get("/shop", userController.shop);
 userRoute.get("/user/profile", userController.userProfile);
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
 
+userRoute.get("*", (req, res) => {
+  res.redirect("/");
+});
+
 module.exports = userRoute;

@@ -137,6 +137,7 @@ const signupEnterPage = async (req, res) => {
         };
 
         req.session.temp = userData;
+        console.log(`req.session.temp-- ${req.session.temp}`);
         req.session.otp = await otpSender.generate();
         await otpSender.sendEmail(userData.email, req.session.otp);
         console.log(req.session.otp);
@@ -157,10 +158,12 @@ const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
   const userData = req.session.temp;
   if (enteredOtp === req.session.otp) {
-    await User.insertMany(userData);
-    console.log("--user inserted to db");
-    req.session.user = userData;
-    res.redirect("/");
+    const userEnteredData = await User.insertMany(userData);
+    // console.log(`req.temp--- ${req.session.temp}`);
+    // console.log(`userData--- ${userData}`);
+    console.log("--user inserted to db--" + userEnteredData);
+    // req.session.user = userEnteredData;
+    res.redirect("/login");
   } else {
     res.render("verification", { otpError: "OTP is incorrect" });
   }
@@ -172,7 +175,7 @@ const homePage = async (req, res) => {
 
   if (req.session.user) {
     let userData = await User.findById(req.session.user._id);
-    console.log(`--- userData - ${userData}`);
+    console.log(`UserData -- ${userData}`);
     res.render("index", { userData, productData, categoryData });
   } else {
     res.render("landing", { productData, categoryData });

@@ -124,10 +124,16 @@ const addedProduct = async (req, res) => {
 
 const productsList = async (req, res) => {
   try {
+    let query = {};
+    if (req.query.searchProduct) {
+      let searchQuery = req.query.searchProduct;
+      console.log(searchQuery);
+      query = { productName: new RegExp(searchQuery, "i") };
+    }
     let page = parseInt(req.query.page) || 1;
     let limit = 5;
     let startIndex = (page - 1) * limit;
-    let productData = await Product.find().skip(startIndex).limit(limit);
+    let productData = await Product.find(query).skip(startIndex).limit(limit);
     let totalDocuments = await Product.countDocuments();
     let totalPages = Math.ceil(totalDocuments / limit);
     // console.log(`productData --- ${productData}`);

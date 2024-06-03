@@ -82,7 +82,13 @@ const userManagement = async (req, res, next) => {
     let limit = 5;
 
     let startIndex = (page - 1) * limit;
-
+    let searchQuery;
+    let query = {};
+    if(req.query.searchUser){
+      searchQuery = req.query.searchUser;
+      console.log(searchQuery)
+      query = { userName: new RegExp(searchQuery, "i") };
+    }
     // const searchQuery = req.body.searchUser;
     // console.log(searchQuery);
     // const query = {};
@@ -91,7 +97,7 @@ const userManagement = async (req, res, next) => {
     //   query = { userName: new RegExp(searchQuery, "i") };
     // }
 
-    let users = await Users.find().skip(startIndex).limit(limit);
+    let users = await Users.find(query).skip(startIndex).limit(limit);
     let totalDocuments = await Users.countDocuments();
 
     let totalPages = Math.ceil(totalDocuments / limit);

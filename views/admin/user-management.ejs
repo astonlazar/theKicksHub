@@ -151,14 +151,12 @@
                 <header class="card-header">
                     <div class="row align-items-center">
                         <div class="col-md-3 col-12 me-auto mb-md-0 mb-3">
-                            <!-- <div class="input-group">
-                                <input list="search_terms" type="text" id="searchUser" name="searchUser" class="form-control" placeholder="Search term">
-                                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
-                            </div> -->
-                            <!-- <div class="input-group">
-                                <input list="search_terms" type="text" id="searchUser" name="searchUser" class="form-control" placeholder="Search term">
-                                <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button>
-                            </div> -->
+                            <form action="/admin/user-management" method="get">
+                                <div class="input-group">
+                                    <input list="search_terms" type="text" id="searchUser" name="searchUser" class="form-control" placeholder="Search term">
+                                    <!-- <button class="btn btn-light bg" type="button"> <i class="material-icons md-search"></i></button> -->
+                                </div>
+                            </form>
                         </div>
                         <!-- <div class="col-md-2 col-6">
                             <input type="date" value="02.05.2022" class="form-control">

@@ -75,4 +75,8 @@ adminRoute.get(
 //route to logout
 adminRoute.get("/logout", adminController.adminLogout);
 
+adminRoute.get("*", (req, res) => {
+  res.redirect("/admin/dashboard");
+});
+
 module.exports = adminRoute;
