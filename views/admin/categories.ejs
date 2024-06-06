@@ -166,14 +166,14 @@
                 <div class="card-body">
                     <div class="row">
                         <div class="col-md-3">
-                            <form action="/admin/categories" method="post">
+                            <form action="/admin/categories" method="post" onsubmit="return validateForm()">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Name</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="category_name" name="category_name" />
+                                    <input type="text" placeholder="Type here" class="form-control" id="category_name" name="category_name" onblur="validateCategory()"/>
+                                    <% if(errorName !== "undefined") { %>
+                                      <p id="category-error" class="text-danger"><%- errorName %></p>
+                                    <% } %>
                                 </div>
-                                <% if(errorName !== "undefined") { %>
-                                  <p id="error-message" class="text-danger"><%- errorName %></p>
-                                <% } %>
                                 <div class="d-grid">
                                     <button class="btn btn-primary">Create category</button>
                                 </div>
@@ -267,6 +267,35 @@
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
     <script>
+
+
+        function validateCategory(){
+            const category_name = document.getElementById("category_name").value;
+            const errorDiv = document.getElementById("category-error")
+            if(category_name == "" || category_name == " "){
+                errorDiv.textContent = "Enter category properly.";
+                return false;
+            } else {
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+        function validateForm(){
+            return validateCategory();
+        }
+
+
+
+
+
+
+
+
+
+
+
+        
         const blockButton = document.getElementById('blockbtn');
         const unblockButton = document.getElementById('unblockbtn');
         

@@ -6,12 +6,7 @@ const addProduct = async (req, res) => {
     let categories = await Category.find({});
     // console.log(categories);
     // categories.forEach((categ) => console.log(categ.categoryName));
-    res.render("add-product", {
-      categories,
-      productNameError: "",
-      productDescError: "",
-      imageError: "",
-    });
+    res.render("add-product", { categories });
   } catch (err) {
     console.log(err);
   }
@@ -29,23 +24,6 @@ const addedProduct = async (req, res) => {
       product_category,
     } = req.body;
 
-    if (!product_name) {
-      res.render("add-product", {
-        categories,
-        productNameError: "Enter product name!!",
-        productDescError: "",
-        imageError: "",
-      });
-    }
-    if (!product_description) {
-      res.render("add-product", {
-        categories,
-        productNameError: "",
-        productDescError: "Enter product description",
-        imageError: "",
-      });
-    }
-
     let totalStock = {
       UK6: req.body.productSizeUK6,
       UK7: req.body.productSizeUK7,
@@ -54,9 +32,22 @@ const addedProduct = async (req, res) => {
       UK10: req.body.productSizeUK10,
       UK11: req.body.productSizeUK11,
     };
-    // console.log(req.body.product_img);
+
+    console.log(`Reached just before req.files if condition`);
 
     if (req.files) {
+      // if (req.files.product_img1[0] != undefined) {
+      //   fileNames[0] = req.files.product_img1[0].filename;
+      // }
+      // if (req.files.product_img2[0] != undefined) {
+      //   fileNames[1] = req.files.product_img2[0].filename;
+      // }
+      // if (req.files.product_img3[0] != undefined) {
+      //   fileNames[2] = req.files.product_img3[0].filename;
+      // }
+      // if (req.files.product_img4[0] != undefined) {
+      //   fileNames[3] = req.files.product_img4[0].filename;
+      // }
       fileNames = [
         req.files.product_img1[0].filename,
         req.files.product_img2[0].filename,
@@ -67,6 +58,8 @@ const addedProduct = async (req, res) => {
       console.log("Error uploading files");
       res.status(400).json({ message: "Error uploading files" });
     }
+
+    console.log(`Reached just after req.files if condition`);
 
     // if (req.files) {
     //   fileNames = req.files.map((file) => file.filename);
@@ -109,14 +102,13 @@ const addedProduct = async (req, res) => {
     console.log(productCheck);
     console.log(productData);
     if (productCheck.length !== 0) {
+      res.render();
       console.log("product exists");
     } else {
       await Product.insertMany(productData);
       console.log("product inserted successfully");
     }
-    // setTimeout(() => {
-    //   res.redirect("/admin/add-product");
-    // }, 3000);
+    // res.redirect("/admin/add-product");
   } catch (err) {
     console.log(`error in addedProduct ${err}`);
   }

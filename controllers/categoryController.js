@@ -27,24 +27,20 @@ const categories = async (req, res) => {
 
 const categoryInsert = async (req, res) => {
   try {
-    let categoryData = await Category.find({});
+    let page = parseInt(req.query.page) || 1;
+    let limit = 5;
+
+    let startIndex = (page - 1) * limit;
+
+    let categoryData = await Category.find().skip(startIndex).limit(limit);
+    let totalDocuments = await Category.countDocuments();
+
+    let totalPages = Math.ceil(totalDocuments / limit);
     console.log(categoryData);
     let { category_name } = req.body;
     category_name = category_name.toUpperCase();
 
     console.log(category_name);
-    if (category_name == "") {
-      res.render("categories", {
-        errorName: "Enter the Category Name",
-        categoryData,
-      });
-    }
-    if (category_name[0] == " " || category_name == " ") {
-      res.render("categories", {
-        errorName: "Enter the Category Name properly",
-        categoryData,
-      });
-    }
     let categoryCheck = await Category.find({
       $and: [{ categoryName: category_name }],
     });
@@ -55,6 +51,13 @@ const categoryInsert = async (req, res) => {
       });
       console.log(`-- inserting categoryData`);
       console.log(insertData);
+    } else {
+      res.status(200).render("categories", {
+        errorName: "Category already exists",
+        categoryData,
+        page,
+        totalPages,
+      });
     }
     res.redirect("/admin/categories");
   } catch (err) {

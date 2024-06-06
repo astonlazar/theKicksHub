@@ -227,30 +227,28 @@
                       <div class="heading_s1">
                         <h3 class="mb-30">Sign Up</h3>
                       </div>
-                      <form action="/signup" method="post">
+                      <form action="/signup" method="post" onsubmit="return validateForm()">
                         <div class="form-group">
-                            <input type="text" name="userName" placeholder="Username">
+                            <input type="text" name="userName" id="userName" placeholder="Username" onblur="validateUsername()">
+                            <p id="username-error" class="text-danger"></p>
                         </div>
-                        <!-- <% if(signupUsernameError != "") { %> -->
-                        <p id="error-message" class="text-danger"><%= signupUsernameError %></p>
-                        <!-- <% } %> -->
                         <div class="form-group">
-                            <input type="email" name="email" placeholder="Email">
+                            <input type="email" name="email" id="email" placeholder="Email" onblur="validateEmail()">
+                            <p id="email-error" class="text-danger"></p>
                         </div>
-                        <!-- <p id="error-message" class="text-danger"><%= signupPhoneNoError %></p> -->
                         <div class="form-group">
-                            <input type="number" name="phoneNo" placeholder="Phone No.">
+                            <input type="text" name="phoneNo" id="phoneNo" placeholder="Phone No." onkeypress="return isNumberKey(event)" onblur="validatePhoneNo()">
+                            <p id="phoneno-error" class="text-danger"></p>
                         </div>
-                        <p id="error-message" class="text-danger"><%= signupPhoneNoError %></p>
                         <div class="form-group">
-                            <input type="password" name="password" placeholder="Password">
+                            <input type="password" name="password" id="password" placeholder="Password" onblur="validatePassword()">
+                            <p id="password-error" class="text-danger"></p>
                         </div>
-                        <p id="error-message" class="text-danger"><%= signupPasswordError %></p>
                         <div class="form-group">
-                            <input type="password" name="confirmPassword" placeholder="Confirm Password">
+                            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onblur="validateConfirmPassword()">
+                            <p id="confirmPass-error" class="text-danger"></p>
                         </div>
-                        <p id="error-message" class="text-danger"><%= signupConfirmError %></p>
-                        <p id="error-message" class="text-danger"><%= signupError %></p>
+                        <!-- <p id="error-message" class="text-danger"></p> -->
                         <div class="form-group">
                             <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Submit &amp; Register</button>
                         </div>
@@ -419,6 +417,137 @@
     <script src="/user/assets/js/plugins/jquery.theia.sticky.js"></script>
     <!-- Template  JS -->
     <script src="/user/assets/js/main.js?v=3.4"></script>
+
+    <script>
+        function isNumberKey(event) {
+                const charCode = event.which || event.keyCode;
+                if (charCode !== 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    return false;
+                }
+                // Allow decimal point only once
+                if (charCode === 46 && event.target.value.indexOf('.') !== -1) {
+                    return false;
+                }
+                return true;
+            }
+
+        function validateUsername() {
+            const username = document.getElementById("userName").value;
+            const errorDiv = document.getElementById("username-error");
+            if(username.length < 3){
+                errorDiv.textContent = "Username must be at least 3 characters long.";
+                return false;
+            } else {
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+        function validateEmail() {
+            const email = document.getElementById("email").value;
+            const errorDiv = document.getElementById("email-error");
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if(!emailPattern.test(email)){
+                errorDiv.textContent = "Please enter a valid email address";
+                return false;
+            } else {
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+        function validatePhoneNo() {
+            const phoneNo = document.getElementById("phoneNo").value;
+            const errorDiv = document.getElementById("phoneno-error");
+            const phonePattern = /^[0-9]{10}$/;
+            if(!phonePattern.test(phoneNo)){
+                errorDiv.textContent = "Please enter a valid 10-digit phone number.";
+                return false;
+            } else {
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+        // function validatePassword() {
+        //     const password = document.getElementById("password").value;
+        //     console.log(password)
+        //     const errorDiv = document.getElementById("password-error");
+        //     const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{8,}$/;
+        //     if(!passwordPattern.test(password)){
+        //         errorDiv.textContent = "Password must be at least 8 characters long with at least one uppercase, one lowercase and one number";
+        //         return false;
+        //     } else {
+        //         errorDiv.textContent = "";
+        //         return true;
+        //     }
+        // }
+
+        function validatePassword() {
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById("password-error");
+            const minLength = 8;
+            const hasUppercase = /[A-Z]/.test(password);
+            const hasLowercase = /[a-z]/.test(password);
+            const hasDigit = /\d/.test(password);
+
+            let errorMessage = [];
+
+            if (password.length < minLength) {
+                errorMessage.push("Password must be at least " + minLength + " characters long.");
+            }
+            if (!hasUppercase) {
+                errorMessage.push("Password must contain at least one uppercase letter.");
+            }
+            if (!hasLowercase) {
+                errorMessage.push("Password must contain at least one lowercase letter.");
+            }
+            if (!hasDigit) {
+                errorMessage.push("Password must contain at least one digit.");
+            }
+
+            if (errorMessage.length > 0) {
+                errorDiv.textContent = errorMessage.join("\n"); // Join error messages with newline
+                return false;
+            } else {
+                // Password is valid
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+
+        // function validatePassword() {
+        //     const password = document.getElementById('password').value;
+        //     console.log(password)
+        //     const errorDiv = document.getElementById('password-error');
+        //     const passwordPattern = /^(?=.\d)(?=.[a-z])(?=.*[A-Z]).{8,}$/;
+        //     if (!passwordPattern.test(password)) {
+        //         errorDiv.textContent = 'Password must be at least 8 characters with at least one uppercase letter, one lowercase letter, and one number.';
+        //         return false;
+        //     } else {
+        //         errorDiv.textContent = '';
+        //         return true;
+        //     }
+        // }
+
+        function validateConfirmPassword() {
+            const confirmPassword= document.getElementById("confirmPassword").value;
+            const password = document.getElementById("password").value;
+            const errorDiv = document.getElementById("confirmPass-error");
+            if(password !== confirmPassword){
+                errorDiv.textContent = "Passwords do not match";
+                return false;
+            } else {
+                errorDiv.textContent = "";
+                return true;
+            }
+        }
+
+        function validateForm() {
+            return validateUsername() && validateEmail() && validatePhoneNo() && validatePassword() && validateConfirmPassword();
+        }
+    </script>
 </body>
 
 </html>

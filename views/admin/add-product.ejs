@@ -161,30 +161,33 @@
                             <h4>Basic</h4>
                         </div>
                         <div class="card-body">
-                            <form action="/admin/add-product" method="post" enctype="multipart/form-data">
+                            <form action="/admin/add-product" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Product Name</label>
-                                    <input type="text" placeholder="Type here" class="form-control" id="product_name" name="product_name">
+                                    <input type="text" placeholder="Type here" class="form-control" id="product_name" name="product_name" onblur="validateProductName()">
+                                    <p id="name-error" class="text-danger"></p>
                                 </div>
-                                <p class="text-danger"><%= productNameError %></p>
                                 <div class="mb-4">
                                     <label class="form-label">Description</label>
-                                    <textarea placeholder="Type here" class="form-control" id="product_description" name="product_description" rows="4"></textarea>
+                                    <textarea placeholder="Type here" class="form-control" id="product_description" name="product_description" rows="4" onblur="validateDescription()"></textarea>
+                                    <p id="description-error" class="text-danger"></p>
                                 </div>
-                                <p class="text-danger"><%= productDescError %></p>
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="mb-4">
                                             <label class="form-label">Regular price</label>
                                             <div class="row gx-2">
-                                                <input placeholder="₹" type="text" id="product_price" name="product_price" class="form-control" value="0">
+                                                <!-- <input placeholder="₹" type="text" id="product_price" name="product_price" class="form-control" value="0"> -->
+                                                <input placeholder="₹" type="number" id="product_price" name="product_price" class="form-control" value="0" onkeypress="return isNumberKey(event)" onblur="validatePrice()">
+                                                <p id="price-error" class="text-danger"></p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-4">
                                             <label class="form-label">Promotional price</label>
-                                            <input placeholder="₹" type="text" id="productPromo_price" name="productPromo_price" class="form-control" value="0">
+                                            <input placeholder="₹" type="number" id="productPromo_price" name="productPromo_price" class="form-control" value="0" onkeypress="return isNumberKey(event)" onblur="validatePromoPrice()">
+                                            <p id="promoprice-error" class="text-danger"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -230,15 +233,13 @@
                                     <div class="input-upload">
                                         <% for(let i = 1; i<= 4; i++) { %>
                                             <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
-                                            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
+                                            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>" onchange="validateImage('<%= i %>')">
                                         <% } %>
-                                        <p class="text-danger"><%= imageError %></p>
+                                        <p id="image-error" class="text-danger"></p>
                                     </div>
-                                    
-                                      <p class="text-danger"><%= imageError %></p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-md rounded font-sm hover-up" id="publishBtn" name="publishBtn" >Publish</button>
+                                    <button type="submit" class="btn btn-md rounded font-sm hover-up" id="publishBtn" name="publishBtn" >Publish</button>
                                 </div>
                             </form>
                         </div>
@@ -261,7 +262,7 @@
             </div>
         </footer>
     </main>
-    <!-- !-- SweetAlert2 JS --> -->
+    <!-- !-- SweetAlert2 JS --> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
@@ -270,19 +271,154 @@
     <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
-    <script>
-        document.getElementById('publishBtn').addEventListener('click', () => {
-                Swal.fire({
-                        icon: 'success',
-                        title: 'Success',
-                        text: 'The category has been successfully updated!',
-                    }).then((result) => {
-                if (result.isConfirmed) {
-                // Call your function to update the user here
-                window.location.href = "/admin/add-product"
+        
+        <script>
+            function isNumberKey(event) {
+                const charCode = event.which || event.keyCode;
+                if (charCode !== 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    return false;
                 }
-            })
-        })
+                // Allow decimal point only once
+                if (charCode === 46 && event.target.value.indexOf('.') !== -1) {
+                    return false;
+                }
+                return true;
+            }
+
+            function validateProductName(){
+                const product_name = document.getElementById("product_name").value;
+                const errorDiv = document.getElementById("name-error")
+                if(product_name == "" || product_name == " "){
+                    errorDiv.textContent = "Enter product name";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validateDescription(){
+                const product_description = document.getElementById("product_description").value;
+                const errorDiv = document.getElementById("description-error");
+                if(product_description == "" || product_description == " "){
+                    errorDiv.textContent = "Enter product description";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validatePrice(){
+                const product_price = document.getElementById("product_price").value;
+                const errorDiv = document.getElementById("price-error");
+                if(product_price == 0 || product_price == undefined){
+                    errorDiv.textContent = "Enter price of the price properly and cannot be 0";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validatePromoPrice(){
+                const productPromo_price = Math.abs(document.getElementById("productPromo_price").value);
+                const product_price = Math.abs(document.getElementById("product_price").value);
+                const errorDiv = document.getElementById("promoprice-error");
+                if(productPromo_price == 0 || productPromo_price == undefined){
+                    errorDiv.textContent = "Enter price of the price properly and cannot be 0";
+                    return false;
+                } else if(productPromo_price > product_price){
+                    errorDiv.textContent = "Promotion price should be lesser than the Product price";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validateImage(num) {
+                // const file = inputElement.files[0];
+                const fileInput = document.getElementById("product_img"+num);
+                const errorDiv = document.getElementById("image-error");
+
+                if (fileInput.files && fileInput.files.length > 0) {
+                    errorDiv.textContent = "";
+                    return true; // Optionally prevent form submission (if applicable)
+                } else {
+                    
+                    errorDiv.textContent = "4 images should be added";
+                    return false;
+                }
+
+            // Additional validation for file type (already present in your code)
+
+            // ... rest of your validation logic for file type (e.g., allowedExtensions check)
+            }
+
+            function validateForm(){
+                const productName = validateProductName();
+                const description = validateDescription()
+                const price = validatePrice()
+                const promo_price = validatePromoPrice()
+                const image = validateImage(1) && validateImage(2) && validateImage(3) && validateImage(4)
+
+                if(productName && description && price && promo_price && image){
+                    try {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'The product has been successfully added.',
+                            confirmButtonText: 'OK',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                            // Redirect to add-product page after confirmation
+                            window.location.href = "/admin/add-product";
+                            }
+                        });
+                        } catch (error) {
+                        console.error('Error showing SweetAlert:', error);
+                        // Handle errors gracefully, e.g., display an error message to the user
+                        }
+                    return true
+                }
+                
+
+            }
+
+            
+
+
+            // document.getElementById("publishBtn").addEventListener("click", async () => {
+            //     // Simulate successful product addition (replace with your actual logic)
+            //     const productAddedSuccessfully = true;
+
+            //     if (productAddedSuccessfully) {
+            //         try {
+            //         await Swal.fire({
+            //             icon: 'success',
+            //             title: 'Success!',
+            //             text: 'The product has been successfully added.',
+            //             confirmButtonText: 'OK', // Change button text if desired
+            //         });
+
+            //         // Redirect after SweetAlert closes
+            //         window.location.href = "/admin/add-product"; // Redirect to add-product page
+            //         } catch (error) {
+            //         console.error('Error showing SweetAlert:', error);
+            //         // Handle errors gracefully, e.g., display an error message to the user
+            //         }
+            //     } else {
+            //         // Handle unsuccessful product addition (e.g., display an error message)
+            //         Swal.fire({
+            //         icon: 'error',
+            //         title: 'Oops!',
+            //         text: 'There was a problem adding the product. Please try again.'
+            //         });
+            //     }
+            // });
+
+            
         
 
         // Get all input elements and preview images
@@ -312,109 +448,6 @@
             });
         });
         </script>
-        
-
-    <!-- <script>
-        document.getElementById('publishBtn').addEventListener('click', (event) => {
-            event.preventDefault();
-
-            // const formData = new FormData(document.getElementById('productDetailsForm'))
-
-            const formData = new FormData();
-            console.log("formdata formed")
-            // Append data from the first form
-            const productDetailsForm = document.getElementById('productDetailsForm');
-            for (let [key, value] of new FormData(productDetailsForm).entries()) {
-                formData.append(key, value);
-            }
-
-            // Append data from the second form
-            const productStockForm = document.getElementById('productStockForm');
-            for (let [key, value] of new FormData(productStockForm).entries()) {
-                formData.append(key, value);
-            }
-            
-            formData.append('product_img', document.getElementById('product_img').files[0])
-            formData.append('product_category', document.getElementById('product_category').value)
-            
-            console.log('fetching')
-            console.log(formData)
-            const response = fetch('/admin/add-product', {
-                method: 'POST',
-                // headers: { 'Content-Type': 'application/json' },
-                body: formData,
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log(data)
-                alert('Product added successfully!!')
-            })
-            .catch(err => {
-                console.log(err)
-                alert('Some error occured')
-            })
-        })
-    </script> -->
-    <!-- <script>
-        document.getElementById('publishBtn').addEventListener('click', async (event) => {
-            event.preventDefault();
-      
-            const formData = new FormData();
-      
-            const productDetailsForm = document.getElementById('productDetailsForm');
-            for (let [key, value] of new FormData(productDetailsForm).entries()) {
-                formData.append(key, value);
-            }
-
-            const productStockForm = document.getElementById('productStockForm');
-            for (let [key, value] of new FormData(productStockForm).entries()) {
-                formData.append(key, value);
-            }
-      
-            const productImg = document.getElementById('product_img').files[0];
-            if (productImg) {
-                formData.append('product_img', productImg);
-            }
-
-            formData.append('product_category', document.getElementById('product_category').value);
-        
-            console.log('fetching');
-            // let jsonData = await JSON.stringify(formData)
-            // console.log(typeof jsonData)
-            await fetch('/admin/add-product', {
-                method: 'POST',
-                
-                body: formData,
-            })
-            .then(response => {
-                console.log("Response "+ response)
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                } else {
-                // console.log('Response not OK')
-                
-            return response.json();
-
-            }
-            
-            })
-            .then(data => {
-              console.log(data);
-              // SweetAlert success message
-              Swal.fire({
-                    icon: 'success',
-                    title: 'Success',
-                    text: 'The category has been successfully updated!',
-                });
-              alert('Product added successfully!!');
-            })
-            .catch(err => {
-              console.log(err);
-              alert('Some error occured');
-            });
-        });
-      </script> -->
-      
 </body>
 
 </html>

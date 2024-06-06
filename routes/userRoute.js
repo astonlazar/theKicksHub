@@ -14,7 +14,7 @@ userRoute.post("/login", userController.loginEnterPage);
 userRoute.get("/signup", auth.isLogout, userController.signupPage);
 userRoute.post("/signup", userController.signupEnterPage);
 
-userRoute.get("/verification", auth.isLogout, userController.verificationPage);
+userRoute.get("/verification", userController.verificationPage);
 userRoute.post("/verification", userController.verifyEnter);
 
 userRoute.get(
@@ -34,12 +34,8 @@ userRoute.get("/success", userController.successGoogle);
 userRoute.get("/failure", userController.failureGoogle);
 userRoute.get("/", userController.homePage);
 userRoute.get("/product-view/:id", auth.isLogin, userController.productView);
-userRoute.get("/shop", userController.shop);
+userRoute.get("/shop", auth.isLogin, userController.shop);
 userRoute.get("/user/profile", userController.userProfile);
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
-
-userRoute.get("*", (req, res) => {
-  res.redirect("/");
-});
 
 module.exports = userRoute;
