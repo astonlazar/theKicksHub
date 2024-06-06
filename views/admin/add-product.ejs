@@ -227,13 +227,20 @@
                                 </div>
                                 <h4>Product Images</h4>
                                 <div class="input-upload">
-                                    <!-- <% for(let i = 1; i<= 4; i++) { %>
-                                        <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
-                                    <% } %> -->
                                     <div class="input-upload">
                                         <% for(let i = 1; i<= 4; i++) { %>
-                                            <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
-                                            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>" onchange="validateImage('<%= i %>')">
+                                            <!-- <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
+                                            <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>" onchange="return validateImage('<%= i %>')"> -->
+                                            <div class="container mt-3">
+                                                <div class="row align-items-center mb-3">
+                                                    <div class="col-auto">
+                                                        <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100px; margin-top: 10px;">
+                                                    </div>
+                                                    <div class="col">
+                                                        <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>" onchange="return validateImage('<%= i %>')">
+                                                    </div>
+                                                </div>
+                                            </div>
                                         <% } %>
                                         <p id="image-error" class="text-danger"></p>
                                     </div>
@@ -337,24 +344,54 @@
                 }
             }
 
-            function validateImage(num) {
-                // const file = inputElement.files[0];
-                const fileInput = document.getElementById("product_img"+num);
-                const errorDiv = document.getElementById("image-error");
+            // function validateImage(num) {
+            //     // const file = inputElement.files[0];
+            //     const fileInput = document.getElementById("product_img"+num);
+            //     const errorDiv = document.getElementById("image-error");
 
-                if (fileInput.files && fileInput.files.length > 0) {
-                    errorDiv.textContent = "";
-                    return true; // Optionally prevent form submission (if applicable)
-                } else {
+            //     if (fileInput.files && fileInput.files.length > 0) {
+            //         errorDiv.textContent = "";
+            //         return true; // Optionally prevent form submission (if applicable)
+            //     } else {
                     
-                    errorDiv.textContent = "4 images should be added";
+            //         errorDiv.textContent = "4 images should be added";
+            //         return false;
+            //     }
+
+            // // Additional validation for file type (already present in your code)
+
+            // // ... rest of your validation logic for file type (e.g., allowedExtensions check)
+            // }
+
+            // function validateImage(input) {
+            //     const file = input.files[0];
+            //     const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+            //     const imageError = document.getElementById('imageError');
+
+            //     if (file && validImageTypes.includes(file.type)) {
+            //         imageError.style.display = 'none';
+            //     } else {
+            //         imageError.style.display = 'block';
+            //         input.value = ''; // Clear the invalid file
+            //     }
+            // }
+
+            function validateImage(index) {
+                const input = document.getElementById(`product_img${index}`);
+                const file = input.files[0];
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                const imageError = document.getElementById('image-error');
+
+                if (file && validImageTypes.includes(file.type)) {
+                    imageError.textContent = '';
+                    return true
+                } else {
+                    imageError.textContent = 'Input 4 images';
+                    input.value = ''; // Clear the invalid file
                     return false;
                 }
-
-            // Additional validation for file type (already present in your code)
-
-            // ... rest of your validation logic for file type (e.g., allowedExtensions check)
             }
+
 
             function validateForm(){
                 const productName = validateProductName();
@@ -381,6 +418,9 @@
                         // Handle errors gracefully, e.g., display an error message to the user
                         }
                     return true
+                }else
+                {
+                    return false
                 }
                 
 

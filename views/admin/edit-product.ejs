@@ -161,28 +161,32 @@
                             <h4>Basic</h4>
                         </div>
                         <div class="card-body">
-                            <form action="/admin/products/edit/<%= productData._id %>" method="post" enctype="multipart/form-data">
+                            <form action="/admin/products/edit/<%= productData._id %>" method="post" enctype="multipart/form-data" onsubmit="return validateForm()">
                                 <div class="mb-4">
                                     <label for="product_name" class="form-label">Product Name</label>
-                                    <input type="text" value="<%= productData.productName %>" class="form-control" id="product_name" name="product_name">
+                                    <input type="text" value="<%= productData.productName %>" class="form-control" id="product_name" name="product_name" onblur="validateProductName()">
+                                    <p id="name-error" class="text-danger"></p>
                                 </div>
                                 <div class="mb-4">
                                     <label class="form-label">Full description</label>
-                                    <textarea placeholder="<%= productData.description %>" class="form-control" id="product_description" name="product_description" rows="4"></textarea>
+                                    <textarea class="form-control" id="product_description" name="product_description" rows="4" onblur="validateDescription()"></textarea>
+                                    <p id="description-error" class="text-danger"></p>
                                 </div>
                                 <div class="row">
                                     <div class="col-lg-4">
                                         <div class="mb-4">
                                             <label class="form-label">Regular price</label>
                                             <div class="row gx-2">
-                                                <input placeholder="₹" type="text" id="product_price" name="product_price" class="form-control" value="<%= productData.price %>">
+                                                <input placeholder="₹" type="text" id="product_price" name="product_price" class="form-control" value="<%= productData.price %>" onblur="validatePrice()">
+                                                <p id="price-error" class="text-danger"></p>
                                             </div>
                                         </div>
                                     </div>
                                     <div class="col-lg-4">
                                         <div class="mb-4">
                                             <label class="form-label">Promotional price</label>
-                                            <input placeholder="₹" type="text" id="productPromo_price" name="productPromo_price" class="form-control" value="<%= productData.promo_price %>">
+                                            <input placeholder="₹" type="text" id="productPromo_price" name="productPromo_price" class="form-control" value="<%= productData.promo_price %>" onblur="validatePromoPrice()">
+                                            <p id="promoprice-error" class="text-danger"></p>
                                         </div>
                                     </div>
                                 </div>
@@ -221,18 +225,45 @@
                                     <label for="product_name" class="form-label">UK11</label>
                                     <input type="number" class="form-control" id="productSizeUK11" name="productSizeUK11" value="<%= productData.stock["UK11"].quantity %>">
                                 </div>
-                                <h4>Media</h4>
+                                <h4>Product Images</h4>
                                 <div class="input-upload">
-                                  <% for(let i = 1; i<= 4; i++) { %>
-                                    <img src="/uploads/<%= productData.productImage[i-1] %>" alt="">
-                                    <img id="product_img_preview<%= i %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
-                                    <input class="form-control" type="file"  accept=".jpg, .jpeg, .png" id="product_img<%= i %>" name="product_img<%= i %>">
-                                  <% } %>
+                                    <% for(let i = 0; i< 4; i++) { %>
+                                        <% if( i < productData.productImage.length) { %>
+                                            <!-- <div class="">
+                                                <img src="/uploads/<%= productData.productImage[i] %>" alt="">
+                                                <button class="btn bg-danger text-white" onclick="confirmRemove('<%= productData._id %>', '<%= i %>')">Remove</button>
+                                            </div> -->
+                                            <div class="container mt-3">
+                                                <div class="row align-items-center">
+                                                    <div class="col-auto">
+                                                        <img src="/uploads/<%= productData.productImage[i] %>" alt="" class="img-fluid">
+                                                    </div>
+                                                    <div class="col-auto">
+                                                        <button class="btn bg-danger text-white" onclick="confirmRemove('<%= productData._id %>', '<%= i %>')">Remove</button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } else { %>
+                                            <!-- <img id="product_img_preview<%= i + 1 %>" src="#" alt="Image Preview" style="display: none; width: 100%; margin-top: 10px;">
+                                            <input class="form-control" type="file"  accept=".jpg, .jpeg, .png" id="product_img<%= i+1 %>" name="product_img<%= i+1 %>" onchange="return validateImage('<%= i+1 %>')"> -->
+                                            <div class="container mt-3">
+                                                <div class="row align-items-center mb-3">
+                                                    <div class="col-auto">
+                                                        <img id="product_img_preview<%= i + 1 %>" src="#" alt="Image Preview" style="display: none; width: 100px; margin-top: 10px;">
+                                                    </div>
+                                                    <div class="col">
+                                                        <input class="form-control" type="file" accept=".jpg, .jpeg, .png" id="product_img<%= i + 1 %>" name="product_img<%= i + 1 %>" onchange="return validateImage('<%= i + 1 %>')">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% } %>
+                                    <% } %>
                                     <!-- <input class="form-control" type="file" accept="image" id="product_img1" name="product_img1">
                                     <input class="form-control" type="file" accept="image" id="product_img2" name="product_img2"> -->
+                                    <p id="image-error" class="text-danger"></p>
                                 </div>
                                 <div>
-                                    <button class="btn btn-md rounded font-sm hover-up" id="publishBtn" name="publishBtn" >Edit</button>
+                                    <button type="submit" class="btn btn-md rounded font-sm hover-up" id="publishBtn" name="publishBtn" >Edit</button>
                                 </div>
                             </form>
                         </div>
@@ -255,7 +286,7 @@
             </div>
         </footer>
     </main>
-    <!-- !-- SweetAlert2 JS --> -->
+    <!-- !-- SweetAlert2 JS --> 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
@@ -292,6 +323,188 @@
                 }
             });
         });
+
+
+
+        const dis=`<%= productData.description %>`
+        console.log(dis);
+        document.getElementById('product_description').textContent=dis;
+
+        async function confirmRemove(productId, imageUrl){
+            console.log("produvt and  image url,",productId,imageUrl );
+            const confirmed = await Swal.fire({
+            title: 'Are you sure?',
+            text: "Do you really want to remove this image?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, remove it!'
+        });
+        if(confirmed.isConfirmed) {
+            await removeImage(productId, imageUrl);
+        }
+        }
+        
+        async function removeImage(productId, imageUrl) {
+            console.log("product id --"+ productId);
+            console.log("image url--"+ imageUrl)
+
+            if(!productId || !imageUrl) {
+                Swal.fire(
+                    'Error!',
+                    'Product ID or Image url is missing',
+                    'error'
+                );
+                return;
+            }
+
+            const data = {
+                productId: productId,
+                image: imageUrl,
+            }
+
+            // const reqBody = JSON.stringify(data);
+            try{
+                const response = await fetch("/admin/products/edit/remove-image", {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                })
+                
+                if(response.ok){
+                    Swal.fire(
+                        'Deleted!',
+                        'Your image has been removed.',
+                        'success'
+                    ).then(() => {
+                        location.reload()
+                    })
+
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to remove the image.',
+                        'error'
+                    )
+                }
+            } catch(err){
+                Swal.fire(
+                    'Error!',
+                    'An error occured: '+ error.message,
+                    'error'
+                )
+            }
+        }
+
+        function validateProductName(){
+                const product_name = document.getElementById("product_name").value;
+                const errorDiv = document.getElementById("name-error")
+                console.log(product_name)
+                if(product_name == "" || product_name == " "){
+                    errorDiv.textContent = "Enter product name";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validateDescription(){
+                const product_description = document.getElementById("product_description").value;
+                const errorDiv = document.getElementById("description-error");
+                console.log(product_description)
+                if(product_description == "" || product_description == " "){
+                    errorDiv.textContent = "Enter product description";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validatePrice(){
+                const product_price = document.getElementById("product_price").value;
+                const errorDiv = document.getElementById("price-error");
+                console.log(product_price)
+                if(product_price == 0 || product_price == undefined){
+                    errorDiv.textContent = "Enter price of the price properly and cannot be 0";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validatePromoPrice(){
+                const productPromo_price = Math.abs(document.getElementById("productPromo_price").value);
+                const product_price = Math.abs(document.getElementById("product_price").value);
+                console.log(productPromo_price)
+                const errorDiv = document.getElementById("promoprice-error");
+                if(productPromo_price == 0 || productPromo_price == undefined){
+                    errorDiv.textContent = "Enter price of the price properly and cannot be 0";
+                    return false;
+                } else if(productPromo_price > product_price){
+                    errorDiv.textContent = "Promotion price should be lesser than the Product price";
+                    return false;
+                } else {
+                    errorDiv.textContent = "";
+                    return true;
+                }
+            }
+
+            function validateImage(index) {
+                const input = document.getElementById(`product_img${index}`);
+                console.log(input)
+                const file = input.files[0];
+                const validImageTypes = ['image/jpeg', 'image/png', 'image/jpg'];
+                const imageError = document.getElementById('image-error');
+
+                if (file && validImageTypes.includes(file.type)) {
+                    imageError.textContent = '';
+                    return true
+                } else {
+                    imageError.textContent = 'Input 4 images';
+                    input.value = ''; // Clear the invalid file
+                    return false;
+                }
+            }
+
+
+            function validateForm(){
+                const productName = validateProductName();
+                const description = validateDescription()
+                const price = validatePrice()
+                const promo_price = validatePromoPrice()
+                const image = validateImage(1) && validateImage(2) && validateImage(3) && validateImage(4)
+
+                if(productName && description && price && promo_price && image){
+                    try {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Success!',
+                            text: 'The product has been successfully updated.',
+                            confirmButtonText: 'OK',
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                            // Redirect to add-product page after confirmation
+                            window.location.href = "/admin/products";
+                            }
+                        });
+                        } catch (error) {
+                        console.error('Error showing SweetAlert:', error);
+                        // Handle errors gracefully, e.g., display an error message to the user
+                        }
+                    return true
+                } else {
+                    return false
+                }
+                
+
+            }
+
     </script>
 
     <!-- <script>

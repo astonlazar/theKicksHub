@@ -282,6 +282,7 @@
                                         Unblock
                                     </a>
                                 <% } %>
+                            </div>
                         </div> <!-- row .// -->
                     </article> <!-- itemlist  .// -->
                     <% }) %>
@@ -319,7 +320,7 @@
     <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
-    <!-- !-- SweetAlert2 JS --> -->
+    <!-- !-- SweetAlert2 JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
     <script>
         function statusUpdate(id, status, page) {
@@ -339,36 +340,40 @@
                             }).then((result) => {
                             if (result.isConfirmed) {
                                 // Call your function to update the user here
-                                performUserUpdate(page);
+                                fetch(`/admin/products/status`, {
+                                    method: 'PUT',
+                                    headers: {
+                                    'Content-Type': 'application/json' // Indicate sending JSON data
+                                    },
+                                    body: JSON.stringify({ productId: productId }) // Send updated isActive value
+                                })
+                                    .then(response => {
+                                    if (response.ok) {
+                                        console.log('Product status updated successfully!');
+                        
+                                    } else {
+                                        console.error('Error updating product status:', response.statusText);
+                                        // Handle errors appropriately (e.g., display error message)
+                                    }
+                                    })
+                                    .catch(error => {
+                                    console.error('Error:', error);
+                                    // Handle network or other errors
+                                    });
+                                    setTimeout(() => {
+                                        performProductUpdate(page);
+                                    }, 1)
                                 }
-                            });
+                            }).catch(() => {
+                                console.log("dialog cancelled")
+                            })
                 }
-        fetch(`/admin/products/status`, {
-            method: 'PUT',
-            headers: {
-            'Content-Type': 'application/json' // Indicate sending JSON data
-            },
-            body: JSON.stringify({ productId: productId }) // Send updated isActive value
-        })
-            .then(response => {
-            if (response.ok) {
-                console.log('Product status updated successfully!');
-
-            } else {
-                console.error('Error updating product status:', response.statusText);
-                // Handle errors appropriately (e.g., display error message)
-            }
-            })
-            .catch(error => {
-            console.error('Error:', error);
-            // Handle network or other errors
-            });
         }
 
-        function performUserUpdate(page) {
-                    window.location.href = '/admin/products?page='+page;
-                    console.log("User updated successfully!");
-                }
+        function performProductUpdate(page) {
+            window.location.reload('/admin/products?page='+page);
+            console.log("User updated successfully!");
+        }
 
     </script>
 </body>

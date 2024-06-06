@@ -84,9 +84,9 @@ const userManagement = async (req, res, next) => {
     let startIndex = (page - 1) * limit;
     let searchQuery;
     let query = {};
-    if(req.query.searchUser){
+    if (req.query.searchUser) {
       searchQuery = req.query.searchUser;
-      console.log(searchQuery)
+      console.log(searchQuery);
       query = { userName: new RegExp(searchQuery, "i") };
     }
     // const searchQuery = req.body.searchUser;
@@ -115,8 +115,6 @@ const blockUser = async (req, res, next) => {
     const id = req.query.id;
     console.log(`_id -- ${id}`);
 
-    req.session.temp = req.session.user;
-    req.session.user.destroy = false;
     const userData = await Users.findByIdAndUpdate(id, {
       $set: { isActive: false },
     });
@@ -131,7 +129,7 @@ const unblockUser = async (req, res, next) => {
   try {
     const id = req.query.id;
     console.log(`_id -- ${id}`);
-    req.session.user = req.session.temp;
+    // req.session.user = req.session.temp;
     const userData = await Users.findByIdAndUpdate(id, {
       $set: { isActive: true },
     });

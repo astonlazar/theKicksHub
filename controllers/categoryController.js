@@ -66,19 +66,22 @@ const categoryInsert = async (req, res) => {
 };
 
 const statusUpdate = async (req, res) => {
-  let { id } = req.body;
-  console.log(`-- category id- ${id}`);
-  let categoryD = await Category.findById({ _id: id });
+  let { categoryId } = req.body;
+  console.log(`-- category id- ${categoryId}`);
+  let categoryD = await Category.findById({ _id: categoryId });
   let categoryData = await Category.find();
   if (categoryD.isActive === true) {
     await Category.findByIdAndUpdate(
-      { _id: id },
+      { _id: categoryId },
       { $set: { isActive: false } }
     );
   } else {
-    await Category.findByIdAndUpdate({ _id: id }, { $set: { isActive: true } });
+    await Category.findByIdAndUpdate(
+      { _id: categoryId },
+      { $set: { isActive: true } }
+    );
   }
-  res.redirect("/categories");
+  // res.redirect("/categories");
 };
 
 const editCategory = async (req, res) => {

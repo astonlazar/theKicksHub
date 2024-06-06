@@ -57,12 +57,14 @@ adminRoute.put(
   auth.isLogin,
   productController.productStatus
 );
-adminRoute.get("/products/edit/:id", productController.editProduct);
+adminRoute.get("/products/edit/:id", auth.isLogin, productController.editProduct);
 adminRoute.post(
   "/products/edit/:id",
   multer.multiupload,
   productController.editedProduct
 );
+
+adminRoute.delete("/products/edit/remove-image", auth.isLogin, productController.removeImage);
 
 adminRoute.get("/transactions", auth.isLogin, adminController.transactions);
 

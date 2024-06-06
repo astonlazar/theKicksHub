@@ -170,7 +170,7 @@ const verifyEnter = async (req, res) => {
 
 const homePage = async (req, res) => {
   let productData = await Product.find({ isActive: { $eq: true } }).limit(4);
-  let categoryData = await Category.find();
+  let categoryData = await Category.find({ isActive: true });
 
   if (req.session.user) {
     let userData = await User.findById(req.session.user._id);
