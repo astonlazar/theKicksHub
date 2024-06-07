@@ -14,7 +14,7 @@ userRoute.post("/login", userController.loginEnterPage);
 userRoute.get("/signup", auth.isLogout, userController.signupPage);
 userRoute.post("/signup", userController.signupEnterPage);
 
-userRoute.get("/verification", userController.verificationPage);
+userRoute.get("/verification", auth.isLogout, userController.verificationPage);
 userRoute.post("/verification", userController.verifyEnter);
 
 userRoute.get(
@@ -37,5 +37,7 @@ userRoute.get("/product-view/:id", auth.isLogin, userController.productView);
 userRoute.get("/shop", auth.isLogin, userController.shop);
 userRoute.get("/user/profile", userController.userProfile);
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
+
+userRoute.put('/resend-otp', userController.sendOtpfromEmail)
 
 module.exports = userRoute;

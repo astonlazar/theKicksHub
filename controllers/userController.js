@@ -10,7 +10,7 @@ const loginPage = (req, res) => {
 };
 
 const signupPage = (req, res) => {
-  res.render("signup");
+  res.render("signup", {signupError: ""});
 };
 
 const successGoogle = async (req, res) => {
@@ -112,10 +112,6 @@ const signupEnterPage = async (req, res) => {
     console.log(checkUser);
     if (checkUser) {
       res.render("signup", {
-        signupUsernameError: "",
-        signupPhoneNoError: "",
-        signupPasswordError: "",
-        signupConfirmError: "",
         signupError: "User already exists!",
       });
     } else {
@@ -135,6 +131,7 @@ const signupEnterPage = async (req, res) => {
       console.log(`req.session.temp-- ${req.session.temp}`);
       req.session.otp = await otpSender.generate();
       await otpSender.sendEmail(userData.email, req.session.otp);
+      req.session.temp.email = userData.email;
       console.log(req.session.otp);
       console.log("--temporary session loading");
       res.redirect("/verification");
@@ -145,14 +142,27 @@ const signupEnterPage = async (req, res) => {
   }
 };
 
+const sendOtpfromEmail = async (req, res) => {
+  try{
+    let {email} = req.body;
+
+    req.session.otp = await otpSender.generate();
+    await otpSender.sendEmail(email, req.session.otp)
+    console.log(email, req.session.otp)
+  } catch(err) {
+    console.log(`Error in sendOtpfromEmail in userController -- ${err}`)
+  }
+}
+
 const verificationPage = (req, res) => {
-  res.render("verification", { otpError: "" });
+  res.render("verification", { otpError: "", userEmail: req.session.temp.email });
 };
 
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
+  console.log(`the otp in verifyEnter -- ${req.session.otp}`)
   // const userData = req.session.temp;
-  if (enteredOtp === req.session.otp) {
+  if (enteredOtp == req.session.otp) {
     // const userEnteredData = await User.insertMany(req.session.temp)
     const userEnteredData = new User(req.session.temp);
     await userEnteredData.save();
@@ -164,7 +174,7 @@ const verifyEnter = async (req, res) => {
     console.log(req.session.user.email);
     res.redirect("/");
   } else {
-    res.render("verification", { otpError: "OTP is incorrect" });
+    res.render("verification", { otpError: "OTP is incorrect",  userEmail: req.session.temp.email });
   }
 };
 
@@ -229,4 +239,5 @@ module.exports = {
   shop,
   userProfile,
   userLogout,
+  sendOtpfromEmail,
 };
