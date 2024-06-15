@@ -545,7 +545,13 @@
         }
 
         function validateForm() {
-            return validateUsername() && validateEmail() && validatePhoneNo() && validatePassword() && validateConfirmPassword();
+            let username = validateUsername();
+            let email = validateEmail();
+            let phoneNo = validatePhoneNo();
+            let password = validatePassword();
+            let confirmPassword = validateConfirmPassword();
+
+            return username && email && phoneNo && password && confirmPassword;
         }
     </script>
 </body>

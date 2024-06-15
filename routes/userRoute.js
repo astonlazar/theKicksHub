@@ -3,6 +3,7 @@ const userRoute = express();
 const userController = require("../controllers/userController");
 const auth = require("../middlewares/userAuth");
 const passport = require("passport");
+const cartController = require("../controllers/cartController");
 
 userRoute.set("view engine", "ejs");
 userRoute.set("views", "./views/user");
@@ -35,9 +36,24 @@ userRoute.get("/failure", userController.failureGoogle);
 userRoute.get("/", userController.homePage);
 userRoute.get("/product-view/:id", auth.isLogin, userController.productView);
 userRoute.get("/shop", auth.isLogin, userController.shop);
-userRoute.get("/user/profile", userController.userProfile);
+
+userRoute.post("/addtocart", cartController.addToCart);
+userRoute.get("/cart", auth.isLogin, cartController.loadCart);
+userRoute.delete(
+  "/cart/remove-product",
+  auth.isLogin,
+  cartController.removeFromCart
+);
+userRoute.put("/cart/quantity", auth.isLogin, cartController.quantityUpdate);
+
+userRoute.get("/checkout", auth.isLogin, cartController.loadCheckout);
+userRoute.post("/checkout", cartController.newAddress);
+
+userRoute.post('/place-order', cartController.placeOrder)
+
+userRoute.get("/profile", auth.isLogin, userController.userProfile);
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
 
-userRoute.put('/resend-otp', userController.sendOtpfromEmail)
+userRoute.put("/resend-otp", userController.sendOtpfromEmail);
 
 module.exports = userRoute;

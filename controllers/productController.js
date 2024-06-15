@@ -117,7 +117,7 @@ const productsList = async (req, res) => {
     let page = parseInt(req.query.page) || 1;
     let limit = 5;
     let startIndex = (page - 1) * limit;
-    let productData = await Product.find(query).skip(startIndex).limit(limit);
+    let productData = await Product.find(query).sort({_id: -1}).skip(startIndex).limit(limit);
     console.log();
     let totalDocuments = (await Product.find(query)).length;
     let totalPages = Math.ceil(totalDocuments / limit);

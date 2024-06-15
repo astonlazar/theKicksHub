@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara - eCommerce HTML Template</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <!-- SweetAlert CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+</head>
+
+<body>
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info">
+                            <ul>
+                                <!-- <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
+                                <li><i class="fi-rs-marker"></i><a  href="page-contact.html">Our location</a></li> -->
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <div class="text-center">
+                            <div id="news-flash" class="d-inline-block">
+                                
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+                                
+                                <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class="logo logo-width-1">
+                        <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-style-2">
+                            <form action="#">
+                                <input type="text" placeholder="Search for items...">
+                            </form>
+                        </div>
+                        <div class="header-action-right">
+                            <div class="header-action-2">
+                                <div class="header-action-icon-2">
+                                    <a href="shop-wishlist.html">
+                                        <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
+                                        <span class="pro-count blue">4</span>
+                                    </a>
+                                </div>
+                                <div class="header-action-icon-2">
+                                    <a class="mini-cart-icon" href="/cart">
+                                        <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
+                                        <span class="pro-count blue">2</span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class="logo logo-width-1 d-block d-lg-none">
+                        <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li><a class="active" href="/">Home <i class="fi-rs-angle-down"></i></a></li>
+                                    <li><a href="/shop">Shop <i class="fi-rs-angle-down"></i></a></li>
+                                    <li><a href="page-about.html">About</a></li>
+                                    <li><a href="page-contact.html">Contact</a></li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+                            <div class="header-action-icon-2">
+                                <a href="shop-wishlist.html">
+                                    <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
+                                    <span class="pro-count white">4</span>
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2">
+                                <a class="mini-cart-icon" href="/cart">
+                                    <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
+                                    <span class="pro-count white">2</span>
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2 d-block d-lg-none">
+                                <div class="burger-icon burger-icon-white">
+                                    <span class="burger-icon-top"></span>
+                                    <span class="burger-icon-mid"></span>
+                                    <span class="burger-icon-bottom"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-top">
+                <div class="mobile-header-logo">
+                    <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                </div>
+                <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
+                    <button class="close-style search-close">
+                        <i class="icon-top"></i>
+                        <i class="icon-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-header-content-area">
+                <div class="mobile-search search-style-3 mobile-header-border">
+                    <form action="#">
+                        <input type="text" placeholder="Search for items…">
+                        <button type="submit"><i class="fi-rs-search"></i></button>
+                    </form>
+                </div>
+                <div class="mobile-menu-wrap mobile-header-border">
+                    <!-- mobile menu start -->
+                    <nav>
+                        <ul class="mobile-menu">
+                            <li class=""><a href="/">Home</a></li>
+                            <li class=""><a href="/shop">Shop</a></li>
+                        </ul>
+                    </nav>
+                    <!-- mobile menu end -->
+                </div>
+                <div class="mobile-header-info-wrap mobile-header-border">
+                    <div class="single-mobile-header-info mt-30">
+                        <a  href="page-contact.html"> Our location </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="page-login-register.html">Log In / Sign Up </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="#">(+01) - 2345 - 6789 </a>
+                    </div>
+                </div>
+                <div class="mobile-social-icon">
+                    <h5 class="mb-15 text-grey-4">Follow Us</h5>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="main">
+        <div class="page-header breadcrumb-wrap">
+            <div class="container">
+                <div class="breadcrumb">
+                    <a href="/" rel="nofollow">Home</a>
+                    <span></span> Shop
+                    <span></span> Checkout
+                </div>
+            </div>
+        </div>
+        <section class="mt-50 mb-50">
+            <div class="container">
+                <!-- <div class="row">
+                    <div class="col-lg-6 mb-sm-15">
+                        <div class="toggle_info">
+                            <span><i class="fi-rs-user mr-10"></i><span class="text-muted">Already have an account?</span> <a href="#loginform" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to login</a></span>
+                        </div>
+                        <div class="panel-collapse collapse login_form" id="loginform">
+                            <div class="panel-body">
+                                <p class="mb-30 font-sm">If you have shopped with us before, please enter your details below. If you are a new customer, please proceed to the Billing &amp; Shipping section.</p>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <input type="text" name="email" placeholder="Username Or Email">
+                                    </div>
+                                    <div class="form-group">
+                                        <input type="password" name="password" placeholder="Password">
+                                    </div>
+                                    <div class="login_footer form-group">
+                                        <div class="chek-form">
+                                            <div class="custome-checkbox">
+                                                <input class="form-check-input" type="checkbox" name="checkbox" id="remember" value="">
+                                                <label class="form-check-label" for="remember"><span>Remember me</span></label>
+                                            </div>
+                                        </div>
+                                        <a href="#">Forgot password?</a>
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-md" name="login">Log in</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div> -->
+                    <!-- <div class="col-lg-6">
+                        <div class="toggle_info">
+                            <span><i class="fi-rs-label mr-10"></i><span class="text-muted">Have a coupon?</span> <a href="#coupon" data-bs-toggle="collapse" class="collapsed" aria-expanded="false">Click here to enter your code</a></span>
+                        </div>
+                        <div class="panel-collapse collapse coupon_form " id="coupon">
+                            <div class="panel-body">
+                                <p class="mb-30 font-sm">If you have a coupon code, please apply it below.</p>
+                                <form method="post">
+                                    <div class="form-group">
+                                        <input type="text" placeholder="Enter Coupon Code...">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn  btn-md" name="login">Apply Coupon</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div> -->
+                <!-- <div class="row">
+                    <div class="col-12">
+                        <div class="divider mt-50 mb-50"></div>
+                    </div>
+                </div> -->
+                <div class="row">
+                    <div class="container mt-5">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <% if(addressData){ %>
+                                    <h3 class="mb-4">My Addresses</h3>
+                                    <ul class="list-group">
+                                        <% addressData.address.forEach((data, index) => { %>
+                                        <li class="list-group-item">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="radio" onclick="selectAddress('<%= index %>')" name="address" id="address<%= index %>" value="<%= index %>">
+                                                <label class="form-check-label" for="address<%= index %>">
+                                                    <strong><%= data.fullName %></strong><br>
+                                                    <%= data.addressLine1 %>, <%= data.addressLine2 %><br>
+                                                    <%= data.city %>, <%= data.state %> - <%= data.pincode %><br>
+                                                    Contact: <%= data.phoneNo %><br> Email: <%= data.email %>
+                                                </label>
+                                            </div>
+                                        </li>
+                                        <% }) %>
+                                    </ul>                                    
+                                <% } %>
+                                <!-- <button type="button" class="btn btn-primary mt-3">Proceed with Selected Address</button> -->
+                                <div class="mt-3">
+                                    <button id="addAddressBtn" class="btn btn-dark">Add new address</button>
+                                </div>
+                            <!-- </div>
+                            <div class="col-md-6"> -->
+                                <div id="addressColumn" class="form-container" style="display: none;">
+                                    <div class="mb-3">
+                                        <h4>Address</h4>
+                                    </div>
+                                    <form action="/checkout" method="post" onsubmit="return validateForm()">
+                                        <div class="form-group">
+                                            <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Full name *" onblur="validateFullName()">
+                                            <p id="errorFullname" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="billing_address" id="billing_address" class="form-control" placeholder="Address *" onblur="validateAddress()">
+                                            <p id="errorAddress" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="billing_address2" class="form-control" placeholder="Address line2">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="city" id="city" class="form-control" placeholder="City / Town *" onblur="validateCity()">
+                                            <p id="errorCity" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="state" id="state" class="form-control" placeholder="State *" onblur="validateState()">
+                                            <p id="errorState" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="pincode" id="pincode" class="form-control" placeholder="Pincode / ZIP *" onkeypress="return isNumberKey(event)" onblur="validatePincode()">
+                                            <p id="errorPincode" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="phone" id="phone" class="form-control" placeholder="Phone *" onkeypress="return isNumberKey(event)" onblur="validatePhoneNo()">
+                                            <p id="errorPhone" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="text" name="email" id="email" class="form-control" placeholder="Email address *" onblur="validateEmail()">
+                                            <p id="errorEmail" class="text-danger"></p>
+                                        </div>
+                                        <div class="form-group">
+                                            <button type="submit" class="btn btn-dark" name="add-address">Add address</button>
+                                        </div>
+                                    </form>
+                                    <button id="addAddressCancelBtn" class="btn btn-secondary">Cancel</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="order_review">
+                                    <div class="mb-20">
+                                        <h4>Your Orders</h4>
+                                    </div>
+                                    <div class="table-responsive order_table text-center">
+                                        <table class="table">
+                                            <thead>
+                                                <tr>
+                                                    <th colspan="2">Product</th>
+                                                    <th colspan="1">Total</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <% cartData.product.forEach(item => { %>
+                                                <tr>
+                                                    <td class="image product-thumbnail"><img src="/uploads/<%= item.productId.productImage[0] %>" alt="#"></td>
+                                                    <td>
+                                                        <h5><a href="/product-view/<%= item.productId._id %>"><%= item.productId.productName %></a></h5> <span class="product-qty">x <%= item.quantity %></span>
+                                                    </td>
+                                                    <td>₹<%= item.quantity * item.productPrice %></td>
+                                                </tr>
+                                                <% }) %>
+                                                <!-- <tr>
+                                                    <td class="image product-thumbnail"><img src="/user/assets/imgs/shop/product-2-1.jpg" alt="#"></td>
+                                                    <td>
+                                                        <h5><a href="shop-product-full.html">LDB MOON Women Summe</a></h5> <span class="product-qty">x 1</span>
+                                                    </td>
+                                                    <td>$65.00</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="image product-thumbnail"><img src="/user/assets/imgs/shop/product-3-1.jpg" alt="#"></td>
+                                                    <td><i class="ti-check-box font-small text-muted mr-10"></i>
+                                                        <h5><a href="shop-product-full.html">Women's Short Sleeve Loose</a></h5> <span class="product-qty">x 1</span>
+                                                    </td>
+                                                    <td>$35.00</td>
+                                                </tr> -->
+                                                <tr>
+                                                    <th>SubTotal</th>
+                                                    <td class="product-subtotal" colspan="2">₹<%= cartData.totalPrice %></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Shipping</th>
+                                                    <td colspan="2"><em>Free Shipping</em></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>Total</th>
+                                                    <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">₹<%= cartData.totalPrice %></span></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                    <div class="payment_method">
+                                        <div class="mb-25">
+                                            <h5>Payment</h5>
+                                        </div>
+                                        <div class="payment_option" id="payment_option">
+                                            <div class="custome-radio">
+                                                <input class="form-check-input" required="" type="radio" name="payment_option" id="cash-on-delivery" >
+                                                <label class="form-check-label" for="cash-on-delivery" data-bs-toggle="collapse" data-target="#cashOnDelivery" aria-controls="cashOnDelivery">COD</label>
+                                            </div>
+                                            <div class="custome-radio">
+                                                <input class="form-check-input" required="" type="radio" name="payment_option" id="razor-pay" >
+                                                <label class="form-check-label" for="razor-pay" data-bs-toggle="collapse" data-target="#razorPay" aria-controls="razorPay">RazorPay</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <button onclick="placeOrder()" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                </div>
+                            </div>
+                            <!--  -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <footer class="main">
+        <section class="newsletter p-30 text-white wow fadeIn animated">
+            <div class="container">
+                <div class="row align-items-center">
+                    <!-- <div class="col-lg-7 mb-md-3 mb-lg-0">
+                        <div class="row align-items-center">
+                            <div class="col flex-horizontal-center">
+                                <img class="icon-email" src="/user/assets/imgs/theme/icons/icon-email.svg" alt="">
+                                <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
+                            </div>
+                            <div class="col my-4 my-md-0 des">
+                                <h5 class="font-size-15 ml-4 mb-0">...and receive <strong>$25 coupon for first shopping.</strong></h5>
+                            </div>
+                        </div>
+                    </div> -->
+                    <div class="col-lg-5">
+                        <!-- Subscribe Form -->
+                        <!-- <form class="form-subcriber d-flex wow fadeIn animated">
+                            <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">
+                            <button class="btn bg-dark text-white" type="submit">Subscribe</button>
+                        </form> -->
+                        <!-- End Subscribe Form -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section-padding footer-mid">
+            <div class="container pt-15 pb-20">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="widget-about font-md mb-md-5 mb-lg-0">
+                            <div class="logo logo-width-1 wow fadeIn animated">
+                                <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                            </div>
+                            <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
+                            <p class="wow fadeIn animated">
+                                <strong>Address: </strong>562 Wellington Road, Street 32, San Francisco
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Phone: </strong>+01 2222 365 /(+91) 01 2345 6789
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Hours: </strong>10:00 - 18:00, Mon - Sat
+                            </p>
+                            <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
+                            <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3">
+                        <h5 class="widget-title wow fadeIn animated">About</h5>
+                        <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Delivery Information</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms &amp; Conditions</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Support Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2  col-md-3">
+                        <h5 class="widget-title wow fadeIn animated">My Account</h5>
+                        <ul class="footer-list wow fadeIn animated">
+                            <li><a href="#">Sign In</a></li>
+                            <li><a href="#">View Cart</a></li>
+                            <li><a href="#">My Wishlist</a></li>
+                            <li><a href="#">Track My Order</a></li>
+                            <li><a href="#">Help</a></li>
+                            <li><a href="#">Order</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5 class="widget-title wow fadeIn animated">Install App</h5>
+                        <div class="row">
+                            <div class="col-md-8 col-lg-12">
+                                <p class="wow fadeIn animated">From App Store or Google Play</p>
+                                <div class="download-app wow fadeIn animated">
+                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="/user/assets/imgs/theme/app-store.jpg" alt=""></a>
+                                    <a href="#" class="hover-up"><img src="/user/assets/imgs/theme/google-play.jpg" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
+                                <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
+                                <img class="wow fadeIn animated" src="/user/assets/imgs/theme/payment-method.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container pb-20 wow fadeIn animated">
+            <div class="row">
+                <div class="col-12 mb-20">
+                    <div class="footer-bottom"></div>
+                </div>
+                <div class="col-lg-6">
+                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2022, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
+                </div>
+                <div class="col-lg-6">
+                    <p class="text-lg-end text-start font-sm text-muted mb-0">
+                        Designed by <a href="http://alithemes.com" target="_blank">Alithemes.com</a>. All rights reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <!-- Preloader Start -->
+    <!-- <div id="preloader-active">
+        <div class="preloader d-flex align-items-center justify-content-center">
+            <div class="preloader-inner position-relative">
+                <div class="text-center">
+                    <h5 class="mb-5">Now Loading</h5>
+                    <div class="loader">
+                        <div class="bar bar1"></div>
+                        <div class="bar bar2"></div>
+                        <div class="bar bar3"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div> -->
+    <!-- SweetAlert JS -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- Vendor JS-->
+    <script src="/user/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/user/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/user/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/user/assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/plugins/slick.js"></script>
+    <script src="/user/assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/user/assets/js/plugins/wow.js"></script>
+    <script src="/user/assets/js/plugins/jquery-ui.js"></script>
+    <script src="/user/assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/user/assets/js/plugins/magnific-popup.js"></script>
+    <script src="/user/assets/js/plugins/select2.min.js"></script>
+    <script src="/user/assets/js/plugins/waypoints.js"></script>
+    <script src="/user/assets/js/plugins/counterup.js"></script>
+    <script src="/user/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/user/assets/js/plugins/images-loaded.js"></script>
+    <script src="/user/assets/js/plugins/isotope.js"></script>
+    <script src="/user/assets/js/plugins/scrollup.js"></script>
+    <script src="/user/assets/js/plugins/jquery.vticker-min.js"></script>
+    <!-- Template  JS -->
+    <script src=".//user/assets/js/main.js?v=3.4"></script>
+    <script src=".//user/assets/js/shop.js?v=3.4"></script>
+    <script>
+
+            function isNumberKey(event) {
+                const charCode = event.which || event.keyCode;
+                if (charCode !== 46 && charCode > 31 && (charCode < 48 || charCode > 57)) {
+                    return false;
+                }
+                // Allow decimal point only once
+                if (charCode === 46 && event.target.value.indexOf('.') !== -1) {
+                    return false;
+                }
+                return true;
+            }
+
+
+
+
+
+        document.getElementById('addAddressBtn').addEventListener('click', () => {
+            document.getElementById('addressColumn').style.display = 'block';
+            document.getElementById('addAddressCancelBtn').style.display = 'block';
+            document.getElementById('addAddressBtn').style.display = 'none'
+            
+        })
+
+        document.getElementById('addAddressCancelBtn').addEventListener('click', () => {
+            document.getElementById('addressColumn').style.display = 'none';
+            document.getElementById('addAddressCancelBtn').style.display = 'none';
+            document.getElementById('addAddressBtn').style.display = 'inline-block'
+        })
+
+        function validateFullName() {
+            let fullname = document.getElementById('fullname').value
+            let errorDiv = document.getElementById('errorFullname')
+            if(fullname === '' || fullname === ' '){
+                errorDiv.textContent = 'Enter name'
+                return false
+            } else {
+                errorDiv.textContent = ''
+                return true
+            }
+        }
+
+        function validateAddress(){
+            let address = document.getElementById('billing_address').value;
+            let errorDiv = document.getElementById('errorAddress')
+            if(address === '' || address === ' '){
+                errorDiv.textContent = 'Enter address'
+                return false
+            } else {
+                errorDiv.textContent = ''
+                return true
+            }
+        }
+
+        function validateCity(){
+            let city = document.getElementById('city').value
+            let errorDiv = document.getElementById('errorCity')
+            if(city === '' || city === ' '){
+                errorDiv.textContent = 'Enter city / town'
+                return false
+            } else {
+                errorDiv.textContent = ''
+                return true
+            }
+        }
+
+        function validateState(){
+            const validStates = [
+                "Andhra Pradesh",
+                "Arunachal Pradesh",
+                "Assam",
+                "Bihar",
+                "Chhattisgarh",
+                "Goa",
+                "Gujarat",
+                "Haryana",
+                "Himachal Pradesh",
+                "Jharkhand",
+                "Karnataka",
+                "Kerala",
+                "Madhya Pradesh",
+                "Maharashtra",
+                "Manipur",
+                "Meghalaya",
+                "Mizoram",
+                "Nagaland",
+                "Odisha",
+                "Punjab",
+                "Rajasthan",
+                "Sikkim",
+                "Tamil Nadu",
+                "Telangana",
+                "Tripura",
+                "Uttar Pradesh",
+                "Uttarakhand",
+                "West Bengal",
+                "andhra pradesh",
+                "arunachal pradesh",
+                "assam",
+                "bihar",
+                "chhattisgarh",
+                "goa",
+                "gujarat",
+                "haryana",
+                "himachal pradesh",
+                "jharkhand",
+                "karnataka",
+                "kerala",
+                "madhya pradesh",
+                "maharashtra",
+                "manipur",
+                "meghalaya",
+                "mizoram",
+                "nagaland",
+                "odisha",
+                "punjab",
+                "rajasthan",
+                "sikkim",
+                "tamil nadu",
+                "telangana",
+                "tripura",
+                "uttar pradesh",
+                "uttarakhand",
+                "west bengal",
+                "ANDHRA PRADESH",
+                "ARUNACHAL PRADESH",
+                "ASSAM",
+                "BIHAR",
+                "CHHATTISGARH",
+                "GOA",
+                "GUJARAT",
+                "HARYANA",
+                "HIMACHAL PRADESH",
+                "JHARKHAND",
+                "KARNATAKA",
+                "KERALA",
+                "MADHYA PRADESH",
+                "MAHARASHTRA",
+                "MANIPUR",
+                "MEGHALAYA",
+                "MIZORAM",
+                "NAGALAND",
+                "ODISHA",
+                "PUNJAB",
+                "RAJASTHAN",
+                "SIKKIM",
+                "TAMIL NADU",
+                "TELANGANA",
+                "TRIPURA",
+                "UTTAR PRADESH",
+                "UTTARAKHAND",
+                "WEST BENGAL"
+            ];
+            let state = document.getElementById('state').value.trim()
+            let errorDiv = document.getElementById('errorState')
+            if(validStates.includes(state)){
+                errorDiv.textContent = ''
+                return true;
+            } else {
+                errorDiv.textContent = 'Enter a valid state'
+                return false;
+            }
+        }
+
+        function validatePincode(){
+            let pincode = document.getElementById('pincode').value
+            let errorDiv = document.getElementById('errorPincode')
+            const pincodePattern = /^[1-9][0-9]{5}$/;
+            if (pincodePattern.test(pincode)){
+                errorDiv.textContent = '';
+                return true
+            } else {
+                errorDiv.textContent = 'Enter a valid pincode'
+                return false
+            }
+        }
+
+        function validatePhoneNo(){
+            let phoneNo = document.getElementById('phone').value
+            let errorDiv = document.getElementById('errorPhone')
+            const phonePattern = /^[0-9]{10}$/;
+            if(phonePattern.test(phoneNo)){
+                errorDiv.textContent = ''
+                return true
+            } else {
+                errorDiv.textContent = 'Enter a valid phone number'
+                return false
+            }
+        }
+
+        function validateEmail(){
+            let email = document.getElementById('email').value
+            let errorDiv = document.getElementById('errorEmail')
+            const emailPattern = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+            if(emailPattern.test(email)){
+                errorDiv.textContent = ''
+                return true
+            } else {
+                errorDiv.textContent = 'Enter a valid email address'
+                return false
+            }
+        }
+
+        function validateForm(){
+            const fullname = validateFullName()
+            const address = validateAddress()
+            const city = validateCity()
+            const state = validateState()
+            const pincode = validatePincode()
+            const phoneNo = validatePhoneNo()
+            const email = validateEmail()
+
+            return fullname && address && city && state && pincode && phoneNo && email
+        }
+
+        // async function newAddressCreate(){
+        //     let response = await fetch('/checkout/new-address', {
+        //         method: 'POST',
+        //         headers: {
+        //             'Content-Type': 'application/json',
+        //         },
+
+        //     })
+
+        // }
+        let selectedAddressIndex;
+        let selectedPaymentMethod;
+        function selectAddress(index){
+            selectedAddressIndex = index;
+            console.log(`selected Address -- ${selectedAddressIndex}`)
+        }
+
+        let paymentOption = document.getElementById('payment_option')
+            paymentOption.addEventListener('click', (event) => {
+                // console.log(event.target.textContent)
+                if(event.target.textContent === 'COD'){
+                    // console.log('Cash On Delivery')
+                    selectedPaymentMethod = 'COD'
+                } else if (event.target.textContent === 'RazorPay'){
+                    // console.log('RazorPay')
+                    selectedPaymentMethod = 'RazorPay'
+                }
+                console.log(`selected Payment -- ${selectedPaymentMethod}`)
+            })
+
+        async function placeOrder() {
+            if(selectedAddressIndex && selectedPaymentMethod) {
+                let response = await fetch('/place-order', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({selectedAddressIndex: selectedAddressIndex, selectedPaymentMethod: selectedPaymentMethod})
+                })
+                if(response.ok){
+                    console.log('Order Successful')
+                    Swal.fire({
+                        title: 'Order Successful',
+                        text: 'Your order has been placed successfully!',
+                        icon: 'success',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                        }
+                    });
+                } else {
+                    console.log('Error')
+                    Swal.fire({
+                        title: 'Order not placed',
+                        text: 'Your order has not been placed!',
+                        icon: 'error',
+                        confirmButtonText: 'OK'
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                        }
+                    });
+                }
+            } else {
+                Swal.fire({
+                        text: 'Select Address and Payment Method to continue!',
+                        icon: 'info',
+                        confirmButtonText: 'OK'
+                    })
+            }
+
+        }
+    </script>
+</body>
+
+</html>

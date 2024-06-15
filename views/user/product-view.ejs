@@ -182,6 +182,9 @@
                                         <li><a href="#"><img src="/user/assets/imgs/theme/flag-ru.png" alt="">Pусский</a></li>
                                     </ul>
                                 </li> -->
+                                <li>
+                                    <a href="/profile">Profile</a>
+                                </li>
                                 <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
                             </ul>
                         </div>
@@ -198,19 +201,6 @@
                     <div class="header-right">
                         <div class="search-style-2">
                             <form action="#">
-                                <!-- <select class="select-active">
-                                    <option>All Categories</option>
-                                    <option>Women's</option>
-                                    <option>Men's</option>
-                                    <option>Cellphones</option>
-                                    <option>Computer</option>
-                                    <option>Electronics</option>
-                                    <option> Accessories</option>
-                                    <option>Home & Garden</option>
-                                    <option>Luggage</option>
-                                    <option>Shoes</option>
-                                    <option>Mother & Kids</option>
-                                </select> -->
                                 <input type="text" placeholder="Search for items...">
                             </form>
                         </div>
@@ -223,11 +213,11 @@
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="shop-cart.html">
+                                    <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
                                         <span class="pro-count blue">2</span>
                                     </a>
-                                    <div class="cart-dropdown-wrap cart-dropdown-hm2">
+                                    <!-- <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
                                             <li>
                                                 <div class="shopping-cart-img">
@@ -263,7 +253,7 @@
                                                 <a href="shop-checkout.html">Checkout</a>
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> -->
                                 </div>
                             </div>
                         </div>
@@ -275,7 +265,7 @@
             <div class="container">
                 <div class="header-wrap header-space-between position-relative">
                     <div class="logo logo-width-1 d-block d-lg-none">
-                        <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                        <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
                     </div>
                     <div class="header-nav d-none d-lg-flex">
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
@@ -604,33 +594,35 @@
                                         <div class="attr-detail attr-size">
                                             <strong class="mr-10">Size</strong>
                                             <ul class="list-filter size-filter font-small">
-                                                <% Object.keys(productData.stock).forEach(size => {  %>
-                                                <li><a onclick="sizeStock('<%= size %>')"><%= size %></a></li>
+                                                <% Object.keys(productData.stock).forEach(size => { %>
+                                                <li>
+                                                    <a onclick="sizeStock('<%= size %>', '<%= productData.stock[size].quantity %>')">
+                                                        <%= size %>
+                                                    </a>
+                                                </li>
                                                 <% }) %>
                                             </ul>
                                         </div>
+                                            <ul class="product-meta font-xs color-grey mt-50">
+                                                <p id="sizeSelectionError" class="text-danger"></p>
+                                                <li>Availability: <span id="stockAvailability"></span></li>
+                                            </ul>  
+                                                <!-- <ul class="product-meta font-xs color-grey mt-50">
+                                                </ul> -->
                                         <div class="bt-1 border-color-1 mt-30 mb-30"></div>
                                         <div class="detail-extralink">
-                                            <div class="detail-qty border radius">
+                                            <!-- <div class="detail-qty border radius">
                                                 <a href="#" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
                                                 <span class="qty-val">1</span>
                                                 <a href="#" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
-                                            </div>
+                                            </div> -->
                                             <div class="product-extra-link2">
-                                                <button type="submit" class="button button-add-to-cart">Add to cart</button>
+                                                <button type="submit" onclick="addToCart('<%= productData._id %>')" class="button button-add-to-cart">Add to cart</button>
                                                 <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
                                                 <!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a> -->
                                             </div>
                                         </div>
-                                        <ul class="product-meta font-xs color-grey mt-50">
-                                            
-                                            <ul class="product-meta font-xs color-grey mt-50">
-                                                <li>Availability:
-                                                 
-                                                </li>
-                                              </ul>
-                                              
-                                        </ul>
+                                        
                                     </div>
                                     <!-- Detail Info -->
                                 </div>
@@ -1116,8 +1108,50 @@
     <script src="/user/assets/js/shop.js?v=3.4"></script>
     
     <script>
-        function sizeStock(size){
-            
+        let selectedSize;
+        let selectedProductStock;
+        function sizeStock(size, quantity){
+            document.getElementById('sizeSelectionError').textContent = ''
+            selectedSize = size;
+            selectedProductStock = quantity;
+            console.log(size, quantity)
+            if(quantity == 0){
+                document.getElementById("stockAvailability").textContent = 'Out of Stock'
+                document.getElementById("stockAvailability").style.color = '#ff4d4d'
+            } else {
+                if(quantity < 10) {
+                    document.getElementById("stockAvailability").textContent = `Only ${quantity} items left in stock`
+                    document.getElementById("stockAvailability").style.color = '#4d4d4d'
+                } else {
+                    document.getElementById("stockAvailability").textContent = 'Stock Available'
+                    document.getElementById("stockAvailability").style.color = '#4d4d4d'
+                }
+            }
+        }
+
+        async function addToCart(productId){
+            if(selectedSize == undefined){
+                // event.preventDefault()
+                document.getElementById('sizeSelectionError').textContent = 'Select a size to add to cart'
+            } else if(selectedProductStock == 0) {
+                // event.preventDefault()
+                document.getElementById('sizeSelectionError').textContent = 'Product is out of stock'
+            } else {
+                let response = await fetch('/addtocart', {
+                    method: "POST",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({productId, selectedSize})
+                })
+                if(!response.ok){
+                    console.log(`error ---${response.statusText}`)
+                } else {
+                    window.location.href = "/cart"
+                }
+                const data = await response.json()
+                console.log(`Data is ${data}`)
+            }
         }
     </script>
 </body>

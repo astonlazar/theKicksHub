@@ -6,20 +6,16 @@ const addressSchema = {
     ref: "user",
     required: true,
   },
-  address: {
-    name: {
+  address: [{
+    fullName: {
       type: String,
       required: true,
     },
-    phoneNo: {
-      type: Number,
-      required: true,
-    },
-    address: {
+    addressLine1: {
       type: String,
       required: true,
     },
-    street: {
+    addressLine2: {
       type: String,
       required: true,
     },
@@ -32,14 +28,22 @@ const addressSchema = {
       required: true,
     },
     pincode: {
-      type: Number,
+      type: String,
+      required: true,
+    },
+    phoneNo: {
+      type: String,
+      required: true,
+    },
+    email: {
+      type: String,
       required: true,
     },
     idDefault: {
       type: Boolean,
       default: false,
     },
-  },
+  }],
 };
 
 module.exports = mongoose.model("address", addressSchema);

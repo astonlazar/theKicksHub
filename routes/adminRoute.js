@@ -3,6 +3,7 @@ const adminRoute = express();
 const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
+const orderController = require("../controllers/orderController")
 const auth = require("../middlewares/adminAuth");
 const multer = require("../helpers/multer");
 
@@ -65,6 +66,8 @@ adminRoute.post(
 );
 
 adminRoute.delete("/products/edit/remove-image", auth.isLogin, productController.removeImage);
+
+adminRoute.get('/orders', auth.isLogin, orderController.loadOrderPage)
 
 adminRoute.get("/transactions", auth.isLogin, adminController.transactions);
 

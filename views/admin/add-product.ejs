@@ -42,7 +42,7 @@
                         <span class="text">Users</span>
                     </a>
                 </li>
-                <li class="menu-item">
+                <li class="menu-item active">
                     <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
                         <span class="text">Products</span>
                     </a>
@@ -52,23 +52,16 @@
                         <span class="text">Categories</span>
                     </a>
                 </li>
-                <li class="menu-item has-submenu">
-                    <a class="menu-link" href="page-orders-1.html"> <i class="icon material-icons md-shopping_cart"></i>
+                <li class="menu-item ">
+                    <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
                         <span class="text">Orders</span>
                     </a>
-                    <div class="submenu">
-                        <a href="page-orders-1.html">Order list 1</a>
-                        <a href="page-orders-2.html">Order list 2</a>
-                        <a href="page-orders-detail.html">Order detail</a>
-                        <a href="page-orders-tracking.html">Order tracking</a>
-<a href="page-invoice.html">Invoice</a>
-                    </div>
                 </li>
-                <li class="menu-item active">
+                <!-- <li class="menu-item active">
                     <a class="menu-link"> <i class="icon material-icons md-add_box"></i>
                         <span class="text">Add product</span>
                     </a>
-                </li>
+                </li> -->
                 <li class="menu-item">
                     <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
                         <span class="text">Transactions</span>
@@ -82,11 +75,6 @@
                         <span class="text">Settings</span>
                     </a>
                 </li>
-                <!-- <li class="menu-item">
-                    <a class="menu-link" href="page-blank.html"> <i class="icon material-icons md-local_offer"></i>
-                        <span class="text"> Starter page </span>
-                    </a>
-                </li> -->
             </ul>
             <br>
             <br>
@@ -194,11 +182,13 @@
                                 <h4 class="mb-4">Category</h4>
                                 <div class="col-sm-12 mb-3">
                                     <!-- <label class="form-label">Category</label> -->
-                                    <select class="form-select" id="product_category" name="product_category">
+                                    <select class="form-select" id="product_category" name="product_category" onblur="validateCategory()">
+                                        <option value="Select">Select a category</option>
                                         <% categories.forEach((cat) => { %>
                                         <option value="<%=cat._id%>"><%= cat.categoryName %></option>
                                         <% }) %>
                                     </select>
+                                    <p id="category-error" class="text-danger"></p>
                                 </div>
                                 <h4 class="mb-4">Stocks</h4>
                                 <div class="mb-4">
@@ -344,6 +334,20 @@
                 }
             }
 
+            function validateCategory() {
+            const categorySelect = document.getElementById('product_category');
+            const errorDiv = document.getElementById("category-error");
+            if (categorySelect.value === 'Select') {
+                errorDiv.textContent = 'Select a category.'
+                // Reset the select element to prompt user to make a valid selection
+                // categorySelect.focus();
+                return false;
+            } else {
+                errorDiv.textContent = ''
+                return true;
+            }
+        }
+
             // function validateImage(num) {
             //     // const file = inputElement.files[0];
             //     const fileInput = document.getElementById("product_img"+num);
@@ -398,9 +402,10 @@
                 const description = validateDescription()
                 const price = validatePrice()
                 const promo_price = validatePromoPrice()
+                const category = validateCategory()
                 const image = validateImage(1) && validateImage(2) && validateImage(3) && validateImage(4)
 
-                if(productName && description && price && promo_price && image){
+                if(productName && description && price && promo_price && category && image){
                     try {
                         Swal.fire({
                             icon: 'success',
@@ -410,7 +415,7 @@
                         }).then((result) => {
                             if (result.isConfirmed) {
                             // Redirect to add-product page after confirmation
-                            window.location.href = "/admin/add-product";
+                            window.location.href = "/admin/products";
                             }
                         });
                         } catch (error) {

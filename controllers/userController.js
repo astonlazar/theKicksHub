@@ -2,6 +2,7 @@ const hashing = require("../helpers/passwordHash");
 const User = require("../models/userModel");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
+const Address = require("../models/addressModel");
 const otpSender = require("../helpers/otpSender");
 const strongPassword = require("../helpers/strongPassword");
 
@@ -210,13 +211,39 @@ const productView = async (req, res) => {
 };
 
 const shop = async (req, res) => {
-  let productData = await Product.find({ isActive: true });
-  let categoryData = await Category.find({ isActive: true });
-  res.render("shop", { productData, categoryData });
+  try{
+    let page = parseInt(req.query.page) || 1;
+    let limit = 9;
+    let startIndex = (page - 1) * limit;
+
+    const sortOptions = {
+      // 'popularity': { popularity: -1 },
+      'price-low-high': { promo_price: 1 },
+      'price-high-low': { promo_price: -1 },
+      // 'average-ratings': { averageRating: -1 },
+      // 'featured': { featured: -1 },
+      'new-arrivals': { _id: -1 },
+      'aA-zZ': { productName: 1 },
+      'zZ-aA': { productName: -1 }
+    };
+
+    let sortBy = req.query.sort || 'new-arrivals'; // Default to 'popularity' if no sort option is provided
+    let sortCriteria = sortOptions[sortBy] || sortOptions['new-arrivals']; // Fallback to 'popularity' if invalid sort option is provided
+    console.log("sortCriteria --"+sortCriteria)
+    let productData = await Product.find({ isActive: true }).sort(sortCriteria).skip(startIndex).limit(limit);
+    let totalDocuments = await Product.countDocuments();
+    let totalPages = Math.ceil(totalDocuments / limit)
+    let categoryData = await Category.find({ isActive: true });
+    res.render("shop", { productData, categoryData, page, totalPages, sortBy });
+  } catch(error){
+    console.log(`Error in shop -- ${error}`)
+  }
 };
 
-const userProfile = (req, res) => {
-  res.render("user-profile");
+const userProfile = async (req, res) => {
+  const addressData = await Address.findOne({userId: req.session.user._id})
+  const userData = await User.findById(req.session.user._id);
+  res.render("user-profile", { userData, addressData });
 };
 
 const userLogout = (req, res) => {
