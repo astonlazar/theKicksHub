@@ -11,7 +11,7 @@ const productSchema = new mongoose.Schema({
   },
   category: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: "category",
+    ref: "categories",
     required: true,
   },
   price: {
@@ -79,8 +79,8 @@ const productSchema = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date(),
-  }
+    default: Date.now,
+  },
 });
 
-module.exports = mongoose.model("product", productSchema);
+module.exports = mongoose.model("products", productSchema);

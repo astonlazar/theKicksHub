@@ -196,21 +196,19 @@
                         <h3 class="mb-30">Verification</h3>
                         <h6 class="mb-30">Enter the OTP code sent to your Email</h6>
                       </div>
-                      <form action="/verification" method="post">
+                      <form action="/verification" method="post" onsubmit="return validateOTP()">
                         <div class="form-group">
                             <div class="form-group">
                                 <div>
-                                  <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;">
+                                  <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;" onblur="verifyOTP()">
                                   <!-- <span id="otpTimer" style="display: inline-block;"></span> -->
-                                  <div id="resendOtp" class="cursor-pointer" onclick="restartOTPTimer()">Resend OTP</div>
+                                  <div id="resendOtp" onclick="restartOTPTimer()">Resend OTP</div>
                                 </div>
                               </div>
                               
                           </div>
                           
-                        <% if(otpError != "") { %>
-                            <p class="text-danger"><%- otpError %></p>
-                        <% } %>
+                            <p id="otp-error" class="text-danger"></p>
                         
                         <div>
                             <!-- <a id="resend-otp" href="" style="display: none;" class="btn-sm bg-dark text-white" onclick="startOTPCountdown(60)">Resend OTP</a>
@@ -471,6 +469,8 @@
                 localStorage.removeItem("timeLeft"); // Clear the stored timer value
                 resendOtpLink.textContent = "Resend OTP";
                 resendOtpLink.style.pointerEvents = "auto"; // Enable clickability
+                resendOtpLink.style.cursor = 'pointer'
+                // resendOtpLink.style.border = 
             } else {
                 // Disable the link/button during the countdown
                 resendOtpLink.style.pointerEvents = "none";
@@ -505,13 +505,31 @@
                     },
                     body: JSON.stringify(emailData)
                 })
+                if(response.ok){
+                    location.reload()
+                }
             } catch (error) {
                 console.log(`Error in restartOtpTimer -- ${error}`)
             }
 
         }
 
-
+        function verifyOTP(){
+            let otpCode = document.getElementById('otpCode').value
+            let errorDiv = document.getElementById('otp-error')
+            let sendOtp = '<%= otp %>'
+            console.log(otpCode, sendOtp)
+            if(otpCode === sendOtp){
+                errorDiv.textContent = ""
+                return true
+            } else {
+                errorDiv.textContent = 'Incorrect OTP'
+                return false
+            }
+        }
+        function validateOTP(){
+            return verifyOTP()
+        }
 
         </script>
 </body>

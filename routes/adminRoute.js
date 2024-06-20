@@ -3,7 +3,7 @@ const adminRoute = express();
 const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
-const orderController = require("../controllers/orderController")
+const orderController = require("../controllers/orderController");
 const auth = require("../middlewares/adminAuth");
 const multer = require("../helpers/multer");
 
@@ -58,16 +58,34 @@ adminRoute.put(
   auth.isLogin,
   productController.productStatus
 );
-adminRoute.get("/products/edit/:id", auth.isLogin, productController.editProduct);
+adminRoute.get(
+  "/products/edit/:id",
+  auth.isLogin,
+  productController.editProduct
+);
 adminRoute.post(
   "/products/edit/:id",
   multer.multiupload,
   productController.editedProduct
 );
 
-adminRoute.delete("/products/edit/remove-image", auth.isLogin, productController.removeImage);
+adminRoute.delete(
+  "/products/edit/remove-image",
+  auth.isLogin,
+  productController.removeImage
+);
 
-adminRoute.get('/orders', auth.isLogin, orderController.loadOrderPage)
+adminRoute.get("/orders", auth.isLogin, orderController.loadOrderPage);
+adminRoute.get(
+  "/orders/details",
+  auth.isLogin,
+  orderController.orderDetailsPage
+);
+adminRoute.post(
+  "/orders/details/status-change",
+  auth.isLogin,
+  orderController.orderStatusChange
+);
 
 adminRoute.get("/transactions", auth.isLogin, adminController.transactions);
 

@@ -200,6 +200,7 @@
                             </a>
                         </div>
                         <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>Price</span> </div>
+                        <div class="col-lg-1 col-sm-2 col-4 col-price"> <span>Stocks left</span> </div>
                         <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>Status</span> </div>
                         <!-- <div class="col-lg-1 col-sm-2 col-4 col-date">
                             <span>Date</span>
@@ -229,6 +230,21 @@
                                 </a>
                             </div>
                             <div class="col-lg-2 col-sm-2 col-4 col-price"> <span>₹ <%= data.price %></span> </div>
+                            <%function calculateTotalStock(stock) {
+                                let totalStock = 0;
+                                for (let size in stock) {
+                                  if (stock[size].quantity !== undefined) {
+                                    totalStock += stock[size].quantity;
+                                  }
+                                }
+                                return totalStock;
+                              }
+                              
+                              // Calculate and log the total stock
+                              const totalStock = calculateTotalStock(data.stock); %>
+                              <div class="col-lg-1 col-sm-2 col-4 col-price"> 
+                                <span class=" text-primary" onclick="showStockModal('<%= JSON.stringify(data.stock) %>')" style="cursor: pointer;">View</span>
+                              </div>
                             <% if(data.isActive == true) { %>
                             <div id="activeStatus<%= data._id %>" style="display: inline-block;" class="col-lg-2 col-sm-2 col-4 col-status">
                                 <span class="badge rounded-pill alert-success">Active</span>
@@ -297,6 +313,65 @@
             </div>
         </footer>
     </main>
+    <!-- Modal -->
+<div class="modal fade" id="stockModal" tabindex="-1" aria-labelledby="stockModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="stockModalLabel">Stock Details</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Size</th>
+                <th>Quantity</th>
+              </tr>
+            </thead>
+            <tbody id="stockDetailsBody">
+              <!-- Stock details will be dynamically inserted here -->
+               
+            </tbody>
+          </table>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script>
+    function showStockModal(stock) {
+        const stockDetailsBody = document.getElementById('stockDetailsBody');
+        stockDetailsBody.innerHTML = '';
+        stock = JSON.parse(stock)
+        // console.log(stock)
+        const sizes = ['UK6', 'UK7', 'UK8', 'UK9', 'UK10', 'UK11'];
+        let totalStock = 0;
+        sizes.forEach(size => {
+            const quantity = stock[size].quantity !== 0 ? stock[size].quantity : 'Out of stock';
+            const row = document.createElement('tr');
+            const sizeCell = document.createElement('td');
+            const quantityCell = document.createElement('td');
+            totalStock += stock[size].quantity;
+            
+            sizeCell.innerText = size;
+            quantityCell.innerText = quantity;
+
+            row.appendChild(sizeCell);
+            row.appendChild(quantityCell);
+            stockDetailsBody.appendChild(row);
+        });
+        const totalStockCell = document.createElement('p')
+        totalStockCell.innerText = 'Total Stock: '+totalStock
+        stockDetailsBody.appendChild(totalStockCell)
+
+        const stockModal = new bootstrap.Modal(document.getElementById('stockModal'));
+        stockModal.show();
+    }
+</script>
+    
     <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/admin/assets/js/vendors/select2.min.js"></script>

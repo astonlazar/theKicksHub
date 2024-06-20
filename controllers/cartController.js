@@ -11,7 +11,7 @@ const loadCart = async (req, res) => {
     const cartData = await Cart.findOne({ userId: userData._id }).populate(
       "product.productId"
     );
-    console.log(`---cartData - ${cartData}`)
+    console.log(`---cartData - ${cartData}`);
     // console.log(cartData[0].product)
     res.render("cart", { cart: cartData });
     console.log(`--loading cart page`);
@@ -249,7 +249,7 @@ const loadCheckout = async (req, res) => {
     }).populate("product.productId");
     const addressData = await Address.findOne({
       userId: req.session.user._id,
-    })
+    });
     res.render("checkout", { cartData, addressData });
   } catch (error) {
     console.log(`Error in loadCheckout -- ${error}`);
@@ -321,17 +321,45 @@ const newAddress = async (req, res) => {
 };
 
 const placeOrder = async (req, res) => {
-  let { selectedAddressIndex, selectedPaymentMethod } = req.body
-  console.log(selectedAddressIndex, selectedPaymentMethod)
-  const addressData = await Address.findOne({userId: req.session.user._id})
-  const cartData = await Cart.findOne({userId: req.session.user._id}).populate('product.productId')
-  let selectedAddress = addressData.address[selectedAddressIndex]
-  let orderedProducts = cartData.product
+  let { selectedAddressIndex, selectedPaymentMethod } = req.body;
+  console.log(selectedAddressIndex, selectedPaymentMethod);
+  const addressData = await Address.findOne({ userId: req.session.user._id });
+  // const productData = await Address.find();
+  const cartData = await Cart.findOne({
+    userId: req.session.user._id,
+  }).populate("product.productId");
+  let selectedAddress = addressData.address[selectedAddressIndex];
+  let orderedProducts = cartData.product;
   let payableAmount = cartData.totalPrice;
+  let order = Order.findOne({ userId: req.session.user._id });
 
-  console.log(selectedAddress, orderedProducts)
-  res.status(200).json({data: 'Success'})
-}
+  order = new Order({
+    userId: req.session.user._id,
+    cartId: cartData._id,
+    products: orderedProducts,
+    address: selectedAddress,
+    payableAmount: cartData.totalPrice,
+  });
+  await order.save();
+
+  let updateProductData = cartData.product.forEach(async (products) => {
+    let update = {};
+      update[`stock.${products.size}.quantity`] = -products.quantity;
+      let product = await Product.findByIdAndUpdate(
+        products.productId,
+        { $inc: update },
+        { new: true, useFindAndModify: false }
+      );
+  })
+
+  cartData.product = []
+  cartData.totalPrice = 0
+  await cartData.save()
+
+  console.log(selectedAddress, orderedProducts);
+  console.log(updateProductData)
+  res.status(200).json({ data: "Success" });
+};
 
 module.exports = {
   loadCart,

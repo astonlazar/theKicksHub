@@ -3,15 +3,17 @@ const User = require("../models/userModel");
 const Category = require("../models/categoryModel");
 const Product = require("../models/productModel");
 const Address = require("../models/addressModel");
+const Order = require("../models/orderModel");
 const otpSender = require("../helpers/otpSender");
 const strongPassword = require("../helpers/strongPassword");
+const { newAddress } = require("./cartController");
 
 const loginPage = (req, res) => {
   res.render("login", { loginError: "" });
 };
 
 const signupPage = (req, res) => {
-  res.render("signup", {signupError: ""});
+  res.render("signup", { signupError: "" });
 };
 
 const successGoogle = async (req, res) => {
@@ -144,39 +146,39 @@ const signupEnterPage = async (req, res) => {
 };
 
 const sendOtpfromEmail = async (req, res) => {
-  try{
-    let {email} = req.body;
+  try {
+    let { email } = req.body;
 
     req.session.otp = await otpSender.generate();
-    await otpSender.sendEmail(email, req.session.otp)
-    console.log(email, req.session.otp)
-  } catch(err) {
-    console.log(`Error in sendOtpfromEmail in userController -- ${err}`)
+    await otpSender.sendEmail(email, req.session.otp);
+    console.log(email, req.session.otp);
+    res.status(200);
+  } catch (err) {
+    console.log(`Error in sendOtpfromEmail in userController -- ${err}`);
   }
-}
+};
 
 const verificationPage = (req, res) => {
-  res.render("verification", { otpError: "", userEmail: req.session.temp.email });
+  res.render("verification", {
+    otp: req.session.otp,
+    userEmail: req.session.temp.email,
+  });
 };
 
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
-  console.log(`the otp in verifyEnter -- ${req.session.otp}`)
+  console.log(`the otp in verifyEnter -- ${req.session.otp}`);
   // const userData = req.session.temp;
-  if (enteredOtp == req.session.otp) {
-    // const userEnteredData = await User.insertMany(req.session.temp)
-    const userEnteredData = new User(req.session.temp);
-    await userEnteredData.save();
-    // console.log(`req.temp--- ${req.session.temp}`);
-    // console.log(`userData--- ${userData}`);
-    console.log("--user inserted to db--" + userEnteredData);
-    req.session.user = userEnteredData;
-    console.log(req.session.user);
-    console.log(req.session.user.email);
-    res.redirect("/");
-  } else {
-    res.render("verification", { otpError: "OTP is incorrect",  userEmail: req.session.temp.email });
-  }
+  // const userEnteredData = await User.insertMany(req.session.temp)
+  const userEnteredData = new User(req.session.temp);
+  await userEnteredData.save();
+  // console.log(`req.temp--- ${req.session.temp}`);
+  // console.log(`userData--- ${userData}`);
+  console.log("--user inserted to db--" + userEnteredData);
+  req.session.user = userEnteredData;
+  console.log(req.session.user);
+  console.log(req.session.user.email);
+  res.redirect("/");
 };
 
 const homePage = async (req, res) => {
@@ -211,39 +213,160 @@ const productView = async (req, res) => {
 };
 
 const shop = async (req, res) => {
-  try{
+  try {
     let page = parseInt(req.query.page) || 1;
     let limit = 9;
     let startIndex = (page - 1) * limit;
 
     const sortOptions = {
       // 'popularity': { popularity: -1 },
-      'price-low-high': { promo_price: 1 },
-      'price-high-low': { promo_price: -1 },
+      "price-low-high": { promo_price: 1 },
+      "price-high-low": { promo_price: -1 },
       // 'average-ratings': { averageRating: -1 },
       // 'featured': { featured: -1 },
-      'new-arrivals': { _id: -1 },
-      'aA-zZ': { productName: 1 },
-      'zZ-aA': { productName: -1 }
+      "new-arrivals": { _id: -1 },
+      "aA-zZ": { productName: 1 },
+      "zZ-aA": { productName: -1 },
     };
 
-    let sortBy = req.query.sort || 'new-arrivals'; // Default to 'popularity' if no sort option is provided
-    let sortCriteria = sortOptions[sortBy] || sortOptions['new-arrivals']; // Fallback to 'popularity' if invalid sort option is provided
-    console.log("sortCriteria --"+sortCriteria)
-    let productData = await Product.find({ isActive: true }).sort(sortCriteria).skip(startIndex).limit(limit);
+    let sortBy = req.query.sort || "new-arrivals"; // Default to 'popularity' if no sort option is provided
+    let sortCriteria = sortOptions[sortBy] || sortOptions["new-arrivals"]; // Fallback to 'popularity' if invalid sort option is provided
+    console.log("sortCriteria --" + sortCriteria);
+    let productData = await Product.find({ isActive: true })
+      .sort(sortCriteria)
+      .skip(startIndex)
+      .limit(limit);
     let totalDocuments = await Product.countDocuments();
-    let totalPages = Math.ceil(totalDocuments / limit)
+    let totalPages = Math.ceil(totalDocuments / limit);
     let categoryData = await Category.find({ isActive: true });
     res.render("shop", { productData, categoryData, page, totalPages, sortBy });
-  } catch(error){
-    console.log(`Error in shop -- ${error}`)
+  } catch (error) {
+    console.log(`Error in shop -- ${error}`);
   }
 };
 
 const userProfile = async (req, res) => {
-  const addressData = await Address.findOne({userId: req.session.user._id})
+  const addressData = await Address.findOne({ userId: req.session.user._id });
   const userData = await User.findById(req.session.user._id);
-  res.render("user-profile", { userData, addressData });
+  const orderData = await Order.find({ userId: req.session.user._id });
+  res.render("user-profile", { userData, addressData, orderData });
+};
+
+const addNewAddress = async (req, res) => {
+  try {
+    let {
+      fullname,
+      billing_address,
+      billing_address2,
+      city,
+      state,
+      pincode,
+      phone,
+      email,
+    } = req.body;
+    console.log(
+      fullname,
+      billing_address,
+      billing_address2,
+      city,
+      state,
+      pincode,
+      phone,
+      email
+    );
+
+    let addressData = await Address.findOne({ userId: req.session.user._id });
+    const userData = await User.findById(req.session.user._id);
+    const orderData = await Order.find({ userId: req.session.user._id });
+
+    if (!addressData) {
+      addressData = new Address({
+        userId: req.session.user._id,
+        address: [
+          {
+            fullName: fullname,
+            addressLine1: billing_address,
+            addressLine2: billing_address2,
+            city: city,
+            state: state,
+            pincode: pincode,
+            phoneNo: phone,
+            email: email,
+          },
+        ],
+      });
+      await addressData.save();
+    } else {
+      addressData.address.push({
+        fullName: fullname,
+        addressLine1: billing_address,
+        addressLine2: billing_address2,
+        city: city,
+        state: state,
+        pincode: pincode,
+        phoneNo: phone,
+        email: email,
+      });
+      await addressData.save();
+    }
+
+    res.redirect("/profile");
+  } catch (error) {
+    console.log(`Error in addNewAddress - ${error}`);
+  }
+};
+
+const editAddress = async (req, res) => {
+  let { address, addressId } = req.body;
+  console.log(`Req.body - ${req.body}`);
+  // console.log(address, addressId)
+  // console.log(address.fullName)
+  const addressData = await Address.findOne({ userId: req.session.user._id });
+  if (addressData) {
+    let updateAddress = addressData.address.find(
+      (addr) => addr._id.toString() === addressId
+    );
+
+    console.log(`the selected address is - ${updateAddress}`);
+    if (updateAddress) {
+      // Update the fields of the found address
+      updateAddress.fullName = address.fullname || updateAddress.fullName;
+      updateAddress.addressLine1 =
+        address.billing_address || updateAddress.addressLine1;
+      updateAddress.addressLine2 =
+        address.billing_address2 || updateAddress.addressLine2;
+      updateAddress.city = address.city || updateAddress.city;
+      updateAddress.state = address.state || updateAddress.state;
+      updateAddress.pincode = address.pincode || updateAddress.pincode;
+      updateAddress.phoneNo = address.phoneNo || updateAddress.phoneNo;
+      updateAddress.email = address.email || updateAddress.email;
+
+      let newAddress = await addressData.save();
+      // console.log("saved", newAddress);
+      console.log(`UpdateAddress - ${updateAddress}`);
+    }
+    if (newAddress) {
+      res.status(200).json({ Message: "Successfully updated address" });
+    } else {
+      res.status(500);
+    }
+  }
+};
+
+const deleteAddress = async (req, res) => {
+  let { addressId } = req.body;
+  console.log(`addressId -- ${addressId}`);
+  const addressData = await Address.findOne({ userId: req.session.user._id });
+  if(addressData){
+    let findAddress = addressData.address.find(
+      (addr) => addr._id.toString() === addressId
+    );
+    let addressIndex = addressData.address.indexOf(findAddress);
+    console.log(`index of ${addressIndex}`)
+    addressData.address.splice(addressIndex, 1)
+    res.status(200).json({message: 'Successfully deleted'})
+    addressData.save()
+  }
 };
 
 const userLogout = (req, res) => {
@@ -265,6 +388,9 @@ module.exports = {
   productView,
   shop,
   userProfile,
+  addNewAddress,
+  editAddress,
+  deleteAddress,
   userLogout,
   sendOtpfromEmail,
 };
