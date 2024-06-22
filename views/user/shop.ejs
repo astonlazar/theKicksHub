@@ -610,6 +610,8 @@
                                         </div>
                                         <div class="sort-by-dropdown-wrap">
                                             <span> <%= (sortBy === 'new-arrivals') ? 'New Arrivals' :
+                                                (sortBy === 'popularity') ? 'Popularity' :
+                                                (sortBy === 'featured') ? 'Featured' :
                                                 (sortBy === 'price-high-low') ? 'Price: High to Low' :
                                                 (sortBy === 'price-low-high') ? 'Price: Low to High' :
                                                 (sortBy === 'aA-zZ') ? 'Aa - Zz' :
@@ -618,8 +620,10 @@
                                     </div>
                                     <div class="sort-by-dropdown">
                                         <ul>
-                                            <!-- <li><a class="active" href="">Featured</a></li> -->
                                             <li><a class="<%= (sortBy === 'new-arrivals')? 'active' : '' %>" href="/shop?sort=new-arrivals&&page=<%= page %>">New Arrivals</a></li>
+                                            <li><a class="<%= (sortBy === 'featured')? 'active' : '' %>" href="/shop?sort=featured&&page=<%= page %>">Featured</a></li>
+                                            <li><a class="<%= (sortBy === 'popularity')? 'active' : '' %>" href="/shop?sort=popularity&&page=<%= page %>">Popularity</a></li>
+                                            <li><a href="#">Average Ratings</a></li>
                                             <li><a class="<%= (sortBy === 'price-high-low')? 'active' : '' %>" href="/shop?sort=price-high-low&&page=<%= page %>">Price: High to Low</a></li>
                                             <li><a class="<%= (sortBy === 'price-low-high')? 'active' : '' %>" href="/shop?sort=price-low-high&&page=<%= page %>">Price: Low to High</a></li>
                                             <li><a class="<%= (sortBy === 'aA-zZ')? 'active' : '' %>" href="/shop?sort=aA-zZ&&page=<%= page %>">Aa - Zz</a></li>

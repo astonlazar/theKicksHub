@@ -264,12 +264,12 @@
                                         <td class="text-center" data-title="Stock">
                                             <div class="detail-qty border radius  m-auto">
                                                 <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'DOWN')" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
-                                                <span class="qty-val"><%= items.quantity %></span>
+                                                <span class="qty-val" id="quantity"><%= items.quantity %></span>
                                                 <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'UP')" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
                                             </div>
                                         </td>
                                         <td class="text-right" data-title="Cart">
-                                            <span>₹ <%= items.productId.promo_price %> </span>
+                                            <span>₹ <%= items.productId.promo_price * items.quantity %> </span>
                                         </td>
                                         <td class="action" data-title="Remove"><a onclick="removeProduct('<%= items.size %>', '<%= items.productId._id %>', '<%= items.productId.promo_price %>')" class="text-muted"><i class="fi-rs-trash"></i></a></td>
                                     </tr>
@@ -864,9 +864,26 @@
         document.getElementById('totalPrice').innerText = data.total;
         document.getElementById('payTotalPrice').innerText = data.total;
         console.log(data.total)
+        console.log(data.message)
+        if(data.message === 'product exceeded'){
+            await Swal.fire(
+            'Product stock exceeded',
+            'Cannot increase quantity',
+            'error'
+          );
+          location.reload()
+        }
+        if(data.message === 'Max 10'){
+            await Swal.fire(
+            'Maximum quantity',
+            'Cannot increase quantity more than 10',
+            'error'
+          );
+          location.reload()
+        }
+
         console.log('Quantity updated successfully')
         
-        // window.location.reload()
       }
     }
     </script>

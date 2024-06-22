@@ -6,10 +6,73 @@ const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
 const otpSender = require("../helpers/otpSender");
 const strongPassword = require("../helpers/strongPassword");
-const { newAddress } = require("./cartController");
+// const { newAddress } = require("./cartController");
+const fPassword = require("../helpers/forgotPassword");
+const crypto = require("crypto");
+
+// Store tokens and expiry times
+const resetTokens = {};
 
 const loginPage = (req, res) => {
   res.render("login", { loginError: "" });
+};
+
+const forgotPassword = (req, res) => {
+  res.render("forgotpassword");
+};
+
+const postForgotPassword = async (req, res) => {
+  let { email } = req.body;
+  console.log(email);
+  const userData = await User.findOne({ email: email });
+  console.log(`userData in postForgotPassword -- ${userData}`)
+  if (!userData) {
+    return res.status(400).send("Email not found");
+  }
+
+  const token = crypto.randomBytes(20).toString("hex");
+  resetTokens[token] = {
+    userId: userData._id,
+    expires: Date.now() + 3600000, // 1 hour
+  };
+
+  await fPassword.sendEmail(email, token);
+
+  res.send("Password reset email sent");
+};
+
+const resetPassword = (req, res) => {
+  const { token } = req.params;
+  const data = resetTokens[token];
+
+  if (!data || data.expires < Date.now()) {
+    return res.status(400).send("Token expired or invalid");
+  }
+  res.render("resetpassword", {token});
+  // res.send(`
+  //   <form action="/reset-password/${token}" method="POST">
+  //     <input type="password" name="password" placeholder="Enter new password" required>
+  //     <button type="submit">Reset Password</button>
+  //   </form>
+  // `);
+};
+
+const postResetPassword = async (req, res) => {
+  const { token } = req.params;
+  console.log(`token in postResetPassword -- ${token}`)
+  const { password } = req.body;
+  const data = resetTokens[token];
+
+  if (!data || data.expires < Date.now()) {
+    return res.status(400).send("Token expired or invalid");
+  }
+  const hashedPassword = await hashing.hashPassword(password);
+  const userData = await User.findOne({ _id: data.userId });
+  userData.password = hashedPassword;
+  await userData.save();
+  delete resetTokens[token];
+
+  res.redirect('/login')
 };
 
 const signupPage = (req, res) => {
@@ -72,43 +135,116 @@ const loginEnterPage = async (req, res) => {
   }
 };
 
+// const signupEnterPage = async (req, res) => {
+//   try {
+//     let { userName, email, phoneNo, password, confirmPassword } = req.body;
+//     const checkUser = await User.findOne({
+//       $or: [{ email: email }, { phoneNo: phoneNo }],
+//     });
+//     console.log(checkUser);
+//     if (checkUser) {
+//       res.render("signup", {
+//         signupError: "User already exists!",
+//       });
+//     } else {
+//       const strongpass = await strongPassword.sPassword(password);
+//       console.log(strongpass);
+//       const hashedPassword = await hashing.hashPassword(password);
+//       console.log("--password hashing");
+//       const userData = {
+//         userName: userName,
+//         email: email,
+//         phoneNo: phoneNo,
+//         password: hashedPassword,
+//       };
+
+//       req.session.temp = userData;
+//       console.log(req.session.temp.email);
+//       console.log(`req.session.temp-- ${req.session.temp}`);
+//       // req.session.temp.otp = otpSender.generate();
+//       // await otpSender.sendEmail(userData.email, req.session.temp.otp);
+//       let otp = await OtpVerification(userData.email)
+//       req.session.temp.otpExpire = Date.now() + (60 * 1000);
+//       req.session.temp.email = userData.email;
+//       req.session.temp.otp = otp
+//       // console.log(req.session.temp.otp);
+//       console.log("--temporary session loading");
+//       res.redirect("/verification");
+//     }
+//     // }
+//   } catch (err) {
+//     console.log(err);
+//   }
+// };
+
+// const OtpVerification = async (email) => {
+  
+//     let otp = otpSender.generate();
+
+//     await otpSender.sendEmail(email, otp);
+//     // req.session.temp.otp = otp;
+//     // req.session.temp.otpExpire = Date.now() + (60 * 1000);
+//     console.log('Otp send to mail - '+ email, otp);
+//     return otp;
+// }
+
+// const sendOtpfromEmail = async (req, res) => {
+//   try {
+//     let { email } = req.body;
+//     let otp = await OtpVerification(email)
+
+//     // let otp = otpSender.generate();
+//     req.session.temp.otp = null;
+//     console.log(req.session.temp.otp)
+//     // await otpSender.sendEmail(email, otp);
+//     req.session.temp.otp = otp;
+//     console.log(req.session.temp.otp)
+//     req.session.temp.otpExpire = Date.now() + (60 * 1000);
+//     // console.log('Otp send to mail - '+ email, req.session.temp.otp);
+//     res.status(200);
+//   } catch (err) {
+//     console.log(`Error in sendOtpfromEmail in userController -- ${err}`);
+//   }
+// };
+
+// const verificationPage = (req, res) => {
+//   res.render("verification", {
+//     otpError: "",
+//     userEmail: req.session.temp.email,
+//   });
+// };
+
+// const verifyEnter = async (req, res) => {
+//   const enteredOtp = req.body.otpCode;
+//   console.log(`Entered otp ${enteredOtp}`);
+//   const expOtp = req.session.temp.otpExpire;
+//   console.log(`the otp in verifyEnter -- ${req.session.temp.otp}`);
+//   if (enteredOtp === req.session.temp.otp && Date.now() < expOtp) {
+//     // const userData = req.session.temp;
+//     // const userEnteredData = await User.insertMany(req.session.temp)
+//     const userEnteredData = new User(req.session.temp);
+//     await userEnteredData.save();
+//     // console.log(`req.temp--- ${req.session.temp}`);
+//     // console.log(`userData--- ${userData}`);
+//     console.log("--user inserted to db--" + userEnteredData);
+//     req.session.user = userEnteredData;
+//     console.log(req.session.user);
+//     console.log(req.session.user.email);
+//     res.redirect('/')
+//   } else {
+//     console.log("Incorrect Otp");
+    
+//     // res.status(500).json({otpError: "Incorrect OTP or Expired OTP", userEmail: req.session.temp.email})
+//     res.render("verification", {
+//       otpError: "Incorrect OTP or Expired OTP",
+//       userEmail: req.session.temp.email,
+//     });
+//   }
+// };
+
 const signupEnterPage = async (req, res) => {
   try {
     let { userName, email, phoneNo, password, confirmPassword } = req.body;
-    // phoneNo = phoneNo.toString();
-    // if (userName.charAt(0) === " " || userName.charAt(0) === "") {
-    //   res.render("signup", {
-    //     signupUsernameError: "Enter valid Username",
-    //     signupPhoneNoError: "",
-    //     signupPasswordError: "",
-    //     signupConfirmError: "",
-    //     signupError: "",
-    //   });
-    // } else if (phoneNo === "" || phoneNo.length < 10) {
-    //   res.render("signup", {
-    //     signupUsernameError: "",
-    //     signupPhoneNoError: "Enter 10 digit Phone no.",
-    //     signupPasswordError: "",
-    //     signupConfirmError: "",
-    //     signupError: "",
-    //   });
-    // } else if (password.charAt(0) === " ") {
-    //   res.render("signup", {
-    //     signupUsernameError: "",
-    //     signupPhoneNoError: "",
-    //     signupPasswordError: "Enter strong password",
-    //     signupConfirmError: "",
-    //     signupError: "",
-    //   });
-    // } else if (password !== confirmPassword) {
-    //   res.render("signup", {
-    //     signupUsernameError: "",
-    //     signupPhoneNoError: "",
-    //     signupPasswordError: "",
-    //     signupConfirmError: "Password does not match",
-    //     signupError: "",
-    //   });
-    // } else {
     const checkUser = await User.findOne({
       $or: [{ email: email }, { phoneNo: phoneNo }],
     });
@@ -132,53 +268,71 @@ const signupEnterPage = async (req, res) => {
       req.session.temp = userData;
       console.log(req.session.temp.email);
       console.log(`req.session.temp-- ${req.session.temp}`);
-      req.session.otp = await otpSender.generate();
-      await otpSender.sendEmail(userData.email, req.session.otp);
-      req.session.temp.email = userData.email;
-      console.log(req.session.otp);
+
+      // Generate and send OTP
+      let otp = await OtpVerification(userData.email);
+      req.session.temp.otp = otp;
+      req.session.temp.otpExpire = Date.now() + (60 * 1000);
       console.log("--temporary session loading");
+      console.log(`OTP set to session: ${req.session.temp.otp}`);
       res.redirect("/verification");
     }
-    // }
   } catch (err) {
     console.log(err);
   }
 };
 
+const OtpVerification = async (email) => {
+  let otp = otpSender.generate();
+  await otpSender.sendEmail(email, otp);
+  console.log('Otp send to mail - ' + email, otp);
+  return otp;
+}
+
 const sendOtpfromEmail = async (req, res) => {
   try {
     let { email } = req.body;
-
-    req.session.otp = await otpSender.generate();
-    await otpSender.sendEmail(email, req.session.otp);
-    console.log(email, req.session.otp);
-    res.status(200);
+    let otp = await OtpVerification(email);
+    
+    if (!req.session.temp) {
+      req.session.temp = {};
+    }
+    req.session.temp.otp = otp;
+    req.session.temp.otpExpire = Date.now() + (60 * 1000);
+    console.log(`OTP sent and set to session: ${req.session.temp.otp}`);
+    res.status(200).json({ message: "OTP sent" });
   } catch (err) {
     console.log(`Error in sendOtpfromEmail in userController -- ${err}`);
+    res.status(500).json({ error: "Failed to send OTP" });
   }
 };
 
 const verificationPage = (req, res) => {
   res.render("verification", {
-    otp: req.session.otp,
+    otpError: "",
     userEmail: req.session.temp.email,
   });
 };
 
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
-  console.log(`the otp in verifyEnter -- ${req.session.otp}`);
-  // const userData = req.session.temp;
-  // const userEnteredData = await User.insertMany(req.session.temp)
-  const userEnteredData = new User(req.session.temp);
-  await userEnteredData.save();
-  // console.log(`req.temp--- ${req.session.temp}`);
-  // console.log(`userData--- ${userData}`);
-  console.log("--user inserted to db--" + userEnteredData);
-  req.session.user = userEnteredData;
-  console.log(req.session.user);
-  console.log(req.session.user.email);
-  res.redirect("/");
+  console.log(`Entered otp ${enteredOtp}`);
+  console.log(`Stored otp in session: ${req.session.temp.otp}`);
+  const expOtp = req.session.temp.otpExpire;
+  if (enteredOtp === req.session.temp.otp && Date.now() < expOtp) {
+    const userEnteredData = new User(req.session.temp);
+    await userEnteredData.save();
+    console.log("--user inserted to db--" + userEnteredData);
+    req.session.user = userEnteredData;
+    console.log(req.session.user);
+    res.redirect('/');
+  } else {
+    console.log("Incorrect OTP or Expired OTP");
+    res.render("verification", {
+      otpError: "Incorrect OTP or Expired OTP",
+      userEmail: req.session.temp.email,
+    });
+  }
 };
 
 const homePage = async (req, res) => {
@@ -219,11 +373,11 @@ const shop = async (req, res) => {
     let startIndex = (page - 1) * limit;
 
     const sortOptions = {
-      // 'popularity': { popularity: -1 },
+      popularity: { orderCount: -1 },
       "price-low-high": { promo_price: 1 },
       "price-high-low": { promo_price: -1 },
       // 'average-ratings': { averageRating: -1 },
-      // 'featured': { featured: -1 },
+      featured: { orderCount: -1, _id: -1 },
       "new-arrivals": { _id: -1 },
       "aA-zZ": { productName: 1 },
       "zZ-aA": { productName: -1 },
@@ -248,8 +402,50 @@ const shop = async (req, res) => {
 const userProfile = async (req, res) => {
   const addressData = await Address.findOne({ userId: req.session.user._id });
   const userData = await User.findById(req.session.user._id);
-  const orderData = await Order.find({ userId: req.session.user._id });
+  const orderData = await Order.find({ userId: req.session.user._id })
+    .populate("products.productId")
+    .sort({ orderDate: -1 });
   res.render("user-profile", { userData, addressData, orderData });
+};
+
+const userProfileEdit = async (req, res) => {
+  try {
+    let { fullName, phoneNo } = req.body;
+    const userData = await User.findById(req.session.user._id);
+    console.log(fullName, phoneNo);
+    if (userData.fullName !== fullName) {
+      userData.fullName = fullName;
+    }
+    if (userData.phoneNo !== phoneNo) {
+      userData.phoneNo = phoneNo;
+    }
+    let updated = await userData.save();
+    if (updated) {
+      res.status(200).json({ message: "Success" });
+    } else {
+      res.status(500).json({ message: "Error" });
+    }
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+const changePassword = async (req, res) => {
+  let { oldPassword, newPassword } = req.body;
+  console.log(`oldPass - ${oldPassword} - newPass - ${newPassword}`);
+  let userData = await User.findById(req.session.user._id);
+  console.log(userData.password);
+  let checkPassword = await hashing.comparePassword(
+    oldPassword,
+    userData.password
+  );
+  if (checkPassword) {
+    userData.password = await hashing.hashPassword(newPassword);
+  } else {
+    return res.status(500).json({ message: "Password does not match" });
+  }
+  await userData.save();
+  res.status(200);
 };
 
 const addNewAddress = async (req, res) => {
@@ -357,15 +553,15 @@ const deleteAddress = async (req, res) => {
   let { addressId } = req.body;
   console.log(`addressId -- ${addressId}`);
   const addressData = await Address.findOne({ userId: req.session.user._id });
-  if(addressData){
+  if (addressData) {
     let findAddress = addressData.address.find(
       (addr) => addr._id.toString() === addressId
     );
     let addressIndex = addressData.address.indexOf(findAddress);
-    console.log(`index of ${addressIndex}`)
-    addressData.address.splice(addressIndex, 1)
-    res.status(200).json({message: 'Successfully deleted'})
-    addressData.save()
+    console.log(`index of ${addressIndex}`);
+    addressData.address.splice(addressIndex, 1);
+    res.status(200).json({ message: "Successfully deleted" });
+    addressData.save();
   }
 };
 
@@ -377,6 +573,10 @@ const userLogout = (req, res) => {
 
 module.exports = {
   loginPage,
+  forgotPassword,
+  postForgotPassword,
+  resetPassword,
+  postResetPassword,
   loginEnterPage,
   successGoogle,
   failureGoogle,
@@ -388,6 +588,8 @@ module.exports = {
   productView,
   shop,
   userProfile,
+  userProfileEdit,
+  changePassword,
   addNewAddress,
   editAddress,
   deleteAddress,

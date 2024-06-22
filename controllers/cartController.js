@@ -182,18 +182,30 @@ const quantityUpdate = async (req, res) => {
         (item) =>
           item.productId.toString() === productId && item.size === selectedSize
       );
+      const findProductStock = productData.stock[selectedSize].quantity;
+      console.log(findProductStock)
       console.log(productIndex);
       if (productIndex > -1) {
-        if (
-          cartData.product[productIndex].quantity >= 1 &&
-          cartData.product[productIndex].quantity < 10
-        ) {
-          cartData.product[productIndex].quantity += 1;
-          // cartData.product[productIndex].productPrice =
-          //   productData.promo_price;
+        if(cartData.product[productIndex].quantity < findProductStock) {
+          if (
+            cartData.product[productIndex].quantity >= 1 &&
+            cartData.product[productIndex].quantity < 10
+          ) {
+            cartData.product[productIndex].quantity += 1;
+            // cartData.product[productIndex].productPrice =
+            //   productData.promo_price;
+          } else {
+            console.log("quantity out of range");
+            return res.json({
+              message: "Max 10",
+              total: cartData.totalPrice,
+            });
+          }
         } else {
-          console.log("quantity out of range");
-          return res.json("quantity out of range");
+          return res.json({
+            message: "product exceeded",
+            total: cartData.totalPrice,
+          })
         }
       }
 
@@ -201,11 +213,16 @@ const quantityUpdate = async (req, res) => {
         (total, item) => total + item.productPrice * item.quantity,
         0
       );
+
       let total = cartData.totalPrice;
       await cartData.save();
       res
         .status(200)
-        .json({ message: "quantity updated successfully", total: total });
+        .json({
+          message: "quantity updated successfully",
+          total: total,
+          products: cartData.product,
+        });
     } else if (status === "DOWN") {
       console.log(`status is ${status}`);
       const productIndex = cartData.product.findIndex(
@@ -223,7 +240,10 @@ const quantityUpdate = async (req, res) => {
           //   productData.promo_price;
         } else {
           console.log("quantity out of range");
-          return res.json("quantity out of range");
+          return res.json({
+            message: "Min 1", 
+            total: cartData.totalPrice,
+          });
         }
       }
 
@@ -343,21 +363,24 @@ const placeOrder = async (req, res) => {
   await order.save();
 
   let updateProductData = cartData.product.forEach(async (products) => {
-    let update = {};
-      update[`stock.${products.size}.quantity`] = -products.quantity;
-      let product = await Product.findByIdAndUpdate(
-        products.productId,
-        { $inc: update },
-        { new: true, useFindAndModify: false }
-      );
-  })
+    let update = {
+      [`stock.${products.size}.quantity`]: -products.quantity,
+      orderCount: products.quantity,
+    };
+    let product = await Product.findByIdAndUpdate(
+      products.productId,
+      { $inc: update },
+      { new: true, useFindAndModify: false }
+    );
+    await product.save();
+  });
 
-  cartData.product = []
-  cartData.totalPrice = 0
-  await cartData.save()
+  cartData.product = [];
+  cartData.totalPrice = 0;
+  await cartData.save();
 
   console.log(selectedAddress, orderedProducts);
-  console.log(updateProductData)
+  console.log(updateProductData);
   res.status(200).json({ data: "Success" });
 };
 

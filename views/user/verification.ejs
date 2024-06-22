@@ -196,19 +196,19 @@
                         <h3 class="mb-30">Verification</h3>
                         <h6 class="mb-30">Enter the OTP code sent to your Email</h6>
                       </div>
-                      <form action="/verification" method="post" onsubmit="return validateOTP()">
+                      <form action="/verification" method="post">
                         <div class="form-group">
                             <div class="form-group">
                                 <div>
-                                  <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;" onblur="verifyOTP()">
+                                  <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;" >
                                   <!-- <span id="otpTimer" style="display: inline-block;"></span> -->
-                                  <div id="resendOtp" onclick="restartOTPTimer()">Resend OTP</div>
+                                  <div id="resendOtp" style="cursor: pointer;" onclick="restartOTPTimer()">Send OTP</div>
                                 </div>
                               </div>
                               
                           </div>
                           
-                            <p id="otp-error" class="text-danger"></p>
+                            <p id="otp-error" class="text-danger"><%= otpError %></p>
                         
                         <div>
                             <!-- <a id="resend-otp" href="" style="display: none;" class="btn-sm bg-dark text-white" onclick="startOTPCountdown(60)">Resend OTP</a>
@@ -454,7 +454,7 @@
         const resendOtpLink = document.getElementById("resendOtp");
 
         // Timer variables
-        const initialTime = 30;
+        const initialTime = 60;
         let countdownInterval;
 
         // Function to update the timer display
@@ -490,12 +490,22 @@
             updateTimer();
             countdownInterval = setInterval(updateTimer, 1000); // Update every second
         }
+        window.onload = function() {
+            let timeLeft = parseInt(localStorage.getItem("timeLeft"));
+            if (!isNaN(timeLeft) && timeLeft > 0) {
+                startTimer();
+            } else {
+                // Set initial time and start if no timer found
+                localStorage.setItem("timeLeft", initialTime);
+                // startTimer();
+            }
+        }
 
         // Call the startTimer function to initiate the countdown when the page loads
-        startTimer();
+        // startTimer();
         async function restartOTPTimer(){
             startTimer();
-            const emailData = { email: '<%= userEmail %>'}
+            let emailData = { email: '<%= userEmail %>'}
     
             try {
                 const response = await fetch("/resend-otp", {
@@ -506,7 +516,11 @@
                     body: JSON.stringify(emailData)
                 })
                 if(response.ok){
-                    location.reload()
+                   console.log('Success')
+                   window.location.href('/')
+                } else {
+                    response.json()
+                    console.log(response.userEmail)
                 }
             } catch (error) {
                 console.log(`Error in restartOtpTimer -- ${error}`)
@@ -514,22 +528,7 @@
 
         }
 
-        function verifyOTP(){
-            let otpCode = document.getElementById('otpCode').value
-            let errorDiv = document.getElementById('otp-error')
-            let sendOtp = '<%= otp %>'
-            console.log(otpCode, sendOtp)
-            if(otpCode === sendOtp){
-                errorDiv.textContent = ""
-                return true
-            } else {
-                errorDiv.textContent = 'Incorrect OTP'
-                return false
-            }
-        }
-        function validateOTP(){
-            return verifyOTP()
-        }
+
 
         </script>
 </body>

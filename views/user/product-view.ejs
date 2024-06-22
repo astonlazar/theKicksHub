@@ -15,6 +15,19 @@
     <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <style>
+        .rating {
+            display: flex;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .rating span {
+            margin: 0 5px;
+        }
+        .rating span.checked {
+            color: orange;
+        }
+    </style>
 </head>
 
 <body>
@@ -864,6 +877,14 @@
                                     <!--comment form-->
                                     <div class="comment-form">
                                         <h4 class="mb-15">Add a review</h4>
+                                        <div class="rating" id="rating-stars">
+                                            <span id="star-1" data-rating="1">&#9733;</span>
+                                            <span id="star-2" data-rating="2">&#9733;</span>
+                                            <span id="star-3" data-rating="3">&#9733;</span>
+                                            <span id="star-4" data-rating="4">&#9733;</span>
+                                            <span id="star-5" data-rating="5">&#9733;</span>
+                                        </div>
+                                        <button id="submit-button" disabled>Submit Rating</button>
                                         <div class="row">
                                             <div class="col-lg-8 col-md-12">
                                                 <form class="form-contact comment_form" action="#" id="commentForm">
@@ -1090,6 +1111,31 @@
     <script src="/user/assets/js/main.js?v=3.4"></script>
     <script src="/user/assets/js/shop.js?v=3.4"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        const stars = document.querySelectorAll('#rating-stars span');
+        const submitButton = document.getElementById('submit-button');
+
+        stars.forEach(star => {
+            star.addEventListener('click', () => {
+                const rating = star.dataset.rating;
+                stars.forEach((s, i) => {
+                    if (i < rating) {
+                        s.classList.add('checked');
+                    } else {
+                        s.classList.remove('checked');
+                    }
+                });
+                submitButton.disabled = false; // Enable submit button on click
+            });
+        });
+
+        submitButton.addEventListener('click', () => {
+            const selectedRating = document.querySelector('#rating-stars span.checked').dataset.rating;
+            alert(`You rated the product ${selectedRating} stars!`);
+            // Submit the rating data to your backend here (using AJAX or form submission)
+        });
+    </script>
     
     <script>
         let selectedSize;

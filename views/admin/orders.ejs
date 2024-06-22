@@ -149,44 +149,79 @@
                 </header> <!-- card-header end// -->
                 <div class="card-body">
                     <div class="table-responsive">
-                        <table class="table table-hover">
-                            <thead>
-                                <tr>
-                                    <th>#ID</th>
-                                    <th scope="col">Name</th>
-                                    <th scope="col">Email</th>
-                                    <th scope="col">Total</th>
-                                    <th scope="col">Status</th>
-                                    <th scope="col">Date</th>
-                                    <th scope="col" class="text-end"> Action </th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                              <% orderData.forEach(data => { %>
-                                <tr>
-                                    <td><%= data.orderId %></td>
-                                    <td><b><%= data.userId.userName %></b></td>
-                                    <td><%= data.userId.email %></td>
-                                    <td>₹<%= data.payableAmount %></td>
-                                    <td><span class="badge rounded-pill alert-warning"><%= data.status %></span></td>
-                                    <td><%= data.orderDate.toISOString().split("T")[0] %></td>
-                                    <td class="text-end">
-                                        <a href="/admin/orders/details?orderId=<%= data.orderId %>" class="btn btn-md rounded font-sm">Detail</a>
-                                        <!-- <div class="dropdown">
-                                            <a href="#" data-bs-toggle="dropdown" class="btn btn-light rounded btn-sm font-sm"> <i class="material-icons md-more_horiz"></i> </a>
-                                            <div class="dropdown-menu">
-                                                <a class="dropdown-item" href="#">View detail</a>
-                                                <a class="dropdown-item" href="#">Edit info</a>
-                                                <a class="dropdown-item text-danger" href="#">Delete</a>
-                                            </div>
-                                        </div> -->
-                                    </td>
-                                </tr>
-                              <% }) %>
-                            </tbody>
-                        </table>
-                    </div> <!-- table-responsive //end -->
-                </div> <!-- card-body end// -->
+                      <table class="table table-hover">
+                        <thead>
+                          <tr>
+                            <th>#ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Total</th>
+                            <th>Status</th>
+                            <th>Date</th>
+                            <th scope="col" class="text-end"> Action </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <% orderData.forEach(data => { %>
+                            <tr>
+                              <td><%= data.orderId %></td>
+                              <td><b><%= data.userId.userName %></b></td>
+                              <td><%= data.userId.email %></td>
+                              <td>₹<%= data.payableAmount %></td>
+                              <td>
+                                <span class="badge rounded-pill alert-warning"><%= data.status %></span>
+                              </td>
+                              <td><%= data.orderDate.toISOString().split("T")[0] %></td>
+                              <td class="text-end">
+                                <a href="/admin/orders/details?orderId=<%= data.orderId %>" class="btn btn-md rounded font-sm">Details</a>
+                                <button class="btn btn-md rounded font-sm" data-bs-toggle="collapse" data-bs-target="#collapse-products-<%= data.orderId %>">
+                                  Products
+                                </button>
+                              </td>
+                            </tr>
+                            <tr class="collapse" id="collapse-products-<%= data.orderId %>">
+                              <td colspan="7">
+                                <div class="card">
+                                  <div class="card-body">
+                                    <table class="table table-sm">
+                                      <thead>
+                                        <tr>
+                                          <th>Product</th>
+                                          <th>Quantity</th>
+                                          <th>Price</th>
+                                          <th>Status</th>
+                                        </tr>
+                                      </thead>
+                                      <tbody>
+                                        <% data.products.forEach((product, index) => { %>
+                                          <tr>
+                                            <td><%= product.productId.productName %></td>
+                                            <td><%= product.quantity %></td>
+                                            <td>₹<%= product.productPrice %></td>
+                                            <td>
+                                              <select id="statusSelect-<%= index %>" data-product-index="<%= index %>" onchange="productIdSend('<%= product._id %>', '<%= data._id %>'), updateProductStatus(this)">
+                                                <option value="<%= product.status %>"><%= product.status %></option>
+                                                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].forEach(item => { %>
+                                                  <% if (product.status !== item) { %>
+                                                    <option value="<%= item %>"><%= item %></option>
+                                                  <% } %>
+                                                <% }) %>
+                                              </select>
+                                            </td>
+                                          </tr>
+                                        <% }) %>
+                                      </tbody>
+                                    </table>
+                                  </div>
+                                </div>
+                              </td>
+                            </tr>
+                          <% }) %>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>  
+                   <!-- card-body end// -->
             </div> <!-- card end// -->
             <div class="pagination-area mt-15 mb-50">
                 <nav aria-label="Page navigation example">
@@ -223,6 +258,105 @@
     <script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
+
+    <script>
+let productId, orderId
+async function updateProductStatus(selectElement) {
+  const selectedValue = selectElement.value;
+  const productLocation = parseInt(selectElement.dataset.productIndex, 10); // Get productLocation from the element
+  console.log('Selected value:', selectedValue);
+  console.log('Product location:', productLocation);
+  console.log('ProductId:', productId)
+  console.log('OrderId:', orderId)
+
+  await fetch('/admin/orders/update-status', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({selectedValue: selectedValue, productId: productId, orderId: orderId, index: productLocation}),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Server response:', data);
+            })
+            .catch(error => console.error(error));
+
+  // You can use selectedValue, productId, orderId, and productLocation for further actions here
+  // Send data to server using Fetch API or similar (logic from previous responses)
+//   document.addEventListener('DOMContentLoaded', () => {
+//         // Set initial selected value
+//         selectedValue = statusSelect.value;
+//             console.log(selectedValue)
+//         // Event listener for change event
+//         statusSelect.addEventListener('change', async () => {
+//             selectedValue = statusSelect.value;
+//             console.log('Selected value:', selectedValue);
+
+//             // You can use selectedValue for further actions here, like sending it to a server
+//             // For example, using Fetch API:
+            
+//         });
+//         });
+
+}
+        
+        // let productLocation, statusSelect
+        // function locationSend(index){
+        //     productLocation = index
+        //     console.log(productLocation)
+        // }
+        function productIdSend(pId, oId){
+            productId = pId;
+            orderId = oId
+            // console.log(productId, orderId)
+        }
+
+        // let selectedValue;
+
+        // document.addEventListener('DOMContentLoaded', (event) => {
+        //     if(event.target){
+        //         console.log(event.target)
+        //     }
+        //     if(productLocation){
+        //         statusSelect = document.getElementById(`statusSelect-${productLocation}`); 
+        //     }
+        // console.log('selected',statusSelect)
+        // // statusSelects.forEach(select => {
+        // //     productLocation = parseInt(select.dataset.productIndex, 10); // Convert to integer
+        // // });
+        // // Set initial selected value
+        // selectedValue = statusSelect.value;
+        //     console.log(selectedValue)
+        // // Event listener for change event
+        // statusSelect.addEventListener('change', async () => {
+        //     selectedValue = statusSelect.value;
+        //     console.log('Selected value:', selectedValue);
+
+        //     // You can use selectedValue for further actions here, like sending it to a server
+        //     // For example, using Fetch API:
+        //     await fetch('/admin/orders/update-status', {
+        //     method: 'PUT',
+        //     headers: {
+        //         'Content-Type': 'application/json',
+        //     },
+        //     body: JSON.stringify({selectedValue: selectedValue, productId: productId, orderId: orderId, index: productLocation[0]}),
+        //     })
+        //     .then(response => response.json())
+        //     .then(data => {
+        //         console.log('Server response:', data);
+        //     })
+        //     .catch(error => console.error(error));
+        // });
+        // });
+        // function locationSend(index, element) {
+        //     productLocation = index;
+        //     console.log(productLocation);
+
+        //     // You can also access the element here if needed
+        //     // console.log(element); // This will be the select element
+        // }
+    </script>
 </body>
 
 </html>

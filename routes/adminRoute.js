@@ -81,8 +81,8 @@ adminRoute.get(
   auth.isLogin,
   orderController.orderDetailsPage
 );
-adminRoute.post(
-  "/orders/details/status-change",
+adminRoute.put(
+  "/orders/update-status",
   auth.isLogin,
   orderController.orderStatusChange
 );

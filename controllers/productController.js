@@ -2,7 +2,6 @@ const Product = require("../models/productModel");
 const Category = require("../models/categoryModel");
 const fs = require("fs");
 const path = require("path");
-const { error } = require("console");
 
 const addProduct = async (req, res) => {
   try {
