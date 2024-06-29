@@ -4,6 +4,15 @@ const Product = require("../models/productModel");
 const User = require("../models/userModel");
 const Address = require("../models/addressModel");
 const Order = require("../models/orderModel");
+const Coupon = require("../models/couponModel");
+const Razorpay = require("razorpay");
+const crypto = require("crypto");
+require("dotenv").config();
+
+const RazorPayInstance = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_KEY_SECRET,
+});
 
 const loadCart = async (req, res) => {
   try {
@@ -183,10 +192,10 @@ const quantityUpdate = async (req, res) => {
           item.productId.toString() === productId && item.size === selectedSize
       );
       const findProductStock = productData.stock[selectedSize].quantity;
-      console.log(findProductStock)
+      console.log(findProductStock);
       console.log(productIndex);
       if (productIndex > -1) {
-        if(cartData.product[productIndex].quantity < findProductStock) {
+        if (cartData.product[productIndex].quantity < findProductStock) {
           if (
             cartData.product[productIndex].quantity >= 1 &&
             cartData.product[productIndex].quantity < 10
@@ -205,7 +214,7 @@ const quantityUpdate = async (req, res) => {
           return res.json({
             message: "product exceeded",
             total: cartData.totalPrice,
-          })
+          });
         }
       }
 
@@ -216,13 +225,11 @@ const quantityUpdate = async (req, res) => {
 
       let total = cartData.totalPrice;
       await cartData.save();
-      res
-        .status(200)
-        .json({
-          message: "quantity updated successfully",
-          total: total,
-          products: cartData.product,
-        });
+      res.status(200).json({
+        message: "quantity updated successfully",
+        total: total,
+        products: cartData.product,
+      });
     } else if (status === "DOWN") {
       console.log(`status is ${status}`);
       const productIndex = cartData.product.findIndex(
@@ -241,7 +248,7 @@ const quantityUpdate = async (req, res) => {
         } else {
           console.log("quantity out of range");
           return res.json({
-            message: "Min 1", 
+            message: "Min 1",
             total: cartData.totalPrice,
           });
         }
@@ -340,50 +347,245 @@ const newAddress = async (req, res) => {
   }
 };
 
+// const placeOrder = async (req, res) => {
+//   let {
+//     selectedAddressIndex,
+//     selectedPaymentMethod,
+//     totalPrice,
+//     couponApplied,
+//   } = req.body;
+//   console.log(
+//     selectedAddressIndex,
+//     selectedPaymentMethod,
+//     totalPrice,
+//     couponApplied
+//   );
+//   const addressData = await Address.findOne({ userId: req.session.user._id });
+//   // const productData = await Address.find();
+//   const cartData = await Cart.findOne({
+//     userId: req.session.user._id,
+//   }).populate("product.productId");
+//   let selectedAddress = addressData.address[selectedAddressIndex];
+//   let orderedProducts = cartData.product;
+//   let payableAmount = cartData.totalPrice;
+//   let order = Order.findOne({ userId: req.session.user._id });
+//   if(couponApplied !== 'x'){
+//     let couponData = await Coupon.findOne({code: couponApplied});
+//     console.log(couponData)
+//     if(new Date(couponData.expiryDate) <= new Date.now){
+//       return res.status(500).json({message: "Coupon Expired"})
+//     }
+//     couponData.limitedQuantity--
+//     await couponData.save()
+//   }
+//   order = new Order({
+//     userId: req.session.user._id,
+//     cartId: cartData._id,
+//     products: orderedProducts,
+//     address: selectedAddress,
+//     payableAmount: totalPrice,
+//   });
+//   await order.save();
+
+//   let updateProductData = cartData.product.forEach(async (products) => {
+//     let update = {
+//       [`stock.${products.size}.quantity`]: -products.quantity,
+//       orderCount: products.quantity,
+//     };
+//     let product = await Product.findByIdAndUpdate(
+//       products.productId,
+//       { $inc: update },
+//       { new: true, useFindAndModify: false }
+//     );
+//     await product.save();
+//   });
+
+//   cartData.product = [];
+//   cartData.totalPrice = 0;
+//   await cartData.save();
+
+//   console.log(selectedAddress, orderedProducts);
+//   console.log(updateProductData);
+//   res.status(200).json({ data: "Success" });
+// };
+
 const placeOrder = async (req, res) => {
-  let { selectedAddressIndex, selectedPaymentMethod } = req.body;
-  console.log(selectedAddressIndex, selectedPaymentMethod);
-  const addressData = await Address.findOne({ userId: req.session.user._id });
-  // const productData = await Address.find();
-  const cartData = await Cart.findOne({
-    userId: req.session.user._id,
-  }).populate("product.productId");
-  let selectedAddress = addressData.address[selectedAddressIndex];
-  let orderedProducts = cartData.product;
-  let payableAmount = cartData.totalPrice;
-  let order = Order.findOne({ userId: req.session.user._id });
-
-  order = new Order({
-    userId: req.session.user._id,
-    cartId: cartData._id,
-    products: orderedProducts,
-    address: selectedAddress,
-    payableAmount: cartData.totalPrice,
-  });
-  await order.save();
-
-  let updateProductData = cartData.product.forEach(async (products) => {
-    let update = {
-      [`stock.${products.size}.quantity`]: -products.quantity,
-      orderCount: products.quantity,
-    };
-    let product = await Product.findByIdAndUpdate(
-      products.productId,
-      { $inc: update },
-      { new: true, useFindAndModify: false }
+  try {
+    let {
+      selectedAddressIndex,
+      selectedPaymentMethod,
+      totalPrice,
+      couponApplied,
+    } = req.body;
+    console.log(
+      selectedAddressIndex,
+      selectedPaymentMethod,
+      totalPrice,
+      couponApplied
     );
-    await product.save();
-  });
 
-  cartData.product = [];
-  cartData.totalPrice = 0;
-  await cartData.save();
+    const addressData = await Address.findOne({ userId: req.session.user._id });
+    const cartData = await Cart.findOne({
+      userId: req.session.user._id,
+    }).populate("product.productId");
 
-  console.log(selectedAddress, orderedProducts);
-  console.log(updateProductData);
-  res.status(200).json({ data: "Success" });
+    if (!addressData || !cartData) {
+      return res.status(400).json({ message: "Address or Cart not found" });
+    }
+
+    let selectedAddress = addressData.address[selectedAddressIndex];
+    let orderedProducts = cartData.product;
+    let payableAmount = cartData.totalPrice;
+
+    if (couponApplied !== "x") {
+      let couponData = await Coupon.findOne({ code: couponApplied });
+      console.log(couponData);
+      if (!couponData) {
+        return res.status(200).json({ message: "Invalid Coupon" });
+      }
+      if (new Date(couponData.expiryDate) <= new Date()) {
+        return res.status(200).json({ message: "Coupon Expired" });
+      }
+      couponData.limitedQuantity--;
+      await couponData.save();
+    }
+
+    if (selectedPaymentMethod === "COD") {
+      let order = new Order({
+        userId: req.session.user._id,
+        cartId: cartData._id,
+        products: orderedProducts,
+        address: selectedAddress,
+        payableAmount: totalPrice,
+        paymentMethod: selectedPaymentMethod,
+        paymentStatus: "Pending",
+      });
+      await order.save();
+    }
+
+    let updateProductData = await Promise.all(
+      cartData.product.map(async (product) => {
+        let update = {
+          [`stock.${product.size}.quantity`]: -product.quantity,
+          orderCount: product.quantity,
+        };
+        let updatedProduct = await Product.findByIdAndUpdate(
+          product.productId,
+          { $inc: update },
+          { new: true, useFindAndModify: false }
+        );
+        return updatedProduct;
+      })
+    );
+
+    cartData.product = [];
+    cartData.totalPrice = 0;
+    await cartData.save();
+
+    console.log(selectedAddress, orderedProducts);
+    console.log(updateProductData);
+    res.status(200).json({ data: "Success" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
 };
 
+const razorPayment = (req, res) => {
+  let amount = req.body.amount;
+  console.log(amount);
+  let options = {
+    amount: amount,
+    currency: "INR",
+    receipt: "order_rcptid_11",
+  };
+  RazorPayInstance.orders.create(options, function (err, order) {
+    console.log("RazorPayInstance - ", order);
+    if (!err) {
+      res.status(200).json({ orderId: order.id });
+    } else {
+      console.log(`Error in razorPayment -- ${err}`);
+    }
+  });
+};
+
+const verifyPayment = async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body.response;
+    let { selectedAddressIndex, selectedPaymentMethod, totalPrice, couponApplied } = req.body;
+    
+    const body = razorpay_order_id + "|" + razorpay_payment_id;
+    const keySecret = process.env.RAZORPAY_KEY_SECRET; // Razorpay key secret from environment variables
+
+    // Generate the expected signature using HMAC SHA256
+    const expectedSignature = crypto.createHmac("sha256", keySecret).update(body.toString()).digest("hex");
+
+    // Compare the signatures
+    if (expectedSignature === razorpay_signature) {
+      console.log("Payment verified successfully");
+
+      const addressData = await Address.findOne({ userId: req.session.user._id });
+      const cartData = await Cart.findOne({ userId: req.session.user._id }).populate("product.productId");
+
+      if (!addressData || !cartData) {
+        return res.status(400).json({ message: "Address or Cart not found" });
+      }
+
+      const selectedAddress = addressData.address[selectedAddressIndex];
+      const orderedProducts = cartData.product;
+
+      if (couponApplied !== "x") {
+        const couponData = await Coupon.findOne({ code: couponApplied });
+        if (!couponData) {
+          return res.status(400).json({ message: "Invalid Coupon" });
+        }
+        if (new Date(couponData.expiryDate) <= new Date()) {
+          return res.status(400).json({ message: "Coupon Expired" });
+        }
+        couponData.limitedQuantity--;
+        await couponData.save();
+      }
+
+      const order = new Order({
+        userId: req.session.user._id,
+        cartId: cartData._id,
+        products: orderedProducts,
+        address: selectedAddress,
+        payableAmount: totalPrice,
+        paymentMethod: selectedPaymentMethod,
+        paymentStatus: "Success",
+      });
+      await order.save();
+
+      const updateProductData = await Promise.all(
+        cartData.product.map(async (product) => {
+          const update = {
+            [`stock.${product.size}.quantity`]: -product.quantity,
+            orderCount: product.quantity,
+          };
+          const updatedProduct = await Product.findByIdAndUpdate(
+            product.productId,
+            { $inc: update },
+            { new: true, useFindAndModify: false }
+          );
+          return updatedProduct;
+        })
+      );
+
+      cartData.product = [];
+      cartData.totalPrice = 0;
+      await cartData.save();
+
+      res.status(200).send({ success: true, message: "Payment verified successfully" });
+    } else {
+      console.log("Payment verification failed");
+      res.status(400).send({ success: false, message: "Payment verification failed" });
+    }
+  } catch (error) {
+    console.error(`Error in verifyPayment -- ${error}`);
+    res.status(500).send({ success: false, message: "Internal Server Error" });
+  }
+};
 module.exports = {
   loadCart,
   addToCart,
@@ -392,4 +594,6 @@ module.exports = {
   loadCheckout,
   newAddress,
   placeOrder,
+  razorPayment,
+  verifyPayment,
 };

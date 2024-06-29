@@ -25,7 +25,7 @@ const postForgotPassword = async (req, res) => {
   let { email } = req.body;
   console.log(email);
   const userData = await User.findOne({ email: email });
-  console.log(`userData in postForgotPassword -- ${userData}`)
+  console.log(`userData in postForgotPassword -- ${userData}`);
   if (!userData) {
     return res.status(400).send("Email not found");
   }
@@ -38,7 +38,7 @@ const postForgotPassword = async (req, res) => {
 
   await fPassword.sendEmail(email, token);
 
-  res.send("Password reset email sent");
+  res.render("email-sent");
 };
 
 const resetPassword = (req, res) => {
@@ -48,7 +48,7 @@ const resetPassword = (req, res) => {
   if (!data || data.expires < Date.now()) {
     return res.status(400).send("Token expired or invalid");
   }
-  res.render("resetpassword", {token});
+  res.render("resetpassword", { token });
   // res.send(`
   //   <form action="/reset-password/${token}" method="POST">
   //     <input type="password" name="password" placeholder="Enter new password" required>
@@ -59,7 +59,7 @@ const resetPassword = (req, res) => {
 
 const postResetPassword = async (req, res) => {
   const { token } = req.params;
-  console.log(`token in postResetPassword -- ${token}`)
+  console.log(`token in postResetPassword -- ${token}`);
   const { password } = req.body;
   const data = resetTokens[token];
 
@@ -72,7 +72,7 @@ const postResetPassword = async (req, res) => {
   await userData.save();
   delete resetTokens[token];
 
-  res.redirect('/login')
+  res.redirect("/login");
 };
 
 const signupPage = (req, res) => {
@@ -178,7 +178,7 @@ const loginEnterPage = async (req, res) => {
 // };
 
 // const OtpVerification = async (email) => {
-  
+
 //     let otp = otpSender.generate();
 
 //     await otpSender.sendEmail(email, otp);
@@ -233,7 +233,7 @@ const loginEnterPage = async (req, res) => {
 //     res.redirect('/')
 //   } else {
 //     console.log("Incorrect Otp");
-    
+
 //     // res.status(500).json({otpError: "Incorrect OTP or Expired OTP", userEmail: req.session.temp.email})
 //     res.render("verification", {
 //       otpError: "Incorrect OTP or Expired OTP",
@@ -272,7 +272,7 @@ const signupEnterPage = async (req, res) => {
       // Generate and send OTP
       let otp = await OtpVerification(userData.email);
       req.session.temp.otp = otp;
-      req.session.temp.otpExpire = Date.now() + (60 * 1000);
+      req.session.temp.otpExpire = Date.now() + 60 * 1000;
       console.log("--temporary session loading");
       console.log(`OTP set to session: ${req.session.temp.otp}`);
       res.redirect("/verification");
@@ -285,20 +285,20 @@ const signupEnterPage = async (req, res) => {
 const OtpVerification = async (email) => {
   let otp = otpSender.generate();
   await otpSender.sendEmail(email, otp);
-  console.log('Otp send to mail - ' + email, otp);
+  console.log("Otp send to mail - " + email, otp);
   return otp;
-}
+};
 
 const sendOtpfromEmail = async (req, res) => {
   try {
     let { email } = req.body;
     let otp = await OtpVerification(email);
-    
+
     if (!req.session.temp) {
       req.session.temp = {};
     }
     req.session.temp.otp = otp;
-    req.session.temp.otpExpire = Date.now() + (60 * 1000);
+    req.session.temp.otpExpire = Date.now() + 60 * 1000;
     console.log(`OTP sent and set to session: ${req.session.temp.otp}`);
     res.status(200).json({ message: "OTP sent" });
   } catch (err) {
@@ -316,6 +316,7 @@ const verificationPage = (req, res) => {
 
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
+  // enteredOtp = parseInt(enteredOtp)
   console.log(`Entered otp ${enteredOtp}`);
   console.log(`Stored otp in session: ${req.session.temp.otp}`);
   const expOtp = req.session.temp.otpExpire;
@@ -325,7 +326,7 @@ const verifyEnter = async (req, res) => {
     console.log("--user inserted to db--" + userEnteredData);
     req.session.user = userEnteredData;
     console.log(req.session.user);
-    res.redirect('/');
+    res.redirect("/");
   } else {
     console.log("Incorrect OTP or Expired OTP");
     res.render("verification", {
@@ -368,10 +369,22 @@ const productView = async (req, res) => {
 
 const shop = async (req, res) => {
   try {
+    let searchQuery = { isActive: true };
     let page = parseInt(req.query.page) || 1;
     let limit = 9;
     let startIndex = (page - 1) * limit;
-
+    let search = "";
+    let categoryFilter = req.query.category || "";
+    console.log(`categoryFilter -- ${categoryFilter}`)
+    if (req.query.search) {
+      search = req.query.search.trim();
+      console.log(`Searched -- ${search}`);
+      searchQuery.productName = (new RegExp(search, "i"));
+    } 
+    if(req.query.category && req.query.category !== 'all-categories'){
+      searchQuery.category = categoryFilter;
+    }
+    console.log('SearchQuery' ,searchQuery)
     const sortOptions = {
       popularity: { orderCount: -1 },
       "price-low-high": { promo_price: 1 },
@@ -386,14 +399,22 @@ const shop = async (req, res) => {
     let sortBy = req.query.sort || "new-arrivals"; // Default to 'popularity' if no sort option is provided
     let sortCriteria = sortOptions[sortBy] || sortOptions["new-arrivals"]; // Fallback to 'popularity' if invalid sort option is provided
     console.log("sortCriteria --" + sortCriteria);
-    let productData = await Product.find({ isActive: true })
+    let productData = await Product.find(searchQuery)
       .sort(sortCriteria)
       .skip(startIndex)
-      .limit(limit);
-    let totalDocuments = await Product.countDocuments();
+      .limit(limit).populate('category')
+    let totalDocuments = await Product.countDocuments()
     let totalPages = Math.ceil(totalDocuments / limit);
     let categoryData = await Category.find({ isActive: true });
-    res.render("shop", { productData, categoryData, page, totalPages, sortBy });
+    res.render("shop", {
+      productData,
+      categoryData,
+      page,
+      totalPages,
+      sortBy,
+      search,
+      categoryFilter,
+    });
   } catch (error) {
     console.log(`Error in shop -- ${error}`);
   }

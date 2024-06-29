@@ -5,6 +5,8 @@ const auth = require("../middlewares/userAuth");
 const passport = require("passport");
 const cartController = require("../controllers/cartController");
 const orderController = require("../controllers/orderController");
+const wishlistController = require("../controllers/wishlistController");
+const couponController = require("../controllers/couponController");
 
 userRoute.set("view engine", "ejs");
 userRoute.set("views", "./views/user");
@@ -49,7 +51,7 @@ userRoute.get("/", userController.homePage);
 userRoute.get("/product-view/:id", userController.productView);
 userRoute.get("/shop", userController.shop);
 
-userRoute.post("/addtocart", cartController.addToCart);
+userRoute.post("/addtocart", auth.isLogin, cartController.addToCart);
 userRoute.get("/cart", auth.isLogin, cartController.loadCart);
 userRoute.delete(
   "/cart/remove-product",
@@ -57,11 +59,19 @@ userRoute.delete(
   cartController.removeFromCart
 );
 userRoute.put("/cart/quantity", auth.isLogin, cartController.quantityUpdate);
+userRoute.post(
+  "/cart/apply-coupon",
+  auth.isLogin,
+  couponController.applyCoupon
+);
 
 userRoute.get("/checkout", auth.isLogin, cartController.loadCheckout);
-userRoute.post("/checkout", cartController.newAddress);
+userRoute.post("/checkout", auth.isLogin, cartController.newAddress);
 
-userRoute.post("/place-order", cartController.placeOrder);
+userRoute.post("/place-order", auth.isLogin, cartController.placeOrder);
+
+userRoute.post("/payment/razorpay", auth.isLogin, cartController.razorPayment);
+userRoute.post("/verifypayment", auth.isLogin, cartController.verifyPayment);
 
 userRoute.get("/profile", auth.isLogin, userController.userProfile);
 userRoute.put("/profile/edit", auth.isLogin, userController.userProfileEdit);
@@ -75,8 +85,16 @@ userRoute.put("/edit-address", auth.isLogin, userController.editAddress);
 userRoute.delete("/delete-address", auth.isLogin, userController.deleteAddress);
 
 userRoute.put("/order/cancel", auth.isLogin, orderController.cancelOrder);
+userRoute.put("/order/return", auth.isLogin, orderController.returnOrder);
+
+userRoute.get("/wishlist", auth.isLogin, wishlistController.loadWishlistPage);
+userRoute.put("/addtowishlist", auth.isLogin, wishlistController.addToWishlist);
+userRoute.delete(
+  "/removefromwishlist",
+  auth.isLogin,
+  wishlistController.removeFromWishlist
+);
+
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
-
-
 
 module.exports = userRoute;

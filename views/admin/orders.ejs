@@ -190,6 +190,7 @@
                                           <th>Quantity</th>
                                           <th>Price</th>
                                           <th>Status</th>
+                                          <th>Reason</th>
                                         </tr>
                                       </thead>
                                       <tbody>
@@ -201,13 +202,16 @@
                                             <td>
                                               <select id="statusSelect-<%= index %>" data-product-index="<%= index %>" onchange="productIdSend('<%= product._id %>', '<%= data._id %>'), updateProductStatus(this)">
                                                 <option value="<%= product.status %>"><%= product.status %></option>
-                                                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled"].forEach(item => { %>
+                                                <% ["Pending", "Processing", "Shipped", "Delivered", "Cancelled", "Return Pending", "Return Cancelled", "Return Success"].forEach(item => { %>
                                                   <% if (product.status !== item) { %>
                                                     <option value="<%= item %>"><%= item %></option>
                                                   <% } %>
                                                 <% }) %>
                                               </select>
                                             </td>
+                                            <% if(product.reason){ %>
+                                                <td>Reason for return - <%= product.reason %></td>
+                                              <% } %>
                                           </tr>
                                         <% }) %>
                                       </tbody>

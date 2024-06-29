@@ -17,6 +17,58 @@
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
     <!-- SweetAlert CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    
+    <style>
+        #couponMessageDiv {
+            padding: 1rem;
+            border: 1px solid #f0ad4e;
+            border-radius: 0.25rem;
+        }
+        #couponMessageDiv a:hover {
+            text-decoration: underline;
+        }
+   /* The Modal (background) */
+.modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 1; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content */
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 300px; /* Center the modal with a max-width */
+    text-align: center;
+}
+
+/* The Close Button */
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+    </style>
 </head>
 
 <body>
@@ -43,7 +95,7 @@
                         <div class="header-info header-info-right">
                             <ul>
                                 
-                                <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                                <!-- <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -362,12 +414,34 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal"><span class="font-xl text-brand fw-900">₹<%= cartData.totalPrice %></span></td>
+                                                    <td colspan="2" class="product-subtotal"><span id="totalPrice" class="font-xl text-brand fw-900">₹<%= cartData.totalPrice %></span></td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="bt-1 border-color-1 mt-30 mb-30"></div>
+                                    <div id="couponDiv" class="bt-1 border-color-1 mt-30 mb-30">
+                                        <div class="heading_s1 mb-3">
+                                            <h4>Apply Coupon</h4>
+                                        </div>
+                                        <div class="coupon">
+                                            <form id="couponForm" action="#" target="_blank">
+                                                <div class="form-row row justify-content-center">
+                                                    <div class="form-group col-lg-6">
+                                                        <input class="font-medium" id="couponCode" name="coupon" oninput="toUpperCase(this)" placeholder="Enter Your Coupon">
+                                                    </div>
+                                                    <div class="form-group col-lg-6">
+                                                        <button type="submit" class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                    <div id="couponMessageDiv" class="mb-3 alert alert-warning" style="display: none;">
+                                        <p id="appliedMessage" class="text-danger mb-1"></p>
+                                        <a href="javascript:void(0);" onclick="removeCoupon()" class="text-decoration-none text-danger fw-bold">Remove coupon</a>
+                                    </div>
+                                    
+                                    
                                     <div class="payment_method">
                                         <div class="mb-25">
                                             <h5>Payment</h5>
@@ -383,7 +457,8 @@
                                             </div>
                                         </div>
                                     </div>
-                                    <button onclick="placeOrder()" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                    <button onclick="placeOrder()" id="placeORDER" class="btn btn-fill-out btn-block mt-30">Place Order</button>
+                                    <button id="rzp-button1" style="display: none;">Pay with Razorpay</button>
                                 </div>
                             </div>
                             <!--  -->
@@ -519,6 +594,8 @@
             </div>
         </div>
     </div> -->
+    <!-- RazorPay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <!-- SweetAlert JS -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Vendor JS-->
@@ -789,49 +866,343 @@
                 console.log(`selected Payment -- ${selectedPaymentMethod}`)
             })
 
+        // async function placeOrder() {
+        //     if(selectedAddressIndex && selectedPaymentMethod) {
+        //         if(selectedPaymentMethod === 'RazorPay'){
+        //             var orderId ;
+        //             $(document).ready(function(){
+        //                 var settings = {
+        //                     "url": "/payment/razorpay",
+        //                     "method": "POST",
+        //                     "timeout": 0,
+        //                     "headers": {
+        //                         "Content-Type": "application/json"
+        //                     },
+        //                     "data": JSON.stringify({
+        //                         "amount": totalPrice,
+        //                     }),
+        //                 };
+
+        //                 //creates new orderId everytime
+        //                 $.ajax(settings).done(function (response) {
+
+        //                     orderId=response.orderId;
+        //                     console.log(orderId);
+        //                     $("button").show();
+        //                 });
+        //             })
+        //             document.getElementById('rzp-button1').onclick = function(e){
+        //                 var options = {
+        //                     "key": "rzp_test_pQFp5cDQlSm9eM", // Enter the Key ID generated from the Dashboard
+        //                     "amount": totalPrice, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+        //                     "currency": "INR",
+        //                     "name": "theKicksHub",
+        //                     "description": "Buy sneakers",
+        //                     "image": "https://example.com/your_logo",
+        //                     "order_id": orderId, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+        //                     "handler": function (response){
+        //                         alert(response.razorpay_payment_id);
+        //                         alert(response.razorpay_order_id);
+        //                         alert(response.razorpay_signature)
+        //                         var settings = {
+        //                             "url": "/verifypayment",
+        //                             "method": "POST",
+        //                             "timeout": 0,
+        //                             "headers": {
+        //                                 "Content-Type": "application/json"
+        //                             },
+        //                             "data": JSON.stringify({response}),
+        //                         }
+        //                     },
+        //                     "theme": {
+        //                         "color": "#3399cc"
+        //                     }
+        //                 };
+        //                 var rzp1 = new Razorpay(options);
+        //                 rzp1.on('payment.failed', function (response){
+        //                         alert(response.error.code);
+        //                         alert(response.error.description);
+        //                         alert(response.error.source);
+        //                         alert(response.error.step);
+        //                         alert(response.error.reason);
+        //                         alert(response.error.metadata.order_id);
+        //                         alert(response.error.metadata.payment_id);
+        //                 });
+        //                 rzp1.open();
+        //                 e.preventDefault(); 
+        //             }
+ 
+        //         } else if(selectedPaymentMethod === 'COD') {
+        //             fetch('/place-order', {
+        //                 method: 'POST',
+        //                 headers: {
+        //                     'Content-Type': 'application/json'
+        //                 },
+        //                 body: JSON.stringify({
+        //                     selectedAddressIndex: selectedAddressIndex,
+        //                     selectedPaymentMethod: selectedPaymentMethod,
+        //                     totalPrice: totalPrice,
+        //                     couponApplied: couponApplied
+        //                 })
+        //             })
+        //             .then(response => {
+        //                 if(response.ok) {
+        //                     return response.json(); // Parse the JSON from the response
+        //                 } else {
+        //                     throw new Error('Network response was not ok');
+        //                 }
+        //             })
+        //             .then(data => {
+        //                 console.log('Order Successful:', data.message);
+        //                 Swal.fire({
+        //                     title: 'Order Successful',
+        //                     text: 'Your order has been placed successfully!',
+        //                     icon: 'success',
+        //                     confirmButtonText: 'OK'
+        //                 }).then(result => {
+        //                     if (result.isConfirmed) {
+        //                         window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+        //                     }
+        //                 });
+        //             })
+        //             .catch(error => {
+        //                 console.error('Error:', error);
+        //                 Swal.fire({
+        //                     title: 'Order not placed',
+        //                     text: 'Your order has not been placed!',
+        //                     icon: 'error',
+        //                     confirmButtonText: 'OK'
+        //                 }).then(result => {
+        //                     if (result.isConfirmed) {
+        //                         window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+        //                     }
+        //                 });
+        //             });
+        //         }
+
+        //     } else {
+        //         Swal.fire({
+        //                 text: 'Select Address and Payment Method to continue!',
+        //                 icon: 'info',
+        //                 confirmButtonText: 'OK'
+        //             })
+        //     }
+
+        // }
+
         async function placeOrder() {
-            if(selectedAddressIndex && selectedPaymentMethod) {
-                let response = await fetch('/place-order', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
+            console.log('TotalPrice -- ',totalPrice)
+    if (selectedAddressIndex != null && selectedPaymentMethod) {
+        if (selectedPaymentMethod === 'RazorPay') {
+            let orderId;
+            const settings = {
+                url: "/payment/razorpay",
+                method: "POST",
+                timeout: 0,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify({
+                    amount: totalPrice * 100
+                }),
+            };
+
+            // Create new orderId every time
+            try {
+                const response = await $.ajax(settings);
+                orderId = response.orderId;
+                console.log(orderId);
+                
+                let verify = function () {
+                
+                console.log('Reached verify')
+                const options = {
+                    key: "rzp_test_pQFp5cDQlSm9eM", // Enter the Key ID generated from the Dashboard
+                    amount: totalPrice * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    currency: "INR",
+                    name: "theKicksHub",
+                    description: "Buy sneakers",
+                    image: "/user/assets/imgs/theme/logo.svg",
+                    order_id: orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    handler: function (response) {
+                        // alert(response.razorpay_payment_id);
+                        // alert(response.razorpay_order_id);
+                        // alert(response.razorpay_signature);
+                        Swal.fire({
+                                    title: "Success",
+                                    text: "Payment successful",
+                                    icon: "success"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "/";
+                                    }
+                                });
+
+                        const verifySettings = {
+                            url: "/verifypayment",
+                            method: "POST",
+                            timeout: 0,
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            data: JSON.stringify({response, 
+                                selectedAddressIndex: selectedAddressIndex,
+                                selectedPaymentMethod: selectedPaymentMethod,
+                                totalPrice: totalPrice,
+                                couponApplied: couponApplied
+                            }),
+                        };
+
+                        $.ajax(verifySettings)
+                            .done(function (verificationResponse) {
+                                console.log('Payment verified:', verificationResponse);
+
+                            })
+                            .fail(function (error) {
+                                console.error('Payment verification failed:', error);
+                            });
                     },
-                    body: JSON.stringify({selectedAddressIndex: selectedAddressIndex, selectedPaymentMethod: selectedPaymentMethod})
-                })
-                if(response.ok){
-                    console.log('Order Successful')
-                    Swal.fire({
-                        title: 'Order Successful',
-                        text: 'Your order has been placed successfully!',
-                        icon: 'success',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '/cart'; // Replace 'index.html' with your home page URL
-                        }
-                    });
-                } else {
-                    console.log('Error')
-                    Swal.fire({
-                        title: 'Order not placed',
-                        text: 'Your order has not been placed!',
-                        icon: 'error',
-                        confirmButtonText: 'OK'
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            window.location.href = '/cart'; // Replace 'index.html' with your home page URL
-                        }
-                    });
-                }
-            } else {
-                Swal.fire({
-                        text: 'Select Address and Payment Method to continue!',
-                        icon: 'info',
-                        confirmButtonText: 'OK'
-                    })
+                    theme: {
+                        color: "#000"
+                    }
+                };
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    // alert(response.error.code);
+                    // alert(response.error.description);
+                    // alert(response.error.source);
+                    // alert(response.error.step);
+                    // alert(response.error.reason);
+                    // alert(response.error.metadata.order_id);
+                    // alert(response.error.metadata.payment_id);
+                    // Swal.fire({
+                    //                 title: "Error",
+                    //                 text: "Payment verification failed",
+                    //                 icon: "error"
+                    //             }).then((result) => {
+                    //                 if (result.isConfirmed) {
+                    //                     window.location.href = "/";
+                    //                 }
+                    //             });
+                });
+                rzp1.open();
+            }
+            verify()
+                // Show the modal and the button
+                // document.getElementById('rzp-button1').style.display = 'block';
+            } catch (error) {
+                console.error('Error creating order:', error);
+                return;
             }
 
+             ;
+
+        } else if (selectedPaymentMethod === 'COD') {
+            fetch('/place-order', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    selectedAddressIndex: selectedAddressIndex,
+                    selectedPaymentMethod: selectedPaymentMethod,
+                    totalPrice: totalPrice,
+                    couponApplied: couponApplied
+                })
+            })
+            .then(response => {
+                if (response.ok) {
+                    return response.json(); // Parse the JSON from the response
+                } else {
+                    throw new Error('Network response was not ok');
+                }
+            })
+            .then(data => {
+                console.log('Order Successful:', data.message);
+                Swal.fire({
+                    title: 'Order Successful',
+                    text: 'Your order has been placed successfully!',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                    }
+                });
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    title: 'Order not placed',
+                    text: 'Your order has not been placed!',
+                    icon: 'error',
+                    confirmButtonText: 'OK'
+                }).then(result => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                    }
+                });
+            });
         }
+
+    } else {
+        Swal.fire({
+            text: 'Select Address and Payment Method to continue!',
+            icon: 'info',
+            confirmButtonText: 'OK'
+        });
+    }
+}
+
+        let totalPrice = '<%= cartData.totalPrice %>';
+        let couponApplied = 'x'
+        let oldTotalPrice = '<%= cartData.totalPrice %>';
+
+        document.getElementById('couponForm').addEventListener('submit', (event) => {
+        event.preventDefault();
+        const formData = new FormData(document.getElementById('couponForm'))
+        const couponCode = formData.get('coupon')
+        
+        fetch('/cart/apply-coupon', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({coupon: couponCode})
+        })
+        .then(response => {
+            if(response.ok){
+                console.log('Successfully coupon applied')
+            }
+            return response.json()
+        })
+        .then(data => {
+            console.log(data.discountPercentage)
+            totalPrice = '<%= cartData.totalPrice %>'
+            console.log(totalPrice)
+            totalPrice -= (data.discountPercentage/100) * totalPrice;
+            document.getElementById('totalPrice').textContent = '₹'+totalPrice
+            document.getElementById('appliedMessage').innerText = `'${couponCode}' - Coupon Applied`
+            document.getElementById('couponDiv').style.display = 'none'
+            document.getElementById('couponMessageDiv').style.display = 'inline-block'
+            couponApplied = couponCode;
+        })
+        .catch(err => {
+            console.log('Error - ', err)
+        })
+    })
+
+    function toUpperCase(input) {
+        input.value = input.value.toUpperCase();
+      }
+
+    function removeCoupon(){
+        totalPrice = oldTotalPrice;
+        document.getElementById('totalPrice').textContent = '₹'+totalPrice
+        document.getElementById('couponDiv').style.display = 'block'
+        document.getElementById('couponMessageDiv').style.display = 'none'
+
+    }
     </script>
 </body>
 

@@ -13,8 +13,17 @@
     <meta property="og:image" content="">
     <!-- Favicon -->
     <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
     <!-- Template CSS -->
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <style>
+        .mb-custom {
+            margin-bottom: 400px;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -67,7 +76,7 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
                                         <span class="pro-count blue">4</span>
                                     </a>
@@ -263,9 +272,13 @@
                                         <td class="price" data-title="Price"><span>₹ <%= items.productId.promo_price %> </span></td>
                                         <td class="text-center" data-title="Stock">
                                             <div class="detail-qty border radius  m-auto">
-                                                <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'DOWN')" class="qty-down"><i class="fi-rs-angle-small-down"></i></a>
+                                                <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'DOWN')" class="qty-down">
+                                                    <i class="fa fa-minus"></i> <!-- FontAwesome class for minus -->
+                                                </a>
                                                 <span class="qty-val" id="quantity"><%= items.quantity %></span>
-                                                <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'UP')" class="qty-up"><i class="fi-rs-angle-small-up"></i></a>
+                                                <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'UP')" class="qty-up">
+                                                    <i class="fa fa-plus"></i> <!-- FontAwesome class for plus -->
+                                                </a>
                                             </div>
                                         </td>
                                         <td class="text-right" data-title="Cart">
@@ -562,27 +575,27 @@
                                         </div>
                                     </div>
                                 </form> -->
-                                <div class="mb-30 mt-50">
+                                <!-- <div class="mb-30 mt-50">
                                     <div class="heading_s1 mb-3">
                                         <h4>Apply Coupon</h4>
                                     </div>
                                     <div class="total-amount">
                                         <div class="left">
                                             <div class="coupon">
-                                                <form action="#" target="_blank">
+                                                <form id="couponForm" action="#" target="_blank">
                                                     <div class="form-row row justify-content-center">
                                                         <div class="form-group col-lg-6">
-                                                            <input class="font-medium" name="Coupon" placeholder="Enter Your Coupon">
+                                                            <input class="font-medium" name="coupon" oninput="toUpperCase(this)" placeholder="Enter Your Coupon">
                                                         </div>
                                                         <div class="form-group col-lg-6">
-                                                            <button class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
+                                                            <button type="submit" class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
                                                         </div>
                                                     </div>
                                                 </form>
                                             </div>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
                             </div>
                             <div class="col-lg-6 col-md-12">
                                 <div class="border p-md-4 p-30 border-radius cart-totals">
@@ -612,8 +625,12 @@
                             </div>
                         </div>
                         <% } else { %>
-                          <h3>Cart is Empty</h3>
-                          <a class="btn" href="/shop"><i class="fi-rs-shopping-bag mr-10"></i>Continue Shopping</a>
+                            <div class="d-flex justify-content-center align-items-center mb-custom mt-100">
+                                <div class="text-center">
+                                    <h3>Cart is Empty</h3>
+                                    <a href="/shop" class="btn">Continue Shopping</a>
+                                </div>
+                            </div>
                           <% } %>
                     </div>
                 </div>
@@ -886,6 +903,8 @@
         
       }
     }
+
+    
     </script>
 </body>
 

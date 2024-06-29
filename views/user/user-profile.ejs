@@ -15,6 +15,13 @@
     <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <style>
+        .wallet-details {
+            max-height: 200px; /* Adjust height as needed */
+            overflow-y: auto;
+        }
+
+    </style>
 </head>
 
 <body>
@@ -44,7 +51,7 @@
                     <div class="col-xl-3 col-lg-4">
                         <div class="header-info header-info-right">
                             <ul>
-                                <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                                <!-- <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -76,53 +83,16 @@
                         </div> -->
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
-                                <a href="shop-wishlist.html">
+                                <a href="/wishlist">
                                     <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
                                     <span class="pro-count blue">4</span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="shop-cart.html">
+                                <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
                                     <span class="pro-count blue">2</span>
                                 </a>
-                                <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                    <ul>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-3.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Plain Striola Shirts</a></h4>
-                                                <h3><span>1 × </span>$800.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-1.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Macbook Pro 2022</a></h4>
-                                                <h3><span>1 × </span>$3200.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div class="shopping-cart-footer">
-                                        <div class="shopping-cart-total">
-                                            <h4>Total <span>$4000.00</span></h4>
-                                        </div>
-                                        <div class="shopping-cart-button">
-                                            <a href="shop-cart.html">View cart</a>
-                                            <a href="shop-checkout.html">Checkout</a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="header-action-icon d-block d-lg-none">
                                 <div class="burger-icon">
@@ -223,6 +193,9 @@
                                             <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
                                         </li>
                                         <li class="nav-item">
+                                            <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-money mr-10"></i>Wallet</a>
+                                        </li>
+                                        <li class="nav-item">
                                             <a class="nav-link" href="/logout"><i class="fi-rs-sign-out mr-10"></i>Logout</a>
                                         </li>
                                     </ul>
@@ -245,71 +218,78 @@
                                             <div class="card-header">
                                                 <h5 class="mb-0">Your Orders</h5>
                                             </div>
-                                            <div class="card-body">
+                                            <div class="card-body" style="height: 500px; overflow-y: auto;">
                                                 <div class="table-responsive">
-                                                  <table class="table">
-                                                    <thead>
-                                                      <tr>
-                                                        <th>Order ID</th>
-                                                        <th>Date</th>
-                                                        <th>Products</th>
-                                                        <th>Total</th>
-                                                      </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                      <% orderData.forEach(order => { %>
-                                                        <tr>
-                                                          <td><%= order.orderId %></td>
-                                                          <td><%= (order.orderDate).toISOString().split("T")[0] %></td>
-                                                          <td><div class="card-header" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapse-<%= order.orderId %>">
-                                                            <h5 class="mb-0" >Products (Click to Expand)</h5>
-                                                          </div></td>
-                                                          <td><%= order.payableAmount %></td>
-                                                        </tr>
-                                                        <tr class="order-details">
-                                                          <td colspan="4">
-                                                            <div class="card">
-                                                              <div id="collapse-<%= order.orderId %>" class="collapse">
-                                                                <div class="card-body">
-                                                                  <table class="table table-sm">
-                                                                    <thead>
-                                                                      <tr>
-                                                                        <th>Product</th>
-                                                                        <th>Price</th>
-                                                                        <th>Status</th>
-                                                                        <th>Actions</th>
-                                                                      </tr>
-                                                                    </thead>
-                                                                    <tbody>
-                                                                      <% order.products.forEach(product => { %>
-                                                                        <tr>
-                                                                            <td>
-                                                                                <span style="float: left;"><%= product.productId.productName %></span>
-                                                                                <span style="float: right;">X<%= product.quantity %></span>
-                                                                            </td>
-                                                                            
-                                                                          <td><%= product.productPrice %></td>
-                                                                          <td><%= product.status %></td>
-                                                                          <td>
-                                                                            <p style="cursor: pointer;" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>')" class="btn-sm btn-danger">Cancel</p>
-                                                                          </td>
-                                                                        </tr>
-                                                                      <% }) %>
-                                                                    </tbody>
-                                                                  </table>
-                                                                </div>
-                                                              </div>
-                                                            </div>
-                                                          </td>
-                                                        </tr>
-                                                      <% }) %>
-                                                    </tbody>
-                                                  </table>
+                                                    <table class="table">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>Order ID</th>
+                                                                <th>Date</th>
+                                                                <th>Products</th>
+                                                                <th>Total</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            <% orderData.forEach(order => { %>
+                                                            <tr>
+                                                                <td><%= order.orderId %></td>
+                                                                <td><%= (order.orderDate).toISOString().split("T")[0] %></td>
+                                                                <td>
+                                                                    <div class="card-header" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapse-<%= order.orderId %>">
+                                                                        <h5 class="mb-0">Products (Click to Expand)</h5>
+                                                                    </div>
+                                                                </td>
+                                                                <td><%= order.payableAmount %></td>
+                                                            </tr>
+                                                            <tr class="order-details">
+                                                                <td colspan="4">
+                                                                    <div class="card">
+                                                                        <div id="collapse-<%= order.orderId %>" class="collapse">
+                                                                            <div class="card-body">
+                                                                                <table class="table table-sm">
+                                                                                    <thead>
+                                                                                        <tr>
+                                                                                            <th>Product</th>
+                                                                                            <th>Price</th>
+                                                                                            <th>Status</th>
+                                                                                            <th>Actions</th>
+                                                                                        </tr>
+                                                                                    </thead>
+                                                                                    <tbody>
+                                                                                        <% order.products.forEach(product => { %>
+                                                                                        <tr>
+                                                                                            <td>
+                                                                                                <span style="float: left;"><%= product.productId.productName %></span>
+                                                                                                <span style="float: right;">X<%= product.quantity %></span>
+                                                                                            </td>
+                                                                                            <td><%= product.productPrice %></td>
+                                                                                            <td>
+                                                                                                <span id="statusOfProduct"><%= product.status %></span>
+                                                                                            </td>
+                                                                                            <td>
+                                                                                                <% if (product.status === 'Pending' || product.status === 'Processing' || product.status === 'Shipped') { %>
+                                                                                                <p id="cancelButton" style="cursor: pointer;" onclick="cancelOrder('<%= order._id %>', '<%= product._id %>')" class="btn-sm btn-danger">Cancel</p>
+                                                                                                <% } else if (product.status === 'Delivered') { %>
+                                                                                                <p id="returnButton" style="cursor: pointer;" onclick="returnOrder('<%= order._id %>', '<%= product._id %>')" class="btn-sm btn-danger">Return</p>
+                                                                                                <% } %>
+                                                                                            </td>
+                                                                                        </tr>
+                                                                                        <% }) %>
+                                                                                    </tbody>
+                                                                                </table>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </td>
+                                                            </tr>
+                                                            <% }) %>
+                                                        </tbody>
+                                                    </table>
                                                 </div>
-                                              </div>
-                                              
+                                            </div>
                                         </div>
                                     </div>
+                                    
                                     <div class="tab-pane fade" id="track-orders" role="tabpanel" aria-labelledby="track-orders-tab">
                                         <div class="card">
                                             <div class="card-header">
@@ -337,7 +317,7 @@
                                     </div>
                                     <div class="tab-pane fade" id="address" role="tabpanel" aria-labelledby="address-tab">
                                         <div class="mt-3">
-                                            <button id="addAddressBtn" class="btn btn-dark">Add new address</button>
+                                            <button id="addAddressBtn" class="btn mb-20">Add new address</button>
                                         </div>
                                         <div id="addressColumn" class="form-container" style="display: none;">
                                             <div class="mb-3">
@@ -479,6 +459,26 @@
                                             </div> -->
                                         </div>
                                     </div>
+                                    <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                Wallet
+                                            </div>
+                                            <div class="card-body">
+                                                <div class="wallet-balance mb-4">
+                                                    <h5>Wallet Balance</h5>
+                                                    <p id="wallet-amount" class="display-4 text-success">₹0.00</p>
+                                                </div>
+                                                <div class="wallet-details">
+                                                    <h5>Details</h5>
+                                                    <ul id="wallet-details-list" class="list-group">
+                                                        <!-- Wallet details will be dynamically added here -->
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
                                 </div>
                             </div>
                         </div>
@@ -807,24 +807,95 @@
 
         function cancelOrder(orderId, productId) {
             console.log(orderId, productId)
-            fetch('/order/cancel', {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({orderId: orderId, productId: productId})
-            })
-            .then(response => {
-                response.json()
-                if(response.ok){
-                    console.log('Success')
-                    window.href('/profile#orders')
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to cancel this order? This process cannot be undone.",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('cancelButton').style.display = 'none'
+                    document.getElementById('statusOfProduct').innerText = 'Cancelled'
+                    await fetch('/order/cancel', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({orderId: orderId, productId: productId})
+                })
+                .then(response => {
+                    response.json()
+                    if(response.ok){
+                        console.log('Success')
+                        // window.href('/profile#orders')
+                    }
+                    // console.log(response.data.message)
+                    window.location.href = '/profile#orders'
+                })
                 }
-                console.log(response.data.message)
             })
             .catch(error => {
                 console.error(error)
             })
+        }
+
+
+        function returnOrder(orderId, productId) {
+            console.log('orderId and productId -- ', orderId, productId)
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you really want to return this order?",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: 'Reason for Return',
+                        input: 'textarea',
+                        inputLabel: 'Please provide the reason for returning the order:',
+                        inputPlaceholder: 'Type your reason here...',
+                        inputAttributes: {
+                            'aria-label': 'Type your reason here'
+                        },
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Submit',
+                        preConfirm: (reason) => {
+                            if (!reason) {
+                                Swal.showValidationMessage('You need to write something!');
+                            }
+                            return reason;
+                        }
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            document.getElementById('returnButton').style.display = 'none'
+                            document.getElementById('statusOfProduct').innerText = 'Return Pending'
+                            const reason = result.value;
+                            Swal.fire({
+                                title: 'Thank you!',
+                                text: 'Your return request has been submitted.',
+                                icon: 'success'
+                            });
+                            // You can also send the reason to your server here
+                            fetch('/order/return', {
+                                method: 'PUT',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                                body: JSON.stringify({orderId: orderId, productId: productId, reason: reason})
+                            })
+                            console.log('Reason for return:', reason);
+                        }
+                    });
+                }
+            });
         }
     </script>
     <script>
@@ -849,9 +920,10 @@
                     }).then(response => {
                         if(response.ok){
                             console.log(`Successfully deleted`)
-                            window.href('/profile#address')
+                            // window.href('/profile#address')
                         }
                     })
+                    window.location.href = '/profile#address'
                 }
             })
         }
@@ -877,7 +949,7 @@
 
                 if(response.ok){
                     console.log('Successfully edited');
-                    location.reload();
+                    window.location.href = '/profile#account-detail'
                 } else {
                     console.log('Error in response');
                 }
@@ -903,7 +975,7 @@
                     body: JSON.stringify({oldPassword: password, newPassword: cpassword})
                 })
                 if(response.ok){
-                    window.href('/profile#account-detail')
+                    window.location.href = '/profile#account-detail'
                 }
             }
         })
@@ -988,7 +1060,7 @@
                 }).then(response => {
                     if(response.ok){
                         console.log('Successfull updated')
-                        window.href('/profile#address')
+                        window.location.href = '/profile#address'
                     }
                 })
                     
@@ -1194,6 +1266,39 @@
 
             return fullname && address && city && state && pincode && phoneNo && email
         }
+
+    </script>
+    <script>
+// Sample data
+const walletAmount = 100.50;
+const walletDetails = [
+    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
+    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
+    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
+    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
+    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
+    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
+    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
+    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
+    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
+    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
+    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
+    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
+    // Add more transactions if needed to test scrolling
+];
+
+// Function to update the wallet amount
+document.getElementById('wallet-amount').textContent = `₹${walletAmount.toFixed(2)}`;
+
+// Function to update the wallet details
+const detailsList = document.getElementById('wallet-details-list');
+walletDetails.forEach(detail => {
+    const listItem = document.createElement('li');
+    listItem.className = 'list-group-item';
+    listItem.textContent = `${detail.date}: ${detail.transaction} - ${detail.amount}`;
+    detailsList.appendChild(listItem);
+});
+
 
     </script>
 </body>

@@ -4,6 +4,7 @@ const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const orderController = require("../controllers/orderController");
+const couponController = require("../controllers/couponController")
 const auth = require("../middlewares/adminAuth");
 const multer = require("../helpers/multer");
 
@@ -94,6 +95,9 @@ adminRoute.get(
   auth.isLogin,
   adminController.transactionDetails
 );
+
+adminRoute.get("/coupons", couponController.loadCouponPage)
+adminRoute.post("/coupons", couponController.addCoupon)
 
 //route to logout
 adminRoute.get("/logout", adminController.adminLogout);

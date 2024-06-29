@@ -15,6 +15,31 @@
     <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <style>
+        #partitioned {
+        padding-left: 15px;
+        letter-spacing: 42px;
+        border: 0;
+        background-image: linear-gradient(to left, black 70%, rgba(255, 255, 255, 0) 0%);
+        background-position: bottom;
+        background-size: 50px 1px;
+        background-repeat: repeat-x;
+        background-position-x: 35px;
+        width: 220px;
+        min-width: 220px;
+        outline:none;
+        }
+
+        #divInner{
+        left: 0;
+        position: sticky;
+        }
+
+        #divOuter{
+        width: 190px; 
+        overflow: hidden;
+        }
+    </style>
 </head>
 
 <body>
@@ -109,7 +134,7 @@
         <div class="mobile-header-wrapper-inner">
             <div class="mobile-header-top">
                 <div class="mobile-header-logo">
-                    <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
                 </div>
                 <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
                     <button class="close-style search-close">
@@ -200,9 +225,15 @@
                         <div class="form-group">
                             <div class="form-group">
                                 <div>
-                                  <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;" >
+                                  <!-- <input type="number" id="otpCode" name="otpCode" placeholder="OTP" style="display: inline-block; width: calc(50% - 20px); margin-right: 20px;" > -->
+                                  <div id="divOuter">
+                                    <div id="divInner">
+                                  <input id="partitioned" name="otpCode" type="text" maxlength="4" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');"  onKeyPress="if(this.value.length==4) return false;"/ autocomplete="off">
+                                  <div id="resendOtp" style="cursor: pointer; margin-top: 10px;" onclick="restartOTPTimer()">Send OTP</div>
+                                    </div>
+                                  </div>
                                   <!-- <span id="otpTimer" style="display: inline-block;"></span> -->
-                                  <div id="resendOtp" style="cursor: pointer;" onclick="restartOTPTimer()">Send OTP</div>
+                                  
                                 </div>
                               </div>
                               

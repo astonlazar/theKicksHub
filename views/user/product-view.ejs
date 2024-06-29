@@ -198,7 +198,7 @@
                                 <li>
                                     <a href="/profile">Profile</a>
                                 </li>
-                                <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                                <!-- <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li> -->
                             </ul>
                         </div>
                     </div>
@@ -220,7 +220,7 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
                                         <span class="pro-count blue">4</span>
                                     </a>
@@ -631,7 +631,7 @@
                                             </div> -->
                                             <div class="product-extra-link2">
                                                 <button type="submit" onclick="addToCart('<%= productData._id %>')" class="button button-add-to-cart">Add to cart</button>
-                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" href="shop-wishlist.html"><i class="fi-rs-heart"></i></a>
+                                                <a aria-label="Add To Wishlist" class="action-btn hover-up" onclick="addToWishlist('<%= productData._id %>')"><i class="fi-rs-heart"></i></a>
                                                 <!-- <a aria-label="Compare" class="action-btn hover-up" href="shop-compare.html"><i class="fi-rs-shuffle"></i></a> -->
                                             </div>
                                         </div>
@@ -1086,6 +1086,8 @@
             </div>
         </div>
     </div>
+    <!-- SweetAlert -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <!-- Vendor JS-->
     <script src="/user/assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="/user/assets/js/vendor/jquery-3.6.0.min.js"></script>
@@ -1151,10 +1153,10 @@
             } else {
                 if(quantity < 10) {
                     document.getElementById("stockAvailability").textContent = `Only ${quantity} items left in stock`
-                    document.getElementById("stockAvailability").style.color = '#4d4d4d'
+                    document.getElementById("stockAvailability").style.color = '#ff4d4d'
                 } else {
                     document.getElementById("stockAvailability").textContent = 'Stock Available'
-                    document.getElementById("stockAvailability").style.color = '#4d4d4d'
+                    document.getElementById("stockAvailability").style.color = '#009933'
                 }
             }
         }
@@ -1183,6 +1185,54 @@
                 console.log(`Data is ${data}`)
             }
         }
+
+        async function addToWishlist(productId) {
+            console.log('Selected product Id - ', productId)
+            await fetch('/addtowishlist', {
+                method: "PUT",
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId })
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error('Failed to add to wishlist');
+                }
+            }).then(data => {
+                console.log(data.message);
+                if(data.message == 'Already added to wishlist'){
+                    Swal.fire({
+                    icon: 'error',
+                    title: 'Product already added to wishlist',
+                    // text: 'The product has been successfully added to your wishlist!'
+                });
+                } else {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'The product has been successfully added to your wishlist!'
+                    });
+                }
+            }).catch(error => {
+                console.error(error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Login Required',
+                    text: 'Login to add the product to wishlist',
+                    showCancelButton: true,
+                    confirmButtonText: 'Login',
+                    cancelButtonText: 'Cancel'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        window.location.href = '/login'; // Change '/login' to your actual login page URL
+                    }
+                });
+            });
+        }
+
+
     </script>
 </body>
 

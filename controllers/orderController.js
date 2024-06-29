@@ -1,10 +1,15 @@
 const Product = require("../models/productModel");
 const Order = require("../models/orderModel");
 const User = require("../models/userModel");
+const Wallet = require("../models/walletModel");
+
 
 const loadOrderPage = async (req, res) => {
   try {
-    const orderData = await Order.find().populate("userId").populate("products.productId").sort({orderDate: -1})
+    const orderData = await Order.find()
+      .populate("userId")
+      .populate("products.productId")
+      .sort({ orderDate: -1 });
     res.render("orders", { orderData });
   } catch (error) {
     console.log(`Error in order page - ${error}`);
@@ -25,33 +30,34 @@ const orderDetailsPage = async (req, res) => {
 
 const orderStatusChange = async (req, res) => {
   try {
-    let { selectedValue, orderId, productId , index} = req.body;
+    let { selectedValue, orderId, productId, index } = req.body;
     console.log(selectedValue, orderId, productId, index);
-    let orderData = await Order.findOne({_id: orderId})
-
+    let orderData = await Order.findOne({ _id: orderId });
 
     // Find the specific product within the order's products array
-    let product = orderData.products.find(p => p._id.toString() === productId);
-    console.log('Product found'+product)
+    let product = orderData.products.find(
+      (p) => p._id.toString() === productId
+    );
+    console.log("Product found" + product);
     if (!product) {
       return res.status(404).json({ message: "Product not found in order" });
     }
-    if(product.status !== 'Cancelled'){
+    if (product.status !== "Cancelled" || product.status !== "Delivered") {
       product.status = selectedValue;
     } else {
-      console.log(`Cannot change the status as it is already cancelled`)
+      console.log(`Cannot change the status as it is already cancelled`);
     }
-    let update
-    if(selectedValue === 'Cancelled'){
+    let update;
+    if (selectedValue === "Cancelled") {
       let updateProductData = orderData.products.forEach(async (products) => {
         update = {};
-          update[`stock.${products.size}.quantity`] = products.quantity;
-          let product = await Product.findByIdAndUpdate(
-            products.productId,
-            { $inc: update },
-            { new: true, useFindAndModify: false }
-          );
-      })
+        update[`stock.${products.size}.quantity`] = products.quantity;
+        let product = await Product.findByIdAndUpdate(
+          products.productId,
+          { $inc: update },
+          { new: true, useFindAndModify: false }
+        );
+      });
     }
     await orderData.save();
     res.status(200).json({ message: "Successfully Updated" });
@@ -68,12 +74,29 @@ const cancelOrder = async (req, res) => {
     let orderId = req.body.orderId;
     let productId = req.body.productId;
     console.log(orderId, productId);
-    let orderData = await Order.findOne({_id: orderId})
-
+    let orderData = await Order.findOne({ _id: orderId });
+    let walletData = await Wallet.findOne({userId: req.session.user._id})
+    if(!walletData){
+      let newWallet = new Wallet({
+        userId: req.session.user._id,
+        walletBalance: orderData.payableAmount,
+        transactions: [{
+          type: "credit",
+          amount: orderData.payableAmount,
+        }]
+      })
+      await newWallet.save()
+    } else {
+      walletData.walletBalance += orderData.payableAmount;
+      let updateWallet = walletData.transactions.unshift({type: "credit", amount: orderData.payableAmount})
+      await walletData.save()
+    }
 
     // Find the specific product within the order's products array
-    let product = orderData.products.find(p => p._id.toString() === productId);
-    console.log('Product found'+product)
+    let product = orderData.products.find(
+      (p) => p._id.toString() === productId
+    );
+    console.log("Product found" + product);
     if (!product) {
       return res.status(404).json({ message: "Product not found in order" });
     }
@@ -81,17 +104,42 @@ const cancelOrder = async (req, res) => {
 
     let updateProductData = orderData.products.forEach(async (products) => {
       let update = {};
-        update[`stock.${products.size}.quantity`] = products.quantity;
-        let product = await Product.findByIdAndUpdate(
-          products.productId,
-          { $inc: update },
-          { new: true, useFindAndModify: false }
-        );
-    })
+      update[`stock.${products.size}.quantity`] = products.quantity;
+      let product = await Product.findByIdAndUpdate(
+        products.productId,
+        { $inc: update },
+        { new: true, useFindAndModify: false }
+      );
+    });
     await orderData.save();
+
+
     res.status(200).json({ message: "Successfully Cancelled" });
   } catch (error) {
     console.log(`Error in cancelOrder --${error}`);
+  }
+};
+
+const returnOrder = async (req, res) => {
+  try {
+    const { orderId, productId, reason } = req.body;
+    console.log(orderId, productId, reason);
+    let orderData = await Order.findOne({ _id: orderId });
+
+    let product = orderData.products.find(
+      (p) => p._id.toString() === productId
+    );
+    console.log("Product found" + product);
+    if (!product) {
+      return res.status(404).json({ message: "Product not found in order" });
+    }
+    product.status = "Return Pending";
+    product.reason = reason;
+
+    await orderData.save();
+    res.status(200).json({ message: "Return request send successfully" });
+  } catch (error) {
+    console.log(`Error in returnOrder -- ${error}`);
   }
 };
 
@@ -100,4 +148,5 @@ module.exports = {
   orderDetailsPage,
   orderStatusChange,
   cancelOrder,
+  returnOrder,
 };
