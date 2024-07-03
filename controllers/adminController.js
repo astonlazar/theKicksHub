@@ -4,6 +4,7 @@ const Users = require("../models/userModel");
 const Orders = require("../models/orderModel")
 const Products = require("../models/productModel")
 const Categories = require("../models/categoryModel")
+const PDFDocument = require("pdfkit")
 
 const adminLoginPage = (req, res, next) => {
   try {
@@ -71,43 +72,50 @@ const adminLoginInsert = async (req, res, next) => {
 
 const adminDashboard = async (req, res, next) => {
   try {
-    const { startDate, endDate } = req.query;
+    const { start, end } = req.query;
     let orderData;
-    let totalOrders = await Orders.countDocuments()
-    let categoryData = await Categories.find({isActive: true})
-    let totalCategories = categoryData.length
-    let productData = await Products.find({isActive: true})
-    let totalProducts = productData.length
-    if (startDate && endDate) {
-      let start = new Date(startDate);
-      let end = new Date(endDate);
-      end.setHours(23, 59, 59, 999); // Ensure the end date includes the whole day
+    let totalOrders = await Orders.countDocuments();
+    let categoryData = await Categories.find({ isActive: true });
+    let totalCategories = categoryData.length;
+    let productData = await Products.find({ isActive: true });
+    let totalProducts = productData.length;
+    
+    if (start && end) {
+      let startDate = new Date(start);
+      let endDate = new Date(end);
+      endDate.setHours(23, 59, 59, 999); // Ensure the end date includes the whole day
 
-      console.log('Date range -- ', start, end);
+      console.log('Date range -- ', startDate, endDate);
       orderData = await Orders.aggregate([
         {
-            $match: {
-                createdAt: { $gte: start, $lte: end }
-            }
+          $match: {
+            orderDate: { $gte: startDate, $lte: endDate }
+          }
         },
         {
-            $sort: { orderDate: -1 }
+          $sort: { orderDate: -1 }
         }
-    ]);
+      ]);
       console.log('--loading admin dashboard after filtering');
     } else {
       orderData = await Orders.aggregate([
         {
-            $sort: { orderDate: -1 }
+          $sort: { orderDate: -1 }
         }
-    ]);
-        console.log("--loading admin dashboard without filtering");
+      ]);
+      console.log("--loading admin dashboard without filtering");
     }
-    res.render("dashboard", {orderData, totalOrders, totalProducts, totalCategories});
+
+    res.render("dashboard", { orderData, totalOrders, totalProducts, totalCategories });
   } catch (err) {
     next(err);
   }
 };
+
+const downloadSalesReport = (req, res) => {
+  console.log('hello')
+}
+
 
 const userManagement = async (req, res, next) => {
   try {
@@ -187,6 +195,7 @@ module.exports = {
   adminLoginPage,
   adminLoginInsert,
   adminDashboard,
+  downloadSalesReport,
   userManagement,
   blockUser,
   unblockUser,

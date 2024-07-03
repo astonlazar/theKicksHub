@@ -150,7 +150,7 @@
                     <p>Whole data about your business here</p>
                 </div>
                 <div>
-                    <a href="#" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
+                    <a href="/admin/download-sales-report" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Create report</a>
                 </div>
             </div>
             <div class="row">
@@ -388,19 +388,20 @@
                     <div class="row align-items-center mb-2">
                         <div class="col-auto">
                             <p class="mb-0">Start Date</p>
-                        </div>
+                        </div> 
                         <div class="col-auto">
-                            <input type="date" value="2022-05-02" class="form-control">
+                            <input id="startDate" type="date"  class="form-control">
                         </div>
                         <div class="col-auto">
                             <p class="mb-0">End Date</p>
                         </div>
                         <div class="col-auto">
-                            <input type="date" value="2022-05-02" class="form-control">
+                            <input id="endDate" type="date"  class="form-control">
                         </div>
                         <div class="col-auto">
-                            <button class="btn btn-primary">Filter</button>
+                            <button id="filterDate" class="btn btn-primary">Filter</button>
                         </div>
+                        <p id="filterError" class="text-danger"></p>
                     </div>
                     <div id="orderFilter" class="row align-items-center">
                         <div class="col-auto">
@@ -531,25 +532,37 @@
                 }
     
                 console.log(filterData);
-                // if(filterData){
-                //     window.location.href = `/admin/dashboard?start=${filterData.startDate}&&end=${filterData.endDate}`
-                // }
+                if(filterData){
+                    window.location.href = `/admin/dashboard?start=${filterData.startDate}&&end=${filterData.endDate}`
+                }
     
-                fetch(`/admin/dashboard?startDate=${filterData.startDate}&endDate=${filterData.endDate}`, {
-                    method: "GET",
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    // body: JSON.stringify(filterData)
-                })
-                // .then(response => {
-                //     if(response.ok){
-                //         location.reload()
-                //     }
+                // fetch(`/admin/dashboard?startDate=${filterData.startDate}&endDate=${filterData.endDate}`, {
+                //     method: "GET",
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     // body: JSON.stringify(filterData)
                 // })
-                .catch(error => {
-                    console.log('Error found -- ',error)
-                })
+                // // .then(response => {
+                // //     if(response.ok){
+                // //         location.reload()
+                // //     }
+                // // })
+                // .catch(error => {
+                //     console.log('Error found -- ',error)
+                // })
+            }
+        })
+
+        document.getElementById("filterDate").addEventListener('click', (e) => {
+            e.preventDefault();
+            let startDate = document.getElementById("startDate").value;
+            let endDate = document.getElementById("endDate").value
+            console.log(startDate, endDate)
+            if(startDate && endDate){
+                window.location.href = `/admin/dashboard?start=${startDate}&&end=${endDate}`
+            } else {
+                document.getElementById("filterError").textContent = 'Select dates to filter'
             }
         })
     </script>

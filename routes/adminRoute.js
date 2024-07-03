@@ -18,6 +18,7 @@ adminRoute.get("/", auth.isLogout, adminController.adminLoginPage);
 adminRoute.post("/", adminController.adminLoginInsert);
 
 adminRoute.get("/dashboard", auth.isLogin, adminController.adminDashboard);
+adminRoute.get("/download-sales-report", adminController.downloadSalesReport)
 
 adminRoute.get(
   "/user-management",
