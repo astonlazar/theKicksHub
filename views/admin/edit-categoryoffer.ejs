@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/admin/assets/imgs/theme/favicon.svg"
+    />
+    <!-- Template CSS -->
+    <link href="/admin/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <!-- Include SweetAlert CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <style>
+      li {
+        list-style-type: none;
+      }
+      table {
+  font-family: Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  text-align: left;
+  background-color: #f2f2f2;
+}
+
+    </style>
+  </head>
+
+  <body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+          <a href="index.html" class="brand-wrap">
+              <img src="/admin/assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+          </a>
+          <div>
+              <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+          </div>
+      </div>
+      <nav>
+          <ul class="menu-aside">
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                      <span class="text">Dashboard</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/user-management"> <i class="icon material-icons md-public"></i>
+                      <span class="text">Users</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                      <span class="text">Products</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/categories"> <i class="icon material-icons md-store"></i>
+                      <span class="text">Categories</span>
+                  </a>
+              </li>
+              <li class="menu-item active">
+                <a class="menu-link" href="/admin/offers"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Offers</span>
+                </a>
+            </li>
+              <li class="menu-item ">
+                  <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
+                      <span class="text">Orders</span>
+                  </a>
+              </li>
+              <li class="menu-item ">
+                <a class="menu-link" href="/admin/coupons"> <i class="icon material-icons md-receipt"></i>
+                    <span class="text">Coupons</span>
+                </a>
+            </li>
+              <!-- <li class="menu-item">
+                  <a class="menu-link" href="/admin/add-product"> <i class="icon material-icons md-add_box"></i>
+                      <span class="text">Add product</span>
+                  </a>
+              </li> -->
+              <li class="menu-item">
+                  <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
+                      <span class="text">Transactions</span>
+                  </a>
+              </li>
+              <!-- <li class="menu-item">
+                  <a class="menu-link" disabled href="#"> <i class="icon material-icons md-pie_chart"></i>
+                      <span class="text">Statistics</span>
+                  </a>
+              </li> -->
+          </ul>
+          <hr>
+          <ul class="menu-aside">
+              <li class="menu-item">
+                  <a class="menu-link" href="#"> <i class="icon material-icons md-settings"></i>
+                      <span class="text">Settings</span>
+                  </a>
+              </li>
+          </ul>
+          <br>
+          <br>
+      </nav>
+  </aside>
+<main class="main-wrap">
+
+   
+    <section class="content-main">
+        <div class="row">
+            <div class="col-9">
+                <div class="content-header">
+                    <h2 class="content-title">Edit Category Offer</h2>
+                    <div>
+                        <!-- <button class="btn btn-light rounded font-sm mr-5 text-body hover-up">Save to draft</button>
+                         <button class="btn btn-md rounded font-sm hover-up">Publich</button> -->
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-9">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h4>Offer Details</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="categoryAdd" method="post" action="/admin/offers/category/edit/<%= offerData._id %>" onsubmit="return validateForm()">
+                            <div class="mb-4">
+                                <label class="form-label">Choose Category</label>
+                                <select id="categorySelect" name="category" onblur="validateSelectCategory()" class="form-select">
+                                    <% if(categoryData) { %>
+                                    <option value="<%= offerData.category._id %>"><%= offerData.category.categoryName %></option>
+                                    <% categoryData.forEach(category => { %>
+                                      <% if(offerData.category.categoryName !== category.categoryName){ %>
+                                      <option value="<%= category._id %>"><%= category.categoryName %></option>
+                                      <% } %>
+                                    <% }) %>
+                                    <% } %>
+                                </select>
+                                <div id="productError" class="text-danger mt-2" style="display: none;">Please select a category.</div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Offer Name</label>
+                                <input type="text" name="offerName" id="offerName" onblur="validateOfferName()" value="<%= offerData.offerName %>" class="form-control" />
+                                <div id="error-offerName" class="text-danger"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Offer Description</label>
+                                <input type="text" id="description" name="description" onblur="validateOfferDescription()" value="<%= offerData.offerDescription %>" class="form-control" />
+                                <div id="error-description" class="text-danger"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Offer Percentage</label>
+                                <input type="number" id="Percentage" name="offerPercentage" onblur="validateOfferPercentage()" value="<%= offerData.discount %>" class="form-control" />
+                                <div id="error-percentage" class="text-danger"></div>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label">Offer Type</label>
+                                <input type="text" value="Category Offer" name="offerType" class="form-control" readonly />
+                            </div>
+                            <p class="text-danger"><%= error %></p>
+                            <button class="btn btn-primary" type="submit">Save</button>
+                        </form>
+                    </div>
+                </div> <!-- card end// -->
+            </div>
+        </div>
+    </section> <!-- content-main end// -->
+    <div ></div>
+
+</main>
+
+
+<script>
+
+function validateSelectCategory() {
+            const categorySelect = document.getElementById('categorySelect');
+            const productError = document.getElementById('productError');
+            
+            if (categorySelect.value === "") {
+                productError.style.display = 'block';
+                return false;
+            } else {
+                productError.style.display = 'none';
+                return true;
+            }
+        }
+        
+        function validateOfferName() {
+            const offerName = document.getElementById('offerName').value;
+            const errorOfferName = document.getElementById('error-offerName');
+            
+            if (offerName === "") {
+                errorOfferName.innerHTML = "Please fill the offer name";
+                return false;
+            } else {
+                errorOfferName.innerHTML = "";
+                return true;
+            }
+        }
+        
+        function validateOfferDescription() {
+            const description = document.getElementById('description').value;
+            const errorDescription = document.getElementById('error-description');
+            
+            if (description === "") {
+                errorDescription.innerHTML = "Please enter the description";
+                return false;
+            } else {
+                errorDescription.innerHTML = "";
+                return true;
+            }
+        }
+        
+        function validateOfferPercentage() {
+            const percentage = document.getElementById('Percentage').value;
+            const errorPercentage = document.getElementById('error-percentage');
+            
+            if (percentage === "") {
+                errorPercentage.innerHTML = "Please enter the percentage";
+                return false;
+            } else if (isNaN(percentage)) {
+                errorPercentage.innerHTML = "Please enter a valid percentage";
+                return false;
+            } else {
+                errorPercentage.innerHTML = "";
+                return true;
+            }
+        }
+        
+        function validateForm() {
+            const selectCategory = validateSelectCategory();
+            const offerName = validateOfferName();
+            const description = validateOfferDescription();
+            const percentage = validateOfferPercentage();
+            return selectCategory && offerName && description && percentage;
+        }
+</script>
+
+<script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+<script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+<script src="/admin/assets/js/vendors/select2.min.js"></script>
+<script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+<script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
+<!-- Main Script -->
+<script src="/admin/assets/js/main.js" type="text/javascript"></script>
+
+</body>
+
+</html>

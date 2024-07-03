@@ -75,21 +75,23 @@ const cancelOrder = async (req, res) => {
     let productId = req.body.productId;
     console.log(orderId, productId);
     let orderData = await Order.findOne({ _id: orderId });
-    let walletData = await Wallet.findOne({userId: req.session.user._id})
-    if(!walletData){
-      let newWallet = new Wallet({
-        userId: req.session.user._id,
-        walletBalance: orderData.payableAmount,
-        transactions: [{
-          type: "credit",
-          amount: orderData.payableAmount,
-        }]
-      })
-      await newWallet.save()
-    } else {
-      walletData.walletBalance += orderData.payableAmount;
-      let updateWallet = walletData.transactions.unshift({type: "credit", amount: orderData.payableAmount})
-      await walletData.save()
+    if(orderData.paymentMethod === 'RazorPay'){
+      let walletData = await Wallet.findOne({userId: req.session.user._id})
+      if(!walletData){
+        let newWallet = new Wallet({
+          userId: req.session.user._id,
+          walletBalance: orderData.payableAmount,
+          transactions: [{
+            type: "credit",
+            amount: orderData.payableAmount,
+          }]
+        })
+        await newWallet.save()
+      } else {
+        walletData.walletBalance += orderData.payableAmount;
+        let updateWallet = walletData.transactions.unshift({type: "credit", amount: orderData.payableAmount})
+        await walletData.save()
+      }
     }
 
     // Find the specific product within the order's products array

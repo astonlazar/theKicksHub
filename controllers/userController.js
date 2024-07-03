@@ -9,6 +9,7 @@ const strongPassword = require("../helpers/strongPassword");
 // const { newAddress } = require("./cartController");
 const fPassword = require("../helpers/forgotPassword");
 const crypto = require("crypto");
+const Wallet = require("../models/walletModel")
 
 // Store tokens and expiry times
 const resetTokens = {};
@@ -423,10 +424,11 @@ const shop = async (req, res) => {
 const userProfile = async (req, res) => {
   const addressData = await Address.findOne({ userId: req.session.user._id });
   const userData = await User.findById(req.session.user._id);
+  const walletData = await Wallet.findOne({userId: req.session.user._id})
   const orderData = await Order.find({ userId: req.session.user._id })
     .populate("products.productId")
     .sort({ orderDate: -1 });
-  res.render("user-profile", { userData, addressData, orderData });
+  res.render("user-profile", { userData, addressData, orderData, walletData });
 };
 
 const userProfileEdit = async (req, res) => {

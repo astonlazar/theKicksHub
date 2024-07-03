@@ -432,6 +432,8 @@
                                                     <div class="form-group col-lg-6">
                                                         <button type="submit" class="btn  btn-sm"><i class="fi-rs-label mr-10"></i>Apply</button>
                                                     </div>
+                                                    <p id="error-message" class="text-danger"></p>
+
                                                 </div>
                                             </form>
                                         </div>
@@ -1168,27 +1170,34 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({coupon: couponCode})
+            body: JSON.stringify({coupon: couponCode, payableAmount: oldTotalPrice})
         })
         .then(response => {
             if(response.ok){
+                document.getElementById('error-message').textContent = ''
                 console.log('Successfully coupon applied')
             }
             return response.json()
         })
         .then(data => {
-            console.log(data.discountPercentage)
-            totalPrice = '<%= cartData.totalPrice %>'
-            console.log(totalPrice)
-            totalPrice -= (data.discountPercentage/100) * totalPrice;
-            document.getElementById('totalPrice').textContent = '₹'+totalPrice
-            document.getElementById('appliedMessage').innerText = `'${couponCode}' - Coupon Applied`
-            document.getElementById('couponDiv').style.display = 'none'
-            document.getElementById('couponMessageDiv').style.display = 'inline-block'
-            couponApplied = couponCode;
+            if(data.message === 'Success'){
+                console.log(data.discountPercentage)
+                totalPrice = '<%= cartData.totalPrice %>'
+                console.log(totalPrice)
+                totalPrice -= (data.discountPercentage/100) * totalPrice;
+                document.getElementById('totalPrice').textContent = '₹'+totalPrice
+                document.getElementById('appliedMessage').innerText = `'${couponCode}' - Coupon Applied`
+                document.getElementById('couponDiv').style.display = 'none'
+                document.getElementById('couponMessageDiv').style.display = 'inline-block'
+                couponApplied = couponCode;
+                document.getElementById('error-message').textContent = ''
+            } else {
+                document.getElementById('error-message').textContent = data.message
+            }
         })
         .catch(err => {
             console.log('Error - ', err)
+            
         })
     })
 

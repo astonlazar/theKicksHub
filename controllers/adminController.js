@@ -1,6 +1,9 @@
 const hashing = require("../helpers/passwordHash");
 const Admin = require("../models/adminModel");
 const Users = require("../models/userModel");
+const Orders = require("../models/orderModel")
+const Products = require("../models/productModel")
+const Categories = require("../models/categoryModel")
 
 const adminLoginPage = (req, res, next) => {
   try {
@@ -66,10 +69,41 @@ const adminLoginInsert = async (req, res, next) => {
   }
 };
 
-const adminDashboard = (req, res, next) => {
+const adminDashboard = async (req, res, next) => {
   try {
-    console.log("--loading admin dashboard");
-    res.render("dashboard");
+    const { startDate, endDate } = req.query;
+    let orderData;
+    let totalOrders = await Orders.countDocuments()
+    let categoryData = await Categories.find({isActive: true})
+    let totalCategories = categoryData.length
+    let productData = await Products.find({isActive: true})
+    let totalProducts = productData.length
+    if (startDate && endDate) {
+      let start = new Date(startDate);
+      let end = new Date(endDate);
+      end.setHours(23, 59, 59, 999); // Ensure the end date includes the whole day
+
+      console.log('Date range -- ', start, end);
+      orderData = await Orders.aggregate([
+        {
+            $match: {
+                createdAt: { $gte: start, $lte: end }
+            }
+        },
+        {
+            $sort: { orderDate: -1 }
+        }
+    ]);
+      console.log('--loading admin dashboard after filtering');
+    } else {
+      orderData = await Orders.aggregate([
+        {
+            $sort: { orderDate: -1 }
+        }
+    ]);
+        console.log("--loading admin dashboard without filtering");
+    }
+    res.render("dashboard", {orderData, totalOrders, totalProducts, totalCategories});
   } catch (err) {
     next(err);
   }
@@ -89,14 +123,6 @@ const userManagement = async (req, res, next) => {
       console.log(searchQuery);
       query = { userName: new RegExp(searchQuery, "i") };
     }
-    // const searchQuery = req.body.searchUser;
-    // console.log(searchQuery);
-    // const query = {};
-
-    // if (searchQuery) {
-    //   query = { userName: new RegExp(searchQuery, "i") };
-    // }
-
     let users = await Users.find(query).skip(startIndex).limit(limit);
     let totalDocuments = await Users.countDocuments();
 

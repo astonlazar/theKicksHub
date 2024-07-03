@@ -52,6 +52,11 @@
                       <span class="text">Categories</span>
                   </a>
               </li>
+              <li class="menu-item ">
+                <a class="menu-link" href="/admin/offers"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Offers</span>
+                </a>
+            </li>
               <li class="menu-item">
                   <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
                       <span class="text">Orders</span>
@@ -189,7 +194,7 @@
                                             <th>Coupon Code</th>
                                             <th>Description</th>
                                             <th>Discount <br> Percentage</th>
-                                            <th>Mininum Purchase <br> Amount</th>
+                                            <th>Minimum Purchase <br> Amount</th>
                                             <th>Limited <br> Quantity</th>
                                             <th>Expiry Date</th>
                                             <th>Status</th>
@@ -197,38 +202,45 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                      <% if(couponData){ %>
-                                        <% couponData.forEach(data => { %>
-                                          <td><%= data.code %></td>
-                                          <td><%= data.description %></td>
-                                          <td><%= data.discountPercentage %></td>
-                                          <td><%= data.minPurchaseAmount %></td>
-                                          <td><%= data.limitedQuantity %></td>
-                                          <td><%= data.expiryDate.toISOString().split("T")[0] %></td>
-                                          <td>
-                                            <% if(data.isActive == true) { %>
-                                              <div id="activeStatus<%= data._id %>" style="display: inline-block;" class="col-lg-2 col-sm-2 col-4 col-status">
-                                                  <span class="badge rounded-pill alert-success">Active</span>
-                                              </div>
-                                              <div id="inactiveStatus<%= data._id %>" style="display: none;" class="col-lg-2 col-sm-2 col-4 col-status">
-                                                  <span class="badge rounded-pill alert-danger">InActive</span>
-                                              </div>
-                                              <% } else { %>
-                                              <div id="activeStatus<%= data._id %>" style="display: none;" class="col-lg-2 col-sm-2 col-4 col-status">
-                                                  <span class="badge rounded-pill alert-success">Active</span>
-                                              </div>
-                                              <div id="inactiveStatus<%= data._id %>" style="display: inline-block;" class="col-lg-2 col-sm-2 col-4 col-status">
-                                                  <span class="badge rounded-pill alert-danger">InActive</span>
-                                              </div>
-                                              <% } %>
-                                          </td>
-                                        <% }) %>
-                                      <% } %>
-                                      
+                                        <% if(couponData) { %>
+                                            <% couponData.forEach(data => { %>
+                                                <tr>
+                                                    <td><%= data.code %></td>
+                                                    <td><%= data.description %></td>
+                                                    <td><%= data.discountPercentage %></td>
+                                                    <td><%= data.minPurchaseAmount %></td>
+                                                    <td><%= data.limitedQuantity %></td>
+                                                    <td><%= new Date(data.expiryDate).toISOString().split("T")[0] %></td>
+                                                    <td>
+                                                        <% if(data.isActive) { %>
+                                                            <div id="activeStatus<%= data._id %>" class="col-lg-2 col-sm-2 col-4 col-status" style="display: inline-block;">
+                                                                <span class="badge rounded-pill alert-success">Active</span>
+                                                            </div>
+                                                            <div id="inactiveStatus<%= data._id %>" class="col-lg-2 col-sm-2 col-4 col-status" style="display: none;">
+                                                                <span class="badge rounded-pill alert-danger">InActive</span>
+                                                            </div>
+                                                        <% } else { %>
+                                                            <div id="activeStatus<%= data._id %>" class="col-lg-2 col-sm-2 col-4 col-status" style="display: none;">
+                                                                <span class="badge rounded-pill alert-success">Active</span>
+                                                            </div>
+                                                            <div id="inactiveStatus<%= data._id %>" class="col-lg-2 col-sm-2 col-4 col-status" style="display: inline-block;">
+                                                                <span class="badge rounded-pill alert-danger">InActive</span>
+                                                            </div>
+                                                        <% } %>
+                                                    </td>
+                                                    <td class="text-center">
+                                                            <% if(data.isActive === true) { %>
+                                                                <button onclick="statusUpdate('<%= data._id %>')" class="btn btn-danger">Block</button>
+                                                            <% } else if(data.isActive === false) { %>
+                                                                <button onclick="statusUpdate('<%= data._id %>')" class="btn btn-success text-light">Unblock</button>
+                                                            <% } %>
+                                                    </td>
+                                                </tr>
+                                            <% }) %>
+                                        <% } %>
                                     </tbody>
-                                    
                                 </table>
-                                
+                                  
                             </div>
                         </div> <!-- .col// -->
                     </div> <!-- .row // -->
@@ -281,6 +293,26 @@
           }
           return true;
       }
+
+      function statusUpdate(couponId) {
+        console.log('Offer Id - ', couponId)
+
+        fetch("/admin/coupons/status", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({couponId: couponId})
+        })
+        .then(response => {
+            if(response.ok){
+                location.reload()
+            }
+        })
+        .catch(error => {
+            console.log(`Error in status update`, error)
+        })
+    }
     </script>
 </body>
 

@@ -435,22 +435,21 @@ const placeOrder = async (req, res) => {
 
     let selectedAddress = addressData.address[selectedAddressIndex];
     let orderedProducts = cartData.product;
-    let payableAmount = cartData.totalPrice;
+    let payableAmount = totalPrice;
 
     if (couponApplied !== "x") {
       let couponData = await Coupon.findOne({ code: couponApplied });
       console.log(couponData);
       if (!couponData) {
-        return res.status(200).json({ message: "Invalid Coupon" });
+        return res.status(400).json({ message: "Invalid Coupon" });
       }
       if (new Date(couponData.expiryDate) <= new Date()) {
-        return res.status(200).json({ message: "Coupon Expired" });
+        return res.status(400).json({ message: "Coupon Expired" });
       }
       couponData.limitedQuantity--;
       await couponData.save();
     }
 
-    if (selectedPaymentMethod === "COD") {
       let order = new Order({
         userId: req.session.user._id,
         cartId: cartData._id,
@@ -461,7 +460,7 @@ const placeOrder = async (req, res) => {
         paymentStatus: "Pending",
       });
       await order.save();
-    }
+  
 
     let updateProductData = await Promise.all(
       cartData.product.map(async (product) => {

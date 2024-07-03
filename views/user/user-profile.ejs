@@ -467,13 +467,35 @@
                                             <div class="card-body">
                                                 <div class="wallet-balance mb-4">
                                                     <h5>Wallet Balance</h5>
-                                                    <p id="wallet-amount" class="display-4 text-success">₹0.00</p>
+                                                    <p id="wallet-amount" class="display-4 text-brand">₹<%= walletData.walletBalance %></p>
                                                 </div>
                                                 <div class="wallet-details">
-                                                    <h5>Details</h5>
-                                                    <ul id="wallet-details-list" class="list-group">
-                                                        <!-- Wallet details will be dynamically added here -->
-                                                    </ul>
+                                                    <h5 class="mb-10">Details</h5>
+                                                    <div class="table-responsive">
+                                                        <table class="table table-striped">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th scope="col">Date</th>
+                                                                    <th scope="col">Type of Payment</th>
+                                                                    <th scope="col">Amount</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody id="wallet-details-list">
+                                                                <!-- Wallet details will be dynamically added here -->
+                                                                <% walletData.transactions.forEach(data => { %>
+                                                                    <tr>
+                                                                        <td><%= data.time.toISOString().split("T")[0] %></td>
+                                                                        <td><%= data.type %></td>
+                                                                        <% if(data.type === 'credit'){ %>
+                                                                            <td><span class="text-success">+ ₹<%= data.amount %></span></td>
+                                                                        <% } else if(data.type === 'credit'){ %>
+                                                                            <td><span class="text-danger">- ₹<%= data.amount %></span></td>
+                                                                        <% } %>
+                                                                     </tr>
+                                                                <% }) %>
+                                                            </tbody>
+                                                        </table>
+                                                    </div>
                                                 </div>
                                             </div>
                                         </div>
@@ -1266,39 +1288,6 @@
 
             return fullname && address && city && state && pincode && phoneNo && email
         }
-
-    </script>
-    <script>
-// Sample data
-const walletAmount = 100.50;
-const walletDetails = [
-    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
-    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
-    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
-    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
-    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
-    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
-    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
-    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
-    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
-    { date: '2024-06-29', transaction: 'Payment received', amount: '₹50.00' },
-    { date: '2024-06-28', transaction: 'Payment sent', amount: '₹25.00' },
-    { date: '2024-06-27', transaction: 'Payment received', amount: '₹75.50' },
-    // Add more transactions if needed to test scrolling
-];
-
-// Function to update the wallet amount
-document.getElementById('wallet-amount').textContent = `₹${walletAmount.toFixed(2)}`;
-
-// Function to update the wallet details
-const detailsList = document.getElementById('wallet-details-list');
-walletDetails.forEach(detail => {
-    const listItem = document.createElement('li');
-    listItem.className = 'list-group-item';
-    listItem.textContent = `${detail.date}: ${detail.transaction} - ${detail.amount}`;
-    detailsList.appendChild(listItem);
-});
-
 
     </script>
 </body>

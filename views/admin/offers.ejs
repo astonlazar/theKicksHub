@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Evara Dashboard</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge" />
+    <meta name="description" content="" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta property="og:title" content="" />
+    <meta property="og:type" content="" />
+    <meta property="og:url" content="" />
+    <meta property="og:image" content="" />
+    <!-- Favicon -->
+    <link
+      rel="shortcut icon"
+      type="image/x-icon"
+      href="/admin/assets/imgs/theme/favicon.svg"
+    />
+    <!-- Template CSS -->
+    <link href="/admin/assets/css/main.css" rel="stylesheet" type="text/css" />
+    <!-- Include SweetAlert CSS -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+    />
+
+    <style>
+      li {
+        list-style-type: none;
+      }
+      table {
+  font-family: Arial, sans-serif;
+  border-collapse: collapse;
+  width: 100%;
+}
+
+td, th {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+th {
+  text-align: left;
+  background-color: #f2f2f2;
+}
+
+    </style>
+  </head>
+
+  <body>
+    <div class="screen-overlay"></div>
+    <aside class="navbar-aside" id="offcanvas_aside">
+      <div class="aside-top">
+          <a href="index.html" class="brand-wrap">
+              <img src="/admin/assets/imgs/theme/logo.svg" class="logo" alt="Evara Dashboard">
+          </a>
+          <div>
+              <button class="btn btn-icon btn-aside-minimize"> <i class="text-muted material-icons md-menu_open"></i> </button>
+          </div>
+      </div>
+      <nav>
+          <ul class="menu-aside">
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/dashboard"> <i class="icon material-icons md-home"></i>
+                      <span class="text">Dashboard</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/user-management"> <i class="icon material-icons md-public"></i>
+                      <span class="text">Users</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/products"> <i class="icon material-icons md-shopping_bag"></i>
+                      <span class="text">Products</span>
+                  </a>
+              </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="/admin/categories"> <i class="icon material-icons md-store"></i>
+                      <span class="text">Categories</span>
+                  </a>
+              </li>
+              <li class="menu-item active">
+                <a class="menu-link" href="/admin/offers"> <i class="icon material-icons md-shopping_cart"></i>
+                    <span class="text">Offers</span>
+                </a>
+            </li>
+              <li class="menu-item ">
+                  <a class="menu-link" href="/admin/orders"> <i class="icon material-icons md-shopping_cart"></i>
+                      <span class="text">Orders</span>
+                  </a>
+              </li>
+              <li class="menu-item ">
+                <a class="menu-link" href="/admin/coupons"> <i class="icon material-icons md-receipt"></i>
+                    <span class="text">Coupons</span>
+                </a>
+            </li>
+              <li class="menu-item">
+                  <a class="menu-link" href="page-transactions-1.html"> <i class="icon material-icons md-monetization_on"></i>
+                      <span class="text">Transactions</span>
+                  </a>
+              </li>
+              <!-- <li class="menu-item">
+                  <a class="menu-link" disabled href="#"> <i class="icon material-icons md-pie_chart"></i>
+                      <span class="text">Statistics</span>
+                  </a>
+              </li> -->
+          </ul>
+          <hr>
+          <ul class="menu-aside">
+              <li class="menu-item">
+                  <a class="menu-link" href="#"> <i class="icon material-icons md-settings"></i>
+                      <span class="text">Settings</span>
+                  </a>
+              </li>
+          </ul>
+          <br>
+          <br>
+      </nav>
+  </aside>
+
+<main class="main-wrap">
+
+    <div "></div>
+
+
+    <section class="content-main">
+        <div class="content-header">
+            <div>
+                <h2 class="content-title card-title">Offer</h2>
+                <p>Add, edit or delete a offer</p>
+            </div>
+            <div>
+                <a  class="btn btn-primary btn-sm rounded" href="/admin/offers/product/add" >Product</a>
+                <a  class="btn btn-primary btn-sm rounded" href="/admin/offers/category/add" >Category</a>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="table-responsive">
+                          <% if(offerData.length <= 0){ %>
+                            <h4>No offers added..</h4>
+                          <% } else { %>
+                            <table class="table table-hover">
+                                <thead>
+                                <tr>
+                                    <th>Status</th>
+                                    <th>Product/Category</th>
+                                    <th>Offer</th>
+                                    <th>Description</th>
+                                    <th>Type</th>
+                                    <th>Offer Percentage</th>
+                                    <th>Update</th>
+                                    <th>Action</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                    <% offerData.forEach(data => { %>
+                                  <tr>
+                                    <td>
+                                        <% if(data.isActive === true) { %>
+                                            <span  class="badge badge-pill badge-soft-success" >Active</span>
+                                        <% } else if(data.isActive === false) { %>
+                                            <span  class="badge badge-pill badge-soft-danger" >Inactive</span>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if(data.product){ %>
+                                            <span><%= data.product.productName %></span>
+                                        <% } else if(data.category) { %>
+                                            <span><%= data.category.categoryName %></span>
+                                        <% } %>
+                                    </td>
+                                    <td><%= data.offerName %></td>
+                                    <td><%= data.offerDescription %></td>
+                                    <td><%= data.offerType %></td>
+                                    <td><%= data.discount %>%</td>
+                                    <td>
+                                        <% if(data.product){ %>
+                                            <a href="/admin/offers/product/edit/<%= data._id %>" class="btn btn-primary">Update</a>
+                                        <% } else if(data.category) { %>
+                                            <a href="/admin/offers/category/edit/<%= data._id %>" class="btn btn-primary">Update</a>
+                                        <% } %>
+                                    </td>
+                                    <td>
+                                        <% if(data.isActive === true) { %>
+                                            <button onclick="statusUpdate('<%= data._id %>')" class="btn btn-danger">Block</button>
+                                        <% } else if(data.isActive === false) { %>
+                                            <button onclick="statusUpdate('<%= data._id %>')" class="btn btn-success text-light">Unblock</button>
+                                        <% } %>
+                                    </td>
+                                </tr>
+                                <% }) %>
+                                </tbody>
+                            </table>
+                            <% } %>
+                        </div>
+                    </div> <!-- .col// -->
+                </div> <!-- .row // -->
+            </div> <!-- card body .// -->
+        </div> <!-- card .// -->  
+        <!-- Add category-->
+    </section> <!-- content-main end// -->
+    
+</main>
+<!-- Include SweetAlert JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
+<script>
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Event delegation for dynamically created buttons
+    document.body.addEventListener('click', function(event) {
+        if (event.target.matches('.btn-primary.btn-sm')) {
+            applyOffer(event.target.id.split('_')[1]);
+        } else if (event.target.matches('.btn-danger.btn-sm')) {
+            removeOffer(event.target.id.split('_')[1]);
+        }
+    });
+
+    function applyOffer(offerId) {
+        const statusDiv = document.querySelector(`.badge`);
+        const applybtn = document.getElementById(`applybtn_${offerId}`);
+        const removebtn = document.getElementById(`removebtn_${offerId}`);
+
+        const offertype = document.getElementById(`applytype_${offerId}`).value;
+        let data;
+
+        if (offertype === "Product Offer") {
+            const productId = document.getElementById(`applypro_${offerId}`).value;
+            data = {
+                offerId: offerId,
+                productId: productId,
+                offertype: offertype
+            };
+        } else {
+            const discount = document.getElementById(`applydis_${offerId}`).value;
+            const categoryId = document.getElementById(`applycat_${offerId}`).value;
+            data = {
+                offerId: offerId,
+                categoryId: categoryId,
+                offertype: offertype,
+                discount: discount
+            };
+        }
+
+        fetch('/admin/offer/apply', {
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+              // statusDiv.className = 'badge badge-pill badge-soft-success';
+              //   statusDiv.textContent = 'Active';
+
+              const statusDiv = document.querySelector(`.badge`);
+            statusDiv.className = 'badge badge-pill badge-soft-success';
+            statusDiv.textContent = 'Blocked';
+
+                // if (applybtn) applybtn.style.display = 'none';
+                // if (removebtn) removebtn.style.display = 'inline-block';
+                
+
+                Swal.fire({
+                    icon: "success",
+                    title: "Success!",
+                    text: "Offer applied successfully",
+                    confirmButtonText: "OK",
+                }).then(() => {
+                    window.location.href = "/admin/offer";
+                });
+            } else {
+                Swal.fire({
+                    icon: "error",
+                    title: "Error!",
+                    text: "Failed to apply the offer. Please try again.",
+                    confirmButtonText: "OK",
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "An unexpected error occurred. Please try again.",
+                confirmButtonText: "OK",
+            });
+        });
+    }
+
+    function removeOffer(offerId) {
+    const offertype = document.getElementById(`removetype_${offerId}`).value;
+    let data;
+
+    if (offertype === "Product Offer") {
+        const productId = document.getElementById(`removepro_${offerId}`).value;
+        data = {
+            offerId: offerId,
+            productId: productId,
+            offertype: offertype
+        };
+    } else {
+        const discount = document.getElementById(`removedis_${offerId}`).value;
+        const categoryId = document.getElementById(`removecat_${offerId}`).value;
+        data = {
+            offerId: offerId,
+            categoryId: categoryId,
+            offertype: offertype,
+            discount: discount
+        };
+    }
+
+    console.log("Sending data: ", data);  // Add this line to log data
+
+    fetch('/admin/offer/remove', {
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json",
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const statusDiv = document.querySelector(`.badge`);
+            statusDiv.className = 'badge badge-pill badge-soft-danger';
+            statusDiv.textContent = 'Blocked';
+
+            Swal.fire({
+                icon: "success",
+                title: "Success!",
+                text: "Offer removed successfully",
+                confirmButtonText: "OK",
+            }).then(() => {
+                window.location.href = "/admin/offer";
+            });
+        } else {
+            Swal.fire({
+                icon: "error",
+                title: "Error!",
+                text: "Failed to remove the offer. Please try again.",
+                confirmButtonText: "OK",
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error:", error);
+        Swal.fire({
+            icon: "error",
+            title: "Error!",
+            text: "An unexpected error occurred. Please try again.",
+            confirmButtonText: "OK",
+        });
+    });
+}
+
+});
+
+</script>
+<script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
+<script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
+<script src="/admin/assets/js/vendors/select2.min.js"></script>
+<script src="/admin/assets/js/vendors/perfect-scrollbar.js"></script>
+<script src="/admin/assets/js/vendors/jquery.fullscreen.min.js"></script>
+<!-- Main Script -->
+<script src="/admin/assets/js/main.js" type="text/javascript"></script>
+
+<script>
+    function statusUpdate(offerId) {
+        console.log('Offer Id - ', offerId)
+
+        fetch("/admin/offers/status", {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({offerId: offerId})
+        })
+        .then(response => {
+            if(response.ok){
+                location.reload()
+            }
+        })
+        .catch(error => {
+            console.log(`Error in status update`, error)
+        })
+    }
+</script>
+</body>
+
+</html>

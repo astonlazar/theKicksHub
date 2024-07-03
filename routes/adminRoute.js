@@ -4,7 +4,8 @@ const adminController = require("../controllers/adminController");
 const categoryController = require("../controllers/categoryController");
 const productController = require("../controllers/productController");
 const orderController = require("../controllers/orderController");
-const couponController = require("../controllers/couponController")
+const couponController = require("../controllers/couponController");
+const offerController = require("../controllers/offerController");
 const auth = require("../middlewares/adminAuth");
 const multer = require("../helpers/multer");
 
@@ -96,8 +97,56 @@ adminRoute.get(
   adminController.transactionDetails
 );
 
-adminRoute.get("/coupons", couponController.loadCouponPage)
-adminRoute.post("/coupons", couponController.addCoupon)
+adminRoute.get("/coupons", auth.isLogin, couponController.loadCouponPage);
+adminRoute.post("/coupons", auth.isLogin, couponController.addCoupon);
+adminRoute.put("/coupons/status", auth.isLogin, couponController.couponStatus)
+
+adminRoute.get("/offers", auth.isLogin, offerController.loadOffersPage);
+adminRoute.get(
+  "/offers/product/add",
+  auth.isLogin,
+  offerController.addProductOffer
+);
+adminRoute.post(
+  "/offers/product/add",
+  auth.isLogin,
+  offerController.addingProductOffer
+);
+
+adminRoute.get(
+  "/offers/category/add",
+  auth.isLogin,
+  offerController.addCategoryOffer
+);
+adminRoute.post(
+  "/offers/category/add",
+  auth.isLogin,
+  offerController.addingCategoryOffer
+);
+
+adminRoute.get(
+  "/offers/product/edit/:id",
+  auth.isLogin,
+  offerController.editProductOffer
+);
+adminRoute.post(
+  "/offers/product/edit/:id",
+  auth.isLogin,
+  offerController.editedProductOffer
+);
+
+adminRoute.get(
+  "/offers/category/edit/:id",
+  auth.isLogin,
+  offerController.editCategoryOffer
+);
+adminRoute.post(
+  "/offers/category/edit/:id",
+  auth.isLogin,
+  offerController.editedCategoryOffer
+);
+
+adminRoute.put("/offers/status", auth.isLogin, offerController.offerStatus);
 
 //route to logout
 adminRoute.get("/logout", adminController.adminLogout);
