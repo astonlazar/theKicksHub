@@ -464,6 +464,7 @@
                                             <div class="card-header">
                                                 Wallet
                                             </div>
+                                            <% if(walletData){ %>
                                             <div class="card-body">
                                                 <div class="wallet-balance mb-4">
                                                     <h5>Wallet Balance</h5>
@@ -498,6 +499,14 @@
                                                     </div>
                                                 </div>
                                             </div>
+                                            <% } else { %>
+                                                <div class="card-body">
+                                                    <div class="wallet-balance mb-4">
+                                                        <h5>Wallet Balance</h5>
+                                                        <p id="wallet-amount" class="display-4 text-brand">₹0</p>
+                                                    </div>
+                                                </div>
+                                            <% } %>
                                         </div>
                                     </div>
                                     

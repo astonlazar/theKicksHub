@@ -10,6 +10,9 @@ const strongPassword = require("../helpers/strongPassword");
 const fPassword = require("../helpers/forgotPassword");
 const crypto = require("crypto");
 const Wallet = require("../models/walletModel")
+const Offer = require("../models/offerModel")
+const Cart = require("../models/cartModel")
+const Wishlist = require("../models/wishlistModel")
 
 // Store tokens and expiry times
 const resetTokens = {};
@@ -318,15 +321,25 @@ const verificationPage = (req, res) => {
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
   // enteredOtp = parseInt(enteredOtp)
+  
   console.log(`Entered otp ${enteredOtp}`);
   console.log(`Stored otp in session: ${req.session.temp.otp}`);
   const expOtp = req.session.temp.otpExpire;
   if (enteredOtp === req.session.temp.otp && Date.now() < expOtp) {
     const userEnteredData = new User(req.session.temp);
     await userEnteredData.save();
+
     console.log("--user inserted to db--" + userEnteredData);
     req.session.user = userEnteredData;
     console.log(req.session.user);
+    let walletData = await Wallet.findOne({userId: req.session.user._id})
+    if(!walletData){
+      let newWallet = new Wallet({
+        userId: req.session.user._id,
+        walletBalance: 0
+      })
+      await newWallet.save()
+    }
     res.redirect("/");
   } else {
     console.log("Incorrect OTP or Expired OTP");
@@ -343,9 +356,14 @@ const homePage = async (req, res) => {
 
   if (req.session.user) {
     let userData = await User.findById(req.session.user._id);
+    let cartData = await Cart.findOne({userId: req.session.user._id})
+    let wishlistData = await Wishlist.findOne({userId: req.session.user._id})
+    let cartCount = cartData.product.length
+    let wishlistCount = wishlistData.products.length
+    console.log(`cart - ${cartCount} -- wishlist - ${wishlistCount}`)
     console.log(`UserData -- ${userData}`);
     req.session.user = userData;
-    res.render("index", { userData, productData, categoryData });
+    res.render("index", { userData, productData, categoryData, cartCount, wishlistCount });
   } else {
     res.render("landing", { productData, categoryData });
   }
