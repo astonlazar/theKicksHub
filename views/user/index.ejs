@@ -533,8 +533,13 @@
                                             </span>
                                         </div>
                                         <div class="product-price">
+                                            <% if(data.offer) { %>
+                                            <span>₹ <%= Math.ceil(data.price - ((data.offer.discount / 100)* data.price)) %></span>
+                                            <span class="old-price">₹ <%= data.price %></span>
+                                            <% } else { %>
                                             <span>₹ <%= data.promo_price %></span>
                                             <span class="old-price">₹ <%= data.price %></span>
+                                            <% } %>
                                         </div>
                                         <div class="product-action-1 show">
                                             <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a>
@@ -1162,18 +1167,7 @@
                 <!--End tab-content-->
             </div>
         </section>
-        <!-- <section class="banner-2 section-padding pb-0">
-            <div class="container">
-                <div class="banner-img banner-big wow fadeIn animated f-none">
-                    <img src="/user/assets/imgs/banner/banner-4.png" alt="">
-                    <div class="banner-text d-md-block d-none">
-                        <h4 class="mb-15 mt-40 text-brand">Repair Services</h4>
-                        <h1 class="fw-600 mb-20">We're an Apple <br>Authorised Service Provider</h1>
-                        <a href="shop-grid-right.html" class="btn">Learn More <i class="fi-rs-arrow-right"></i></a>
-                    </div>
-                </div>
-            </div>
-        </section> -->
+        
         <section class="popular-categories section-padding mt-15">
             <div class="container wow fadeIn animated">
                 <h3 class="section-title mb-20"><span>Popular</span> Categories</h3>

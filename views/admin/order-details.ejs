@@ -228,6 +228,12 @@
                                             <td colspan="4">
                                                 <article class="float-end">
                                                     <dl class="dlist">
+                                                        <% if(orderData.coupon !== 'x'){ %>
+                                                            <dt>Coupon:</dt>
+                                                            <dd style="font-weight: bold;"><%= orderData.coupon %></dd>
+                                                          <% } %>
+                                                    </dl>
+                                                    <dl class="dlist">
                                                         <dt>Subtotal:</dt>
                                                         <dd>₹<%= orderData.payableAmount %></dd>
                                                     </dl>

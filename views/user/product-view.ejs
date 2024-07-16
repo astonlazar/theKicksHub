@@ -187,14 +187,6 @@
                     <div class="col-xl-3 col-lg-4">
                         <div class="header-info header-info-right">
                             <ul>
-                                <!-- <li>
-                                    <a class="language-dropdown-active" href="#"> <i class="fi-rs-world"></i> English <i class="fi-rs-angle-small-down"></i></a>
-                                    <ul class="language-dropdown">
-                                        <li><a href="#"><img src="/user/assets/imgs/theme/flag-fr.png" alt="">Français</a></li>
-                                        <li><a href="#"><img src="/user/assets/imgs/theme/flag-dt.png" alt="">Deutsch</a></li>
-                                        <li><a href="#"><img src="/user/assets/imgs/theme/flag-ru.png" alt="">Pусский</a></li>
-                                    </ul>
-                                </li> -->
                                 <li>
                                     <a href="/profile">Profile</a>
                                 </li>
@@ -222,13 +214,17 @@
                                 <div class="header-action-icon-2">
                                     <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
-                                        <span class="pro-count blue">4</span>
+                                        <% if(wishlistCount) { %>
+                                            <span class="pro-count blue"><%= wishlistCount %></span>
+                                        <% } %>
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
-                                        <span class="pro-count blue">2</span>
+                                        <% if(cartCount) { %>
+                                            <span class="pro-count blue"><%= cartCount %></span>
+                                        <% } %>
                                     </a>
                                     <!-- <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
@@ -392,43 +388,6 @@
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
                                     <span class="pro-count white">2</span>
                                 </a>
-                                <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                    <ul>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-3.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Plain Striola Shirts</a></h4>
-                                                <h3><span>1 × </span>$800.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-4.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Macbook Pro 2022</a></h4>
-                                                <h3><span>1 × </span>$3500.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div class="shopping-cart-footer">
-                                        <div class="shopping-cart-total">
-                                            <h4>Total <span>$383.00</span></h4>
-                                        </div>
-                                        <div class="shopping-cart-button">
-                                            <a href="shop-cart.html">View cart</a>
-                                            <a href="shop-checkout.html">Checkout</a>
-                                        </div>
-                                    </div>
-                                </div>
                             </div>
                             <div class="header-action-icon-2 d-block d-lg-none">
                                 <div class="burger-icon burger-icon-white">
@@ -577,9 +536,15 @@
                                         </div>
                                         <div class="clearfix product-price-cover">
                                             <div class="product-price primary-color float-left">
-                                                <ins><span class="text-brand">₹ <%= productData.promo_price %></span></ins>
-                                                <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
-                                                <span class="save-price  font-md color3 ml-15"><%= (100 - (productData.promo_price/productData.price) * 100).toFixed(2) %> % Off</span>
+                                                <% if(productData.offer){ %>
+                                                    <ins><span class="text-brand">₹ <%= Math.ceil(productData.price - ((productData.offer.discount / 100)* productData.price)) %></span></ins>
+                                                    <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
+                                                    <span class="save-price  font-md color3 ml-15"><%= productData.offer.discount %> % Off</span>
+                                                <% } else { %>
+                                                    <ins><span class="text-brand">₹ <%= productData.promo_price %></span></ins>
+                                                    <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
+                                                    <span class="save-price  font-md color3 ml-15"><%= (100 - (productData.promo_price/productData.price) * 100).toFixed(2) %> % Off</span>
+                                                <% } %>
                                             </div>
                                         </div>
                                         <div class="bt-1 border-color-1 mt-15 mb-15"></div>
@@ -589,7 +554,7 @@
                                         <div class="product_sort_info font-xs mb-30">
                                             <ul>
                                                 <li class="mb-10"><i class="fi-rs-refresh mr-5"></i> 30 Day Return Policy</li>
-                                                <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available</li>
+                                                <li><i class="fi-rs-credit-card mr-5"></i> Cash on Delivery available only for purchase below ₹10000</li>
                                             </ul>
                                         </div>
                                         <!-- <div class="attr-detail attr-color mb-15">

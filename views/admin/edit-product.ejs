@@ -230,15 +230,17 @@
                                 <div class="input-upload" id="input-upload">
                                     <% for(let i = 0; i < 4; i++) { %>
                                         <div class="container mt-3" id="image-container-<%= i + 1 %>">
-                                            <% if( i < productData.productImage.length) { %>
+                                            <% if(productData.productImage && Array.isArray(productData.productImage) && i < productData.productImage.length) { %>
                                                 <div class="row align-items-center">
                                                     <div class="col-auto">
                                                         <img src="/uploads/<%= productData.productImage[i] %>" alt="" class="img-fluid">
                                                     </div>
                                                     <div class="col-auto">
-                                                        <button class="btn bg-danger text-white" onclick="confirmRemove('<%= productData._id %>', '<%= i %>')">Remove</button>
+                                                        <a class="btn bg-danger text-white" onclick="confirmRemove('<%= productData._id %>', '<%= i %>')">Remove</a>
                                                     </div>
                                                 </div>
+                                                <!-- Hidden input to retain the value -->
+                                                <input type="hidden" name="product_img<%= i + 1 %>" value="<%= productData.productImage[i] %>">
                                             <% } else { %>
                                                 <div class="row align-items-center mb-3">
                                                     <div class="col-auto">

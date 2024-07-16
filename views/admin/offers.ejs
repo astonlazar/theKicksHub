@@ -25,6 +25,11 @@
     />
 
     <style>
+        /* Custom width for the modal */
+.modal-lg {
+  max-width: 80%;
+}
+
       li {
         list-style-type: none;
       }
@@ -147,11 +152,11 @@ th {
                                 <thead>
                                 <tr>
                                     <th>Status</th>
-                                    <th>Product/Category</th>
                                     <th>Offer</th>
                                     <th>Description</th>
                                     <th>Type</th>
                                     <th>Offer Percentage</th>
+                                    <th>Add/Remove</th>
                                     <th>Update</th>
                                     <th>Action</th>
                                 </tr>
@@ -166,22 +171,23 @@ th {
                                             <span  class="badge badge-pill badge-soft-danger" >Inactive</span>
                                         <% } %>
                                     </td>
-                                    <td>
-                                        <% if(data.product){ %>
-                                            <span><%= data.product.productName %></span>
-                                        <% } else if(data.category) { %>
-                                            <span><%= data.category.categoryName %></span>
-                                        <% } %>
-                                    </td>
                                     <td><%= data.offerName %></td>
                                     <td><%= data.offerDescription %></td>
                                     <td><%= data.offerType %></td>
                                     <td><%= data.discount %>%</td>
                                     <td>
-                                        <% if(data.product){ %>
-                                            <a href="/admin/offers/product/edit/<%= data._id %>" class="btn btn-primary">Update</a>
-                                        <% } else if(data.category) { %>
-                                            <a href="/admin/offers/category/edit/<%= data._id %>" class="btn btn-primary">Update</a>
+                                        <% if(data.offerType === "Product"){ %>
+                                            <a class="btn btn-dark show-modal" onclick="getOfferIdFunction('<%= data._id %>')" data-offer-type="Product" >Products</a>
+                                        <% } else if(data.offerType === "Category") { %>
+                                            <a class="btn btn-dark show-modal" onclick="getOfferIdFunction('<%= data._id %>')" data-offer-type="Category" >Categories</a>
+                                        <% } %>
+                                        
+                                    </td>
+                                    <td>
+                                        <% if(data.offerType === "Product"){ %>
+                                            <a href="/admin/offers/product/edit/<%= data._id %>" class="btn btn-primary">Edit</a>
+                                        <% } else if(data.offerType === "Category") { %>
+                                            <a href="/admin/offers/category/edit/<%= data._id %>" class="btn btn-primary">Edit</a>
                                         <% } %>
                                     </td>
                                     <td>
@@ -195,7 +201,7 @@ th {
                                 <% }) %>
                                 </tbody>
                             </table>
-                            <% } %>
+                            <% } %>     
                         </div>
                     </div> <!-- .col// -->
                 </div> <!-- .row // -->
@@ -205,6 +211,89 @@ th {
     </section> <!-- content-main end// -->
     
 </main>
+<!-- Product Modal -->
+<div class="modal fade" id="productModal" tabindex="-1" aria-labelledby="productModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Added modal-lg class for larger modal -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="productModalLabel">Add Products</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="productModalBody">
+          <!-- Product content will be loaded dynamically here -->
+          <div class="row">
+            <% if (productData) { %>
+              <% productData.forEach(product => { %>
+                <div class="col-md-3"> <!-- Four-column layout -->
+                  <div class="card mb-3">
+                    <img src="/uploads/<%= product.productImage[0] %>" class="card-img-top" alt="<%= product.productName %>">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= product.productName %></h5>
+                      <div class="d-flex justify-content-between">
+                        <% if(product.offer){ %>
+                            <button class="btn btn-danger remove-offer-btn" data-product-id="<%= product._id %>">Remove Offer</button>
+                            <% } else { %>
+                            <button class="btn btn-primary add-offer-btn" data-product-id="<%= product._id %>">Add Offer</button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
+<!-- Category Modal -->
+<div class="modal fade" id="categoryModal" tabindex="-1" aria-labelledby="categoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg"> <!-- Added modal-lg class for larger modal -->
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="categoryModalLabel">Add Categories</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" id="categoryModalBody">
+          <!-- Category content will be loaded dynamically here -->
+          <div class="row">
+            <% if (categoryData) { %>
+              <% categoryData.forEach(category => { %>
+                <div class="col-md-3"> <!-- Four-column layout -->
+                  <div class="card mb-3">
+                    <div class="card-body">
+                      <h5 class="card-title"><%= category.categoryName %></h5>
+                      <div class="d-flex justify-content-between">
+                        <% if(category.offer){ %>
+                            <button class="btn btn-danger remove-offer-btn" data-category-id="<%= category._id %>">Remove Offer</button>
+                            <% } else { %>
+                            <button class="btn btn-primary add-offer-btn" data-category-id="<%= category._id %>">Add Offer</button>
+                        <% } %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              <% }) %>
+            <% } %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  
+  
+  
 <!-- Include SweetAlert JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.js"></script>
 <script>
@@ -392,6 +481,147 @@ document.addEventListener('DOMContentLoaded', function() {
         })
     }
 </script>
+
+//Script for modal of products and categories
+<script>
+    let offerId;
+    function getOfferIdFunction(id){
+        console.log('offerId - ', id)
+        offerId = id;
+    }
+    document.addEventListener('DOMContentLoaded', function () {
+        // Function to load products
+        function loadProductModalContent() {
+            let productModalBody = document.getElementById('productModalBody');
+            // productModalBody.innerHTML = ''; // Clear previous content
+            
+            // Fetch and display products
+            // Here you can use AJAX to fetch product data from the server
+            // fetch('/path/to/products')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         data.products.forEach(product => {
+            //             let productItem = document.createElement('div');
+            //             productItem.classList.add('product-item');
+            //             productItem.innerHTML = `
+            //                 <div>${product.name}</div>
+            //                 <button class="btn btn-primary add-offer-btn" data-product-id="${product.id}">Add Offer</button>
+            //             `;
+            //             productModalBody.appendChild(productItem);
+            //         });
+            //     });
+        }
+    
+        // Function to load categories
+        function loadCategoryModalContent() {
+            let categoryModalBody = document.getElementById('categoryModalBody');
+            // categoryModalBody.innerHTML = ''; // Clear previous content
+            
+            // Fetch and display categories
+            // Here you can use AJAX to fetch category data from the server
+            // fetch('/path/to/categories')
+            //     .then(response => response.json())
+            //     .then(data => {
+            //         data.categories.forEach(category => {
+            //             let categoryItem = document.createElement('div');
+            //             categoryItem.classList.add('category-item');
+            //             categoryItem.innerHTML = `
+            //                 <div>${category.name}</div>
+            //                 <button class="btn btn-primary add-offer-btn" data-category-id="${category.id}">Add Offer</button>
+            //             `;
+            //             categoryModalBody.appendChild(categoryItem);
+            //         });
+            //     });
+        }
+    
+        // Event listener for showing the modals
+        document.querySelectorAll('.show-modal').forEach(button => {
+            button.addEventListener('click', function () {
+                let offerType = this.getAttribute('data-offer-type');
+                if (offerType === 'Product') {
+                    loadProductModalContent();
+                    let productModal = new bootstrap.Modal(document.getElementById('productModal'));
+                    productModal.show();
+                } else if (offerType === 'Category') {
+                    loadCategoryModalContent();
+                    let categoryModal = new bootstrap.Modal(document.getElementById('categoryModal'));
+                    categoryModal.show();
+                }
+            });
+        });
+    
+        // Event listener for add offer buttons in product modal
+        document.getElementById('productModalBody').addEventListener('click', function (event) {
+            if (event.target.classList.contains('add-offer-btn')) {
+                let productId = event.target.getAttribute('data-product-id');
+                // Handle adding offer to the product
+                console.log('Add offer to product:', productId);
+                fetch("/admin/offer/apply-product", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({productId: productId, offerId: offerId})
+                }).then(response => {
+                    if(response.ok){
+                        location.reload()
+                    }
+                })
+            } else if (event.target.classList.contains('remove-offer-btn')) {
+                let productId = event.target.getAttribute('data-product-id');
+                // Handle removing offer from the product
+                console.log('Remove offer from product:', productId);
+                fetch("/admin/offer/delete-product", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({productId: productId, offerId: offerId})
+                }).then(response => {
+                    if(response.ok){
+                        location.reload()
+                    }
+                })
+            }
+        });
+    
+        // Event listener for add offer buttons in category modal
+        document.getElementById('categoryModalBody').addEventListener('click', function (event) {
+            if (event.target.classList.contains('add-offer-btn')) {
+                let categoryId = event.target.getAttribute('data-category-id');
+                // Handle adding offer to the category
+                console.log('Add offer to category:', categoryId);
+                fetch("/admin/offer/apply-category", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({categoryId: categoryId, offerId: offerId})
+                }).then(response => {
+                    if(response.ok){
+                        location.reload()
+                    }
+                })
+            } else if (event.target.classList.contains('remove-offer-btn')) {
+                let categoryId = event.target.getAttribute('data-category-id');
+                // Handle removing offer from the category
+                console.log('Remove offer from category:', categoryId);
+                fetch("/admin/offer/delete-category", {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                    },
+                    body: JSON.stringify({categoryId: categoryId, offerId: offerId})
+                }).then(response => {
+                    if(response.ok){
+                        location.reload()
+                    }
+                })
+            }
+        });
+    });
+    </script>
+    
 </body>
 
 </html>

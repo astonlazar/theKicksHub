@@ -78,13 +78,13 @@
                                 <div class="header-action-icon-2">
                                     <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
-                                        <span class="pro-count blue">4</span>
+                                        <span class="pro-count blue"><%= wishlistCount %></span>
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="/shop">
                                         <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
-                                        <span class="pro-count blue">2</span>
+                                        <span class="pro-count blue"><%= cartCount %></span>
                                     </a>
                                 </div>
                             </div>
@@ -117,53 +117,17 @@
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
-                                <a href="shop-wishlist.html">
+                                <a href="/wishlist">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
-                                    <span class="pro-count white">4</span>
+                                    <span class="pro-count white"><%= wishlistCount %></span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
                                 <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
-                                    <span class="pro-count white">2</span>
+                                    <span class="pro-count white"><%= cartCount %></span>
                                 </a>
-                                <div class="cart-dropdown-wrap cart-dropdown-hm2">
-                                    <ul>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-3.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Plain Striola Shirts</a></h4>
-                                                <h3><span>1 × </span>$800.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="shopping-cart-img">
-                                                <a href="shop-product-right.html"><img alt="Evara" src="/user/assets/imgs/shop/thumbnail-4.jpg"></a>
-                                            </div>
-                                            <div class="shopping-cart-title">
-                                                <h4><a href="shop-product-right.html">Macbook Pro 2022</a></h4>
-                                                <h3><span>1 × </span>$3500.00</h3>
-                                            </div>
-                                            <div class="shopping-cart-delete">
-                                                <a href="#"><i class="fi-rs-cross-small"></i></a>
-                                            </div>
-                                        </li>
-                                    </ul>
-                                    <div class="shopping-cart-footer">
-                                        <div class="shopping-cart-total">
-                                            <h4>Total <span>$383.00</span></h4>
-                                        </div>
-                                        <div class="shopping-cart-button">
-                                            <a href="shop-cart.html">View cart</a>
-                                            <a href="shop-checkout.html">Checkout</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </div>
                             <div class="header-action-icon-2 d-block d-lg-none">
                                 <div class="burger-icon burger-icon-white">
@@ -269,7 +233,7 @@
                                             </p> -->
                                         </td>
                                         <td class="size" data-title="Size"><%= items.size %></td>
-                                        <td class="price" data-title="Price"><span>₹ <%= items.productId.promo_price %> </span></td>
+                                        <td class="price" data-title="Price"><span>₹ <%= items.productPrice %> </span></td>
                                         <td class="text-center" data-title="Stock">
                                             <div class="detail-qty border radius  m-auto">
                                                 <a onclick="quantityUpdate('<%= items.size %>', '<%= items.productId._id %>', 'DOWN')" class="qty-down">
@@ -282,7 +246,7 @@
                                             </div>
                                         </td>
                                         <td class="text-right" data-title="Cart">
-                                            <span>₹ <%= items.productId.promo_price * items.quantity %> </span>
+                                            <span>₹ <%= items.productPrice * items.quantity %> </span>
                                         </td>
                                         <td class="action" data-title="Remove"><a onclick="removeProduct('<%= items.size %>', '<%= items.productId._id %>', '<%= items.productId.promo_price %>')" class="text-muted"><i class="fi-rs-trash"></i></a></td>
                                     </tr>
@@ -607,18 +571,31 @@
                                             <tbody>
                                                 <tr>
                                                     <td class="cart_total_label">Cart Subtotal</td>
-                                                    <td class="cart_total_amount"><span id="totalPrice" class="font-lg fw-900 text-brand">₹ <%= cart.totalPrice %></span></td>
+                                                    <td class="cart_total_amount">
+                                                        <span id="totalPrice" class="font-lg fw-900 text-brand">₹ <%= (cart.totalPrice).toFixed(2) %></span>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="cart_total_label">GST (12%)</td>
+                                                    <td class="cart_total_amount">
+                                                        <span id="gstAmount" class="font-lg fw-900 text-brand">₹ <%= (cart.totalPrice * 0.12).toFixed(2) %></span>
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Shipping</td>
-                                                    <td class="cart_total_amount"> <i class="ti-gift mr-5"></i> Free Shipping</td>
+                                                    <td class="cart_total_amount">
+                                                        <i class="ti-gift mr-5"></i> Free Shipping
+                                                    </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
-                                                    <td class="cart_total_amount"><strong><span id="payTotalPrice" class="font-xl fw-900 text-brand">₹ <%= cart.totalPrice %></span></strong></td>
+                                                    <td class="cart_total_amount">
+                                                        <strong><span id="payTotalPrice" class="font-xl fw-900 text-brand">₹ <%= (cart.totalPriceGST).toFixed(2) %></span></strong>
+                                                    </td>
                                                 </tr>
                                             </tbody>
                                         </table>
+                                        
                                     </div>
                                     <a href="/checkout" class="btn "> <i class="fi-rs-box-alt mr-10"></i> Proceed To CheckOut</a>
                                 </div>
@@ -878,9 +855,11 @@
       })
       if(response.ok){
         let data = await response.json()
-        document.getElementById('totalPrice').innerText = data.total;
-        document.getElementById('payTotalPrice').innerText = data.total;
+        document.getElementById('totalPrice').innerText = (data.total).toFixed(2);
+        document.getElementById('gstAmount').innerText = (data.total * 0.12).toFixed(2)
+        document.getElementById('payTotalPrice').innerText = (data.totalGST).toFixed(2);
         console.log(data.total)
+        console.log(data.totalGST)
         console.log(data.message)
         if(data.message === 'product exceeded'){
             await Swal.fire(

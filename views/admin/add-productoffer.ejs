@@ -143,20 +143,6 @@ th {
                         <form  id="productAdd" action="/admin/offers/product/add" method="post" onsubmit="return validateForm()">
 
                             <div class="mb-4">
-                                <label  class="form-label">Choose Product</label>
-                                <select id="productSelect" name="product"  onselect="validateSelectProduct()" class="form-select">
-                                    <% if(productData){ %>
-                                        <option value="">Select one.</option>
-                                        <% productData.forEach(product => { %>
-                                            <option value="<%= product._id %>"><%= product.productName %></option>
-                                        <% }) %>
-                                    <% } %>
-                                </select>
-                                <!-- <div id="error-product" class="text-danger"></div> -->
-                                <div id="productError" class="text-danger mt-2" style="display: none;">Please select a product.</div>
-                            </div>
-
-                            <div class="mb-4">
                                 <label  class="form-label">Offer Name</label>
                                 <input type="text"  name="offerName" id="offerName" onblur="validateOfferName()"  class="form-control"/>
                                 <div id="error-offerName" class="text-danger" ></div>
@@ -172,7 +158,7 @@ th {
                                 <div id="error-percentage" class="text-danger"></div>
                             <div class="mb-4">
                                 <label  class="form-label">Offer Type</label>
-                                <input type="text" value="Product Offer" name="offerType"   class="form-control"  readonly  />
+                                <input type="text" value="Product" name="offerType"   class="form-control"  readonly  />
                             </div>
                             <p class="text-danger"><%= error %></p>
                             <button class="btn btn-primary" type="submit">Save</button>

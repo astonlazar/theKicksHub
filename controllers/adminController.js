@@ -73,12 +73,21 @@ const adminLoginInsert = async (req, res, next) => {
 const adminDashboard = async (req, res, next) => {
   try {
     const { start, end } = req.query;
+
     let orderData;
     let totalOrders = await Orders.countDocuments();
     let categoryData = await Categories.find({ isActive: true });
     let totalCategories = categoryData.length;
     let productData = await Products.find({ isActive: true });
     let totalProducts = productData.length;
+    let totalRevenue = await Orders.aggregate([
+      {
+        $group: {
+          _id: null,
+          totalPayableAmount: { $sum: "$payableAmount" },
+        },
+      },
+    ]);
 
     if (start && end) {
       let startDate = new Date(start);
@@ -105,21 +114,401 @@ const adminDashboard = async (req, res, next) => {
       ]);
       console.log("--loading admin dashboard without filtering");
     }
+    let revenue = totalRevenue[0].totalPayableAmount;
+
+    const pipelineCat = [
+      // Unwind the products array from the orders
+      {
+        $unwind: "$products",
+      },
+      // Lookup the product details to get the category
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      // Unwind the productDetails array
+      {
+        $unwind: "$productDetails",
+      },
+      // Group by category and count the number of products sold
+      {
+        $group: {
+          _id: "$productDetails.category",
+          totalSold: { $sum: "$products.quantity" },
+        },
+      },
+      // Lookup the category details to get the category name
+      {
+        $lookup: {
+          from: "categories",
+          localField: "_id",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      // Unwind the categoryDetails array
+      {
+        $unwind: "$categoryDetails",
+      },
+      // Project the desired fields
+      {
+        $project: {
+          _id: 0,
+          categoryId: "$_id",
+          categoryName: "$categoryDetails.categoryName",
+          totalSold: 1,
+        },
+      },
+      // Sort by the total number of products sold in descending order
+      {
+        $sort: { totalSold: -1 },
+      },
+      // Limit to top 10 categories
+      {
+        $limit: 10,
+      },
+    ];
+    let topCategories = await Orders.aggregate(pipelineCat).exec();
+    console.log(`top categories -- ${topCategories}`)
+    const pipelinePro = [
+      // Match active products only (optional)
+      {
+        $match: { isActive: true },
+      },
+      // Sort by orderCount in descending order
+      {
+        $sort: { orderCount: -1 },
+      },
+      // Limit to top 10 products
+      {
+        $limit: 10,
+      },
+      // Lookup the category details to get the category name (optional)
+      {
+        $lookup: {
+          from: "categories",
+          localField: "category",
+          foreignField: "_id",
+          as: "categoryDetails",
+        },
+      },
+      // Unwind the categoryDetails array
+      {
+        $unwind: "$categoryDetails",
+      },
+      // Project the desired fields
+      {
+        $project: {
+          _id: 0,
+          productId: "$_id",
+          productName: 1,
+          description: 1,
+          price: 1,
+          promo_price: 1,
+          isActive: 1,
+          productImage: 1,
+          stock: 1,
+          reviews: 1,
+          createdAt: 1,
+          orderCount: 1,
+          category: "$categoryDetails.categoryName",
+        },
+      },
+    ];
+    let topProducts = await Products.aggregate(pipelinePro).exec();
+    console.log(`top 10 products -- ${topProducts}`)
 
     res.render("dashboard", {
       orderData,
+      revenue,
       totalOrders,
       totalProducts,
       totalCategories,
+      topCategories,
+      topProducts,
+      errorDownload: "",
     });
   } catch (err) {
     next(err);
   }
 };
 
-const downloadSalesReport = (req, res) => {
-  console.log("hello");
+const salesChart = async (req, res) => {
+  try {
+    let { period } = req.body;
+    let groupBy;
+    switch (period) {
+      case "day":
+        groupBy = {
+          year: { $year: "$orderDate" },
+          month: { $month: "$orderDate" },
+          day: { $dayOfMonth: "$orderDate" }
+        };
+        break;
+      case "month":
+        groupBy = {
+          year: { $year: "$orderDate" },
+          month: { $month: "$orderDate" }
+        };
+        break;
+      case "year":
+        groupBy = {
+          year: { $year: "$orderDate" }
+        };
+        break;
+      default:
+        return res.status(400).json({ error: "Invalid period" });
+    }
+
+    const pipeline = [
+      {
+        $match: {
+          paymentStatus: "Success"
+        }
+      },
+      {
+        $group: {
+          _id: groupBy,
+          totalSales: { $sum: "$payableAmount" }
+        }
+      },
+      {
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 }
+      }
+    ];
+
+    const results = await Orders.aggregate(pipeline);
+    res.json(results);
+  } catch (error) {
+    console.log(`Error in salesChart -- ${error}`);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 };
+
+
+const downloadSalesReport = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    let dateFilter = {};
+    if (startDate && endDate) {
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+    }
+
+    const orders = await Orders.aggregate([
+      { $match: dateFilter },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$products" },
+      { $unwind: "$productDetails" },
+      {
+        $addFields: {
+          "products.formattedDate": {
+            $function: {
+              body: `function(date) {
+                const options = { weekday: 'short', year: '2-digit', month: 'short', day: 'numeric' };
+                return new Date(date).toLocaleDateString('en-US', options);
+              }`,
+              args: ["$orderDate"],
+              lang: "js",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          userId: { $first: "$userId" },
+          products: {
+            $push: {
+              productName: "$productDetails.productName",
+              productPrice: "$products.productPrice",
+              promo_price: "$productDetails.promo_price",
+              quantity: "$products.quantity",
+              productOrderStatus: "$products.status",
+              paymentStatus: "$products.paymentStatus",
+              paymentMethod: "$products.paymentMethod",
+              date: "$products.formattedDate",
+            },
+          },
+          payableAmount: { $first: "$payableAmount" },
+          address: { $first: "$address" },
+          orderDate: { $first: "$orderDate" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      { $unwind: "$userDetails" },
+    ]);
+
+    if (!orders || orders.length === 0) {
+      console.log("Orders not found");
+      return res.status(404).send("No orders found");
+    }
+
+    const doc = new PDFDocument({ margin: 30, size: "A4" });
+    let filename = `orders_report_${new Date().toISOString()}.pdf`;
+    filename = encodeURIComponent(filename);
+
+    res.setHeader(
+      "Content-disposition",
+      'attachment; filename="' + filename + '"'
+    );
+    res.setHeader("Content-type", "application/pdf");
+
+    doc.on("data", (chunk) => res.write(chunk));
+    doc.on("end", () => res.end());
+
+    // Header
+    doc.fontSize(25).text("Order Report", { align: "center" }).moveDown(2);
+
+    // Table header
+    doc.fontSize(12).font("Helvetica-Bold").fill("#333");
+    const headers = [
+      "Date",
+      "User",
+      "Product Name",
+      "Product Price",
+      "Discount",
+      "Quantity",
+      "Total",
+      "Status",
+    ];
+    const headerXPositions = [10, 60, 130, 230, 320, 390, 460, 530];
+    const headerYPosition = 150;
+    const rowHeight = 50;
+
+    headers.forEach((header, i) => {
+      doc.text(header, headerXPositions[i], headerYPosition);
+    });
+    doc
+      .moveTo(10, headerYPosition + rowHeight)
+      .lineTo(570, headerYPosition + rowHeight)
+      .stroke();
+    doc
+      .moveTo(10, headerYPosition - 10)
+      .lineTo(570, headerYPosition - 10)
+      .stroke();
+
+    headerXPositions.forEach((xPos) => {
+      doc
+        .moveTo(xPos, headerYPosition - 10)
+        .lineTo(xPos, headerYPosition + rowHeight)
+        .stroke();
+    });
+    doc
+      .moveTo(570, headerYPosition - 10)
+      .lineTo(570, headerYPosition + rowHeight)
+      .stroke();
+
+    let y = headerYPosition + rowHeight + 0;
+
+    orders.forEach((order) => {
+      order.products.forEach((product) => {
+        const productPrice = parseFloat(product.promo_price * product.quantity);
+        const discount = parseFloat(productPrice - product.productPrice);
+        const total = product.promo_price * product.quantity;
+
+        if (!product.productName || !product.promo_price || !product.quantity)
+          return;
+
+        doc.moveTo(10, y).lineTo(570, y).stroke();
+        doc
+          .moveTo(10, y + rowHeight)
+          .lineTo(570, y + rowHeight)
+          .stroke();
+        headerXPositions.forEach((xPos) => {
+          doc
+            .moveTo(xPos, y)
+            .lineTo(xPos, y + rowHeight)
+            .stroke();
+        });
+        doc
+          .moveTo(570, y)
+          .lineTo(570, y + rowHeight)
+          .stroke();
+
+        doc.fontSize(9).font("Helvetica").fill("#555");
+        doc
+          .fontSize(8)
+          .text(product.date, 10, y + 0, { width: 50, align: "center" });
+        doc.text(order.userDetails.userName, 60, y + 10, {
+          width: 70,
+          align: "center",
+        });
+        doc.text(product.productName, 130, y + 10, {
+          width: 100,
+          align: "left",
+        });
+        doc.text(product.promo_price.toFixed(0), 230, y + 10, {
+          width: 70,
+          align: "center",
+        });
+        doc.text(discount.toFixed(0), 320, y + 10, {
+          width: 60,
+          align: "center",
+        });
+        doc.text(product.quantity.toString(), 390, y + 10, {
+          width: 60,
+          align: "center",
+        });
+        doc.text(total.toFixed(0), 460, y + 10, { width: 70, align: "center" });
+        doc.text(product.productOrderStatus, 530, y + 10, {
+          width: 50,
+          align: "left",
+        });
+
+        y += rowHeight;
+
+        if (y > 750) {
+          doc.addPage();
+          y = 50;
+
+          headers.forEach((header, i) => {
+            doc.text(header, headerXPositions[i], 20);
+          });
+          doc.moveTo(50, 40).lineTo(550, 40).stroke();
+
+          headerXPositions.forEach((xPos) => {
+            doc.moveTo(xPos, 10).lineTo(xPos, 40).stroke();
+          });
+          doc.moveTo(550, 10).lineTo(550, 40).stroke();
+
+          y = 60;
+        }
+      });
+
+      y += rowHeight;
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generating sales report");
+  }
+};
+
 
 const userManagement = async (req, res, next) => {
   try {
@@ -197,6 +586,7 @@ module.exports = {
   adminLoginPage,
   adminLoginInsert,
   adminDashboard,
+  salesChart,
   downloadSalesReport,
   userManagement,
   blockUser,

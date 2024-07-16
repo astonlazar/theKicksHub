@@ -144,20 +144,7 @@ th {
                     </div>
                     <div class="card-body">
                         <form id="categoryAdd" method="post" action="/admin/offers/category/edit/<%= offerData._id %>" onsubmit="return validateForm()">
-                            <div class="mb-4">
-                                <label class="form-label">Choose Category</label>
-                                <select id="categorySelect" name="category" onblur="validateSelectCategory()" class="form-select">
-                                    <% if(categoryData) { %>
-                                    <option value="<%= offerData.category._id %>"><%= offerData.category.categoryName %></option>
-                                    <% categoryData.forEach(category => { %>
-                                      <% if(offerData.category.categoryName !== category.categoryName){ %>
-                                      <option value="<%= category._id %>"><%= category.categoryName %></option>
-                                      <% } %>
-                                    <% }) %>
-                                    <% } %>
-                                </select>
-                                <div id="productError" class="text-danger mt-2" style="display: none;">Please select a category.</div>
-                            </div>
+
                             <div class="mb-4">
                                 <label class="form-label">Offer Name</label>
                                 <input type="text" name="offerName" id="offerName" onblur="validateOfferName()" value="<%= offerData.offerName %>" class="form-control" />
@@ -175,7 +162,7 @@ th {
                             </div>
                             <div class="mb-4">
                                 <label class="form-label">Offer Type</label>
-                                <input type="text" value="Category Offer" name="offerType" class="form-control" readonly />
+                                <input type="text" value="Category" name="offerType" class="form-control" readonly />
                             </div>
                             <p class="text-danger"><%= error %></p>
                             <button class="btn btn-primary" type="submit">Save</button>

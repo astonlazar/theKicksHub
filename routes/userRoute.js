@@ -29,6 +29,8 @@ userRoute.post("/reset-password/:token", userController.postResetPassword);
 userRoute.get("/signup", auth.isLogout, userController.signupPage);
 userRoute.post("/signup", userController.signupEnterPage);
 
+userRoute.put("/referralverify", userController.referralVerify);
+
 userRoute.get("/verification", auth.isLogout, userController.verificationPage);
 userRoute.post("/verification", userController.verifyEnter);
 
@@ -87,6 +89,13 @@ userRoute.delete("/delete-address", auth.isLogin, userController.deleteAddress);
 userRoute.put("/order/cancel", auth.isLogin, orderController.cancelOrder);
 userRoute.put("/order/return", auth.isLogin, orderController.returnOrder);
 
+userRoute.get("/order/details", auth.isLogin, userController.loadOrderDetails);
+userRoute.put(
+  "/invoice/download",
+  auth.isLogin,
+  userController.generateInvoice
+);
+
 userRoute.get("/wishlist", auth.isLogin, wishlistController.loadWishlistPage);
 userRoute.put("/addtowishlist", auth.isLogin, wishlistController.addToWishlist);
 userRoute.delete(
@@ -98,3 +107,4 @@ userRoute.delete(
 userRoute.get("/logout", auth.isLogin, userController.userLogout);
 
 module.exports = userRoute;
+``;

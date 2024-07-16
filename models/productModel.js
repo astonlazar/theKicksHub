@@ -84,7 +84,11 @@ const productSchema = new mongoose.Schema({
   orderCount: {
     type: Number,
     default: 0,
-  }
+  },
+  offer: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "offers",
+  },
 });
 
 module.exports = mongoose.model("products", productSchema);

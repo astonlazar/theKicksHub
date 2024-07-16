@@ -1,9 +1,13 @@
 const Wishlist = require("../models/wishlistModel");
+const Cart = require("../models/cartModel")
 
 const loadWishlistPage = async (req, res) => {
   try {
     let wishlistData = await Wishlist.findOne({userId: req.session.user._id}).populate("products.productId");
-    res.render("wishlist", { wishlistData });
+    let cartData = await Cart.findOne({userId: req.session.user._id})
+    wishlistCount = wishlistData?.products?.length ?? 0;
+    cartCount = cartData?.product?.length ?? 0;
+    res.render("wishlist", { wishlistData, wishlistCount, cartCount });
   } catch (error) {
     console.log(`Error in loadWishlist -- ${error}`);
   }

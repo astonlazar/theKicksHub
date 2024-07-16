@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Evara - eCommerce HTML Template</title>
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta property="og:title" content="">
+    <meta property="og:type" content="">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="">
+    <!-- Favicon -->
+    <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <!-- Template CSS -->
+    <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <style>
+        .mb-custom {
+            margin-bottom: 400px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <header class="header-area header-style-1 header-height-2">
+        <div class="header-top header-top-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info">
+                            <!-- <ul>
+                                <li><i class="fi-rs-smartphone"></i> <a href="#">(+01) - 2345 - 6789</a></li>
+                                <li><i class="fi-rs-marker"></i><a  href="page-contact.html">Our location</a></li>
+                            </ul> -->
+                        </div>
+                    </div>
+                    <div class="col-xl-6 col-lg-4">
+                        <!-- <div class="text-center">
+                            <div id="news-flash" class="d-inline-block">
+                                <ul>
+                                    <li>Get great devices up to 50% off <a href="shop-grid-right.html">View details</a></li>
+                                    <li>Supper Value Deals - Save more with coupons</li>
+                                    <li>Trendy 25silver jewelry, save up 35% off today <a href="shop-grid-right.html">Shop now</a></li>
+                                </ul>
+                            </div>
+                        </div> -->
+                    </div>
+                    <div class="col-xl-3 col-lg-4">
+                        <div class="header-info header-info-right">
+                            <ul>
+                              <li><a href="/profile">Profile</a></li>
+                              <li><i class="fi-rs-user"></i><a href="/logout">Logout</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-middle header-middle-ptb-1 d-none d-lg-block">
+            <div class="container">
+                <div class="header-wrap">
+                    <div class="logo logo-width-1">
+                        <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    </div>
+                    <div class="header-right">
+                        <div class="search-style-2">
+                            <form action="#">
+                                <input type="text" placeholder="Search for items...">
+                            </form>
+                        </div>
+                        <div class="header-action-right">
+                            <div class="header-action-2">
+                                <div class="header-action-icon-2">
+                                    <a href="/wishlist">
+                                        <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
+                                        <span class="pro-count blue"><%= wishlistCount %></span>
+                                    </a>
+                                </div>
+                                <div class="header-action-icon-2">
+                                    <a class="mini-cart-icon" href="/shop">
+                                        <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
+                                        <span class="pro-count blue"><%= cartCount %></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="header-bottom header-bottom-bg-color sticky-bar">
+            <div class="container">
+                <div class="header-wrap header-space-between position-relative">
+                    <div class="logo logo-width-1 d-block d-lg-none">
+                        <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                    </div>
+                    <div class="header-nav d-none d-lg-flex">
+                        <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
+                            <nav>
+                                <ul>
+                                    <li><a href="/">Home</a></li>
+                                    <li><a href="/shop">Shop</a></li>
+                                    <li><a href="page-about.html">About</a></li>
+                                    <li>
+                                        <a href="page-contact.html">Contact</a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                    <p class="mobile-promotion">Happy <span class="text-brand">Mother's Day</span>. Big Sale Up to 40%</p>
+                    <div class="header-action-right d-block d-lg-none">
+                        <div class="header-action-2">
+                            <div class="header-action-icon-2">
+                                <a href="/wishlist">
+                                    <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
+                                   
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2">
+                                <a class="mini-cart-icon" href="/cart">
+                                    <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
+                                </a>
+                            </div>
+                            <div class="header-action-icon-2 d-block d-lg-none">
+                                <div class="burger-icon burger-icon-white">
+                                    <span class="burger-icon-top"></span>
+                                    <span class="burger-icon-mid"></span>
+                                    <span class="burger-icon-bottom"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    <div class="mobile-header-active mobile-header-wrapper-style">
+        <div class="mobile-header-wrapper-inner">
+            <div class="mobile-header-top">
+                <div class="mobile-header-logo">
+                    <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                </div>
+                <div class="mobile-menu-close close-style-wrap close-style-position-inherit">
+                    <button class="close-style search-close">
+                        <i class="icon-top"></i>
+                        <i class="icon-bottom"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="mobile-header-content-area">
+                <div class="mobile-search search-style-3 mobile-header-border">
+                    <form action="#">
+                        <input type="text" placeholder="Search for items…">
+                        <button type="submit"><i class="fi-rs-search"></i></button>
+                    </form>
+                </div>
+                <div class="mobile-menu-wrap mobile-header-border">
+                    <div class="main-categori-wrap mobile-header-border">
+
+                    </div>
+                    <!-- mobile menu start -->
+                    <nav>
+                        <ul class="mobile-menu">
+                            <li class=""><a href="/">Home</a></li>
+                            <li class=""><a href="/shop">Shop</a></li>
+                        </ul>
+                    </nav>
+                    <!-- mobile menu end -->
+                </div>
+                <div class="mobile-header-info-wrap mobile-header-border">
+                    <div class="single-mobile-header-info mt-30">
+                        <a  href="page-contact.html"> Our location </a>
+                    </div>
+                    <div class="single-mobile-header-info">
+                        <a href="/logout">Logout </a>
+                    </div>
+                </div>
+                <div class="mobile-social-icon">
+                    <h5 class="mb-15 text-grey-4">Follow Us</h5>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                    <a href="#"><img src="/user/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <main class="main">
+      <div class="page-header breadcrumb-wrap">
+          <div class="container">
+              <div class="breadcrumb">
+                  <a href="index.html" rel="nofollow">Home</a>
+                  <span></span> Orders
+                  <span></span> Details
+              </div>
+          </div>
+      </div>
+      <div class="container">
+          <section class="content-main">
+              <div class="content-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h2 class="content-title card-title">Order detail</h2>
+                    <a id="pdfDownload" class="btn btn-primary">
+                      Download Invoice
+                    </a>
+                  </div>
+                  
+              </div>
+              <div class="card">
+                  <header class="card-header">
+                      <div class="row align-items-center">
+                          <div class="col-lg-6 col-md-6 mb-lg-0 mb-15">
+                              <span>
+                                  <i class="material-icons md-calendar_today"></i> <b><%= orderData.orderDate.toISOString().split("T")[0] %></b>
+                              </span> <br>
+                              <small class="text-muted">Order ID: <%= orderData.orderId %></small>
+                          </div>
+                      </div>
+                  </header>
+                  <div class="card-body">
+                      <div class="row mb-50 mt-20 order-info-wrap">
+                          <div class="col-md-4">
+                              <article class="icontext align-items-start">
+                                  <span class="icon icon-sm rounded-circle bg-primary-light">
+                                      <i class="text-primary material-icons md-person"></i>
+                                  </span>
+                                  <div class="text">
+                                      <h6 class="mb-1">Customer</h6>
+                                      <p class="mb-1">
+                                          <%= orderData.address.fullName %> <br> <%= orderData.address.email %> <br> <%= orderData.address.phoneNo %>
+                                      </p>
+                                  </div>
+                              </article>
+                          </div>
+                          <div class="col-md-4">
+                              <article class="icontext align-items-start">
+                                  <span class="icon icon-sm rounded-circle bg-primary-light">
+                                      <i class="text-primary material-icons md-local_shipping"></i>
+                                  </span>
+                                  <div class="text">
+                                      <h6 class="mb-1">Order info</h6>
+                                      <p class="mb-1">
+                                          Shipping: Express delivery <br> Pay method: PayPal <br> Status: new
+                                      </p>
+                                      <a href="#">Download info</a>
+                                  </div>
+                              </article>
+                          </div>
+                          <div class="col-md-4">
+                              <article class="icontext align-items-start">
+                                  <span class="icon icon-sm rounded-circle bg-primary-light">
+                                      <i class="text-primary material-icons md-place"></i>
+                                  </span>
+                                  <div class="text">
+                                      <h6 class="mb-1">Delivery Address</h6>
+                                      <p class="mb-1">
+                                          <%= orderData.address.addressLine1 %> %> <br> <%= orderData.address.addressLine2 %> <br> <%= orderData.address.city %> <br> <%= orderData.address.state %> - <%= orderData.address.pincode %>
+                                      </p>
+                                  </div>
+                              </article>
+                          </div>
+                      </div>
+                      <div class="row">
+                          <div class="col-lg-7">
+                              <div class="table-responsive">
+                                <% if(orderData){ %>
+                                  <table class="table">
+                                      <thead>
+                                          <tr>
+                                              <th width="40%">Product</th>
+                                              <th width="20%">Unit Price</th>
+                                              <th width="20%">Quantity</th>
+                                              <th width="20%" class="text-end">Total</th>
+                                          </tr>
+                                      </thead>
+                                      <tbody>
+                                        <% orderData.products.forEach(product => { %>
+                                          <tr>
+                                              <td>
+                                                  <a class="itemside" href="#">
+                                                      <div class="left">
+                                                          <img src="/uploads/<%= product.productId.productImage[0] %>" width="40" height="40" class="img-xs" alt="Item">
+                                                      </div>
+                                                      <div class="info"> <%= product.productId.productName %>, <%= product.size %></div>
+                                                  </a>
+                                              </td>
+                                              <td>  ₹<%= product.productPrice %> </td>
+                                              <td> <%= product.quantity %> </td>
+                                              <td class="text-end">  ₹<%= product.productPrice * product.quantity %> </td>
+                                          </tr>
+                                          <% }) %>
+                                          <tr>
+                                              <td colspan="4">
+                                                  <article class="float-end">
+                                                    <dl class="dlist">
+                                                        <% if(orderData.coupon) { %>
+                                                        <% if(orderData.coupon !== 'x'){ %>
+                                                          <dt>Coupon:</dt>
+                                                          <dd style="font-weight: bold;"><%= orderData.coupon %></dd>
+                                                        <% } %>
+                                                        <% } else { %>
+                                                            <dt>Coupon:</dt>
+                                                          <dd style="font-weight: bold;">Coupon not applied</dd>
+                                                          <% } %>
+                                                    <!-- </dl>
+                                                    <% 
+  let couponAmt = couponData ? (orderData.payableAmount - orderData.payableAmount * (couponData.discountPercentage/100)) : 0;
+  let subtotal = (orderData.payableAmount + Number((orderData.payableAmount * 0.12).toFixed(2)) + couponAmt).toFixed(2);
+%>
+<dl class="dlist">
+  <dt>Subtotal:</dt>
+  <dd style="font-weight: bold;">₹<%= subtotal %></dd>
+</dl> -->
+                                                      <dl class="dlist">
+                                                          <dt>Shipping cost:</dt>
+                                                          <dd style="font-weight: bold;">Free Delivery</dd>
+                                                      </dl>
+                                                      <dl class="dlist">
+                                                          <dt>Grand total:</dt>
+                                                          <dd> <b class="h5" style="font-weight: bold;">₹<%= orderData.payableAmount %></b> </dd>
+                                                      </dl>
+                                                      <dl class="dlist">
+                                                          <dt class="text-muted">Status:</dt>
+                                                          <dd>
+                                                            <% if(orderData.paymentMethod === "RazorPay"){ %>
+                                                                <% if(orderData.paymentStatus !== 'Success'){ %>
+                                                                    <span class="badge rounded-pill alert-danger text-danger">Payment Pending</span>
+                                                                    <a id="payNowBtn" class="btn-sm btn-dark">Pay Now</a>
+                                                                <% } else { %>
+                                                                    <span class="badge rounded-pill alert-success text-success">Payment done</span>
+                                                                <% } %>
+                                                            <% } else { %>
+                                                                <span class="badge rounded-pill alert-danger text-danger">Payment Pending</span>
+                                                            <% } %>
+                                                          </dd>
+                                                      </dl>
+                                                  </article>
+                                              </td>
+                                          </tr>
+                                      </tbody>
+                                  </table>
+                                  <% } %>
+                              </div>
+                          </div>
+                          <div class="col-lg-1"></div>
+                          <div class="col-lg-4">
+                              <div class="box shadow-sm bg-light">
+                                  <h6 class="mb-15">Payment Method</h6>
+                                  <p>
+                                      <%= orderData.paymentMethod %>
+                                  </p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+          </section>
+      </div>
+  </main>
+  
+    <footer class="main">
+        <section class="newsletter p-30 text-white wow fadeIn animated">
+            <div class="container">
+                <div class="row align-items-center">
+                    <div class="col-lg-7 mb-md-3 mb-lg-0">
+                        <div class="row align-items-center">
+                            <div class="col flex-horizontal-center">
+                                <img class="icon-email" src="/user/assets/imgs/theme/icons/icon-email.svg" alt="">
+                                <h4 class="font-size-20 mb-0 ml-3">Sign up to Newsletter</h4>
+                            </div>
+                            <div class="col my-4 my-md-0 des">
+                                <h5 class="font-size-15 ml-4 mb-0">...and receive <strong>$25 coupon for first shopping.</strong></h5>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-5">
+                        <!-- Subscribe Form -->
+                        <form class="form-subcriber d-flex wow fadeIn animated">
+                            <input type="email" class="form-control bg-white font-small" placeholder="Enter your email">
+                            <button class="btn bg-dark text-white" type="submit">Subscribe</button>
+                        </form>
+                        <!-- End Subscribe Form -->
+                    </div>
+                </div>
+            </div>
+        </section>
+        <section class="section-padding footer-mid">
+            <div class="container pt-15 pb-20">
+                <div class="row">
+                    <div class="col-lg-4 col-md-6">
+                        <div class="widget-about font-md mb-md-5 mb-lg-0">
+                            <div class="logo logo-width-1 wow fadeIn animated">
+                                <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                            </div>
+                            <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
+                            <p class="wow fadeIn animated">
+                                <strong>Address: </strong>562 Wellington Road, Street 32, San Francisco
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Phone: </strong>+01 2222 365 /(+91) 01 2345 6789
+                            </p>
+                            <p class="wow fadeIn animated">
+                                <strong>Hours: </strong>10:00 - 18:00, Mon - Sat
+                            </p>
+                            <h5 class="mb-10 mt-30 fw-600 text-grey-4 wow fadeIn animated">Follow Us</h5>
+                            <div class="mobile-social-icon wow fadeIn animated mb-sm-5 mb-md-0">
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-facebook.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-twitter.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-instagram.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-pinterest.svg" alt=""></a>
+                                <a href="#"><img src="/user/assets/imgs/theme/icons/icon-youtube.svg" alt=""></a>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-2 col-md-3">
+                        <h5 class="widget-title wow fadeIn animated">About</h5>
+                        <ul class="footer-list wow fadeIn animated mb-sm-5 mb-md-0">
+                            <li><a href="#">About Us</a></li>
+                            <li><a href="#">Delivery Information</a></li>
+                            <li><a href="#">Privacy Policy</a></li>
+                            <li><a href="#">Terms &amp; Conditions</a></li>
+                            <li><a href="#">Contact Us</a></li>
+                            <li><a href="#">Support Center</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-2  col-md-3">
+                        <h5 class="widget-title wow fadeIn animated">My Account</h5>
+                        <ul class="footer-list wow fadeIn animated">
+                            <li><a href="#">Sign In</a></li>
+                            <li><a href="#">View Cart</a></li>
+                            <li><a href="#">My Wishlist</a></li>
+                            <li><a href="#">Track My Order</a></li>
+                            <li><a href="#">Help</a></li>
+                            <li><a href="#">Order</a></li>
+                        </ul>
+                    </div>
+                    <div class="col-lg-4">
+                        <h5 class="widget-title wow fadeIn animated">Install App</h5>
+                        <div class="row">
+                            <div class="col-md-8 col-lg-12">
+                                <p class="wow fadeIn animated">From App Store or Google Play</p>
+                                <div class="download-app wow fadeIn animated">
+                                    <a href="#" class="hover-up mb-sm-4 mb-lg-0"><img class="active" src="/user/assets/imgs/theme/app-store.jpg" alt=""></a>
+                                    <a href="#" class="hover-up"><img src="/user/assets/imgs/theme/google-play.jpg" alt=""></a>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-12 mt-md-3 mt-lg-0">
+                                <p class="mb-20 wow fadeIn animated">Secured Payment Gateways</p>
+                                <img class="wow fadeIn animated" src="/user/assets/imgs/theme/payment-method.png" alt="">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+        <div class="container pb-20 wow fadeIn animated">
+            <div class="row">
+                <div class="col-12 mb-20">
+                    <div class="footer-bottom"></div>
+                </div>
+                <div class="col-lg-6">
+                    <p class="float-md-left font-sm text-muted mb-0">&copy; 2022, <strong class="text-brand">Evara</strong> - HTML Ecommerce Template </p>
+                </div>
+                <div class="col-lg-6">
+                    <p class="text-lg-end text-start font-sm text-muted mb-0">
+                        Designed by <a href="http://alithemes.com" target="_blank">Alithemes.com</a>. All rights reserved
+                    </p>
+                </div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <!-- RazorPay -->
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+    <!-- Vendor JS-->
+    <script src="/user/assets/js/vendor/modernizr-3.6.0.min.js"></script>
+    <script src="/user/assets/js/vendor/jquery-3.6.0.min.js"></script>
+    <script src="/user/assets/js/vendor/jquery-migrate-3.3.0.min.js"></script>
+    <script src="/user/assets/js/vendor/bootstrap.bundle.min.js"></script>
+    <script src="/user/assets/js/plugins/slick.js"></script>
+    <script src="/user/assets/js/plugins/jquery.syotimer.min.js"></script>
+    <script src="/user/assets/js/plugins/wow.js"></script>
+    <script src="/user/assets/js/plugins/jquery-ui.js"></script>
+    <script src="/user/assets/js/plugins/perfect-scrollbar.js"></script>
+    <script src="/user/assets/js/plugins/magnific-popup.js"></script>
+    <script src="/user/assets/js/plugins/select2.min.js"></script>
+    <script src="/user/assets/js/plugins/waypoints.js"></script>
+    <script src="/user/assets/js/plugins/counterup.js"></script>
+    <script src="/user/assets/js/plugins/jquery.countdown.min.js"></script>
+    <script src="/user/assets/js/plugins/images-loaded.js"></script>
+    <script src="/user/assets/js/plugins/isotope.js"></script>
+    <script src="/user/assets/js/plugins/scrollup.js"></script>
+    <script src="/user/assets/js/plugins/jquery.vticker-min.js"></script>
+    <!-- Template  JS -->
+    <script src=".//user/assets/js/main.js?v=3.4"></script>
+    <script src=".//user/assets/js/shop.js?v=3.4"></script>
+    <script>
+        document.getElementById("pdfDownload").addEventListener('click', (e) => {
+          e.preventDefault();
+      
+          // Get the current URL
+          const url = new URL(window.location.href);
+          
+          // Extract the orderId parameter
+          const orderId = url.searchParams.get('orderId');
+          
+          // Log the orderId to the console
+          console.log(orderId);
+      
+          // Fetch the PDF
+          fetch('/invoice/download', {
+            method: "PUT",
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ orderId: orderId })
+          })
+          .then(response => response.blob())
+          .then(blob => {
+            // Create a link element
+            const link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = `invoice_${orderId}.pdf`;
+            
+            // Append the link to the body
+            document.body.appendChild(link);
+            
+            // Programmatically click the link to trigger the download
+            link.click();
+            
+            // Remove the link from the document
+            document.body.removeChild(link);
+          })
+          .catch(error => console.error('Error:', error));
+        });
+      </script>
+
+
+      <script>
+        let totalPrice = '<%= orderData.payableAmount %>'
+        let orderIdOfOrder = '<%= orderData.orderId %>'
+        console.log(`Payable amount -- ${totalPrice}, Order Id - ${orderIdOfOrder}`)
+        document.getElementById("payNowBtn").addEventListener('click', async (e) => {
+            e.preventDefault()
+            let orderId;
+            const settings = {
+                url: "/payment/razorpay",
+                method: "POST",
+                timeout: 0,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: JSON.stringify({
+                    amount: totalPrice * 100
+                }),
+            };
+
+            // Create new orderId every time
+            try {
+                const response = await $.ajax(settings);
+                orderId = response.orderId;
+                console.log(orderId);
+                
+                let verify = function () {
+                
+                console.log('Reached verify')
+                const options = {
+                    key: "rzp_test_pQFp5cDQlSm9eM", // Enter the Key ID generated from the Dashboard
+                    amount: totalPrice * 100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                    currency: "INR",
+                    name: "theKicksHub",
+                    description: "Buy sneakers",
+                    image: "/user/assets/imgs/theme/logo.svg",
+                    order_id: orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                    handler: function (response) {
+                        // alert(response.razorpay_payment_id);
+                        // alert(response.razorpay_order_id);
+                        // alert(response.razorpay_signature);
+                        Swal.fire({
+                                    title: "Success",
+                                    text: "Payment successful",
+                                    icon: "success"
+                                }).then((result) => {
+                                    if (result.isConfirmed) {
+                                        window.location.href = "/order/details?orderId="+orderIdOfOrder;
+                                    }
+                                });
+
+                        const verifySettings = {
+                            url: "/verifypayment",
+                            method: "POST",
+                            timeout: 0,
+                            headers: {
+                                "Content-Type": "application/json"
+                            },
+                            data: JSON.stringify({response, orderIdOfOrder}),
+                        };
+
+                        $.ajax(verifySettings)
+                            .done(function (verificationResponse) {
+                                console.log('Payment verified:', verificationResponse);
+
+                            })
+                            .fail(function (error) {
+                                console.error('Payment verification failed:', error);
+                            });
+                    },
+                    theme: {
+                        color: "#000"
+                    }
+                };
+                const rzp1 = new Razorpay(options);
+                rzp1.on('payment.failed', function (response) {
+                    // alert(response.error.code);
+                    // alert(response.error.description);
+                    // alert(response.error.source);
+                    // alert(response.error.step);
+                    // alert(response.error.reason);
+                    // alert(response.error.metadata.order_id);
+                    // alert(response.error.metadata.payment_id);
+                    // rzp1.close(); // Close the Razorpay modal
+                    // cleanUpRazorpay()
+                    // Swal.fire({
+                    //                 title: "Error",
+                    //                 text: "Payment verification failed",
+                    //                 icon: "error"
+                    //             }).then((result) => {
+                    //                 if (result.isConfirmed) {
+                    //                     console.log("Payment failed")
+                    //                 }
+                    //             });
+                });
+                rzp1.open();
+            }
+            verify()
+                // Show the modal and the button
+                // document.getElementById('rzp-button1').style.display = 'block';
+            } catch (error) {
+                console.error('Error creating order:', error);
+                return;
+            }
+        })
+      </script>
+</body>
+
+</html>

@@ -5,8 +5,10 @@ const Categories = require("../models/categoryModel");
 const loadOffersPage = async (req, res) => {
   try {
     let offerData = await Offer.find().populate("product").populate("category");
+    let productData = await Products.find({isActive: true})
+    let categoryData = await Categories.find({isActive: true})
     console.log(offerData);
-    res.render("offers", { offerData });
+    res.render("offers", { offerData, productData, categoryData });
   } catch (error) {
     console.log(`Error in loadOffersPage -- ${error}`);
   }
@@ -35,14 +37,13 @@ const addingProductOffer = async (req, res) => {
       offerType
     );
     let data = {
-      product: product,
       offerName: offerName,
       offerDescription: description,
       discount: offerPercentage,
       offerType: offerType,
     };
 
-    let offerData = await Offer.findOne({ product: product });
+    let offerData = await Offer.findOne({ offerName: offerName });
     if (!offerData) {
       let newOffer = new Offer(data);
       await newOffer.save();
@@ -82,14 +83,13 @@ const addingCategoryOffer = async (req, res) => {
       offerType
     );
     let data = {
-      category: category,
       offerName: offerName,
       offerDescription: description,
       discount: offerPercentage,
       offerType: offerType,
     };
 
-    let offerData = await Offer.findOne({ category: category });
+    let offerData = await Offer.findOne({ offerName: offerName });
     if (!offerData) {
       let newOffer = new Offer(data);
       await newOffer.save();
@@ -202,6 +202,50 @@ const offerStatus = async (req, res) => {
   }
 };
 
+const applyOfferProduct = async (req, res) => {
+  let productId = req.body.productId
+  let offerId = req.body.offerId
+  console.log(`productId -- ${productId}, offerId -- ${offerId}`)
+  let productData = await Products.findById(productId)
+  productData.offer = offerId
+  let update = await productData.save()
+  if(update){
+    res.status(200).json({message: "Success"})
+  }
+}
+
+const applyOfferCategory = async (req, res) => {
+  let categoryId = req.body.categoryId
+  let offerId = req.body.offerId
+  console.log(`categoryId -- ${categoryId}, offerId -- ${offerId}`)
+  let categoryData = await Categories.findById(categoryId)
+  categoryData.offer = offerId
+  let update = await categoryData.save()
+  if(update){
+    res.status(200).json({message: "Success"})
+  }
+}
+
+const deleteOfferProduct = async (req,res) => {
+  let productId = req.body.productId
+  let offerId = req.body.offerId
+  console.log(`productId -- ${productId}, offerId -- ${offerId}`)
+  let productData = await Products.findByIdAndUpdate(productId, {$unset: {offer: 1}})
+  if(productData){
+    res.status(200).json({message: "Success"})
+  }
+}
+
+const deleteOfferCategory = async (req, res) => {
+  let categoryId = req.body.categoryId
+  let offerId = req.body.offerId
+  console.log(`categoryId -- ${categoryId}, offerId -- ${offerId}`)
+  let categoryData = await Categories.findByIdAndUpdate(categoryId, {$unset: {offer: 1}})
+  if(categoryData){
+    res.status(200).json({message: "Success"})
+  }
+}
+
 module.exports = {
   loadOffersPage,
   addProductOffer,
@@ -213,4 +257,8 @@ module.exports = {
   editCategoryOffer,
   editedCategoryOffer,
   offerStatus,
+  applyOfferProduct,
+  applyOfferCategory,
+  deleteOfferProduct,
+  deleteOfferCategory,
 };

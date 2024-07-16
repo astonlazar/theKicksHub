@@ -204,13 +204,17 @@
                                 <div class="header-action-icon-2">
                                     <a href="/wishlist">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
-                                        <span class="pro-count blue">4</span>
+                                        <% if(wishlistCount) { %>
+                                        <span class="pro-count blue"><%= wishlistCount %></span>
+                                        <% } %>
                                     </a>
                                 </div>
                                 <div class="header-action-icon-2">
                                     <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
-                                        <span class="pro-count blue">2</span>
+                                        <% if(cartCount) { %>
+                                        <span class="pro-count blue"><%= cartCount %></span>
+                                        <% } %>
                                     </a>
                                     <!-- <div class="cart-dropdown-wrap cart-dropdown-hm2">
                                         <ul>
@@ -667,8 +671,13 @@
                                                 </span>
                                             </div>
                                             <div class="product-price">
+                                                <% if(data.offer) { %>
+                                                <span>₹ <%= Math.ceil(data.price - ((data.offer.discount / 100)* data.price)) %></span>
+                                                <span class="old-price">₹ <%= data.price %></span>
+                                                <% } else { %>
                                                 <span>₹ <%= data.promo_price %></span>
                                                 <span class="old-price">₹ <%= data.price %></span>
+                                                <% } %>
                                             </div>
                                             <div class="product-action-1 show">
                                                 <!-- <a aria-label="Add To Cart" class="action-btn hover-up" href="shop-cart.html"><i class="fi-rs-shopping-bag-add"></i></a> -->

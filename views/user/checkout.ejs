@@ -117,16 +117,16 @@
                         <div class="header-action-right">
                             <div class="header-action-2">
                                 <div class="header-action-icon-2">
-                                    <a href="shop-wishlist.html">
+                                    <!-- <a href="shop-wishlist.html">
                                         <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
                                         <span class="pro-count blue">4</span>
-                                    </a>
+                                    </a> -->
                                 </div>
                                 <div class="header-action-icon-2">
-                                    <a class="mini-cart-icon" href="/cart">
+                                    <!-- <a class="mini-cart-icon" href="/cart">
                                         <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
                                         <span class="pro-count blue">2</span>
-                                    </a>
+                                    </a> -->
                                 </div>
                             </div>
                         </div>
@@ -140,31 +140,31 @@
                     <div class="logo logo-width-1 d-block d-lg-none">
                         <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
                     </div>
-                    <div class="header-nav d-none d-lg-flex">
+                    <!-- <div class="header-nav d-none d-lg-flex">
                         <div class="main-menu main-menu-padding-1 main-menu-lh-2 d-none d-lg-block">
                             <nav>
                                 <ul>
-                                    <li><a class="active" href="/">Home <i class="fi-rs-angle-down"></i></a></li>
-                                    <li><a href="/shop">Shop <i class="fi-rs-angle-down"></i></a></li>
+                                    <li><a class="active" href="/">Home</a></li>
+                                    <li><a href="/shop">Shop</a></li>
                                     <li><a href="page-about.html">About</a></li>
                                     <li><a href="page-contact.html">Contact</a></li>
                                 </ul>
                             </nav>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
-                                <a href="shop-wishlist.html">
+                                <!-- <a href="shop-wishlist.html">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
                                     <span class="pro-count white">4</span>
-                                </a>
+                                </a> -->
                             </div>
                             <div class="header-action-icon-2">
-                                <a class="mini-cart-icon" href="/cart">
+                                <!-- <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
                                     <span class="pro-count white">2</span>
-                                </a>
+                                </a> -->
                             </div>
                             <div class="header-action-icon-2 d-block d-lg-none">
                                 <div class="burger-icon burger-icon-white">
@@ -235,7 +235,7 @@
         <div class="page-header breadcrumb-wrap">
             <div class="container">
                 <div class="breadcrumb">
-                    <a href="/" rel="nofollow">Home</a>
+                    <a rel="nofollow">Home</a>
                     <span></span> Shop
                     <span></span> Checkout
                 </div>
@@ -406,7 +406,11 @@
                                                 </tr> -->
                                                 <tr>
                                                     <th>SubTotal</th>
-                                                    <td class="product-subtotal" colspan="2">₹<%= cartData.totalPrice %></td>
+                                                    <td class="product-subtotal" colspan="2">₹<%= (cartData.totalPrice).toFixed(2) %></td>
+                                                </tr>
+                                                <tr>
+                                                    <th>GST (12%)</th>
+                                                    <td class="product-subtotal" colspan="2">₹<%= (cartData.totalPrice * 0.12).toFixed(2) %></td>
                                                 </tr>
                                                 <tr>
                                                     <th>Shipping</th>
@@ -414,7 +418,7 @@
                                                 </tr>
                                                 <tr>
                                                     <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal"><span id="totalPrice" class="font-xl text-brand fw-900">₹<%= cartData.totalPrice %></span></td>
+                                                    <td colspan="2" class="product-subtotal"><span id="totalPrice" class="font-xl text-brand fw-900">₹<%= (cartData.totalPriceGST).toFixed(2) %></span></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -449,10 +453,17 @@
                                             <h5>Payment</h5>
                                         </div>
                                         <div class="payment_option" id="payment_option">
-                                            <div class="custome-radio">
-                                                <input class="form-check-input" required="" type="radio" name="payment_option" id="cash-on-delivery" >
-                                                <label class="form-check-label" for="cash-on-delivery" data-bs-toggle="collapse" data-target="#cashOnDelivery" aria-controls="cashOnDelivery">COD</label>
-                                            </div>
+                                            <% if(cartData.totalPrice <= 10000){ %>
+                                                <div class="custome-radio">
+                                                    <input class="form-check-input" required="" type="radio" name="payment_option" id="cash-on-delivery" disabled>
+                                                    <label class="form-check-label" for="cash-on-delivery" data-bs-toggle="collapse" data-target="#cashOnDelivery" aria-controls="cashOnDelivery">COD</label>
+                                                </div>
+                                            <% } else { %>
+                                                <div class="custome-radio">
+                                                    <input class="form-check-input" required="" type="radio" name="payment_option" id="cash-on-delivery">
+                                                    <label class="form-check-label" for="cash-on-delivery" data-bs-toggle="collapse" data-target="#cashOnDelivery" aria-controls="cashOnDelivery">COD</label>
+                                                </div>
+                                            <% } %>
                                             <div class="custome-radio">
                                                 <input class="form-check-input" required="" type="radio" name="payment_option" id="razor-pay" >
                                                 <label class="form-check-label" for="razor-pay" data-bs-toggle="collapse" data-target="#razorPay" aria-controls="razorPay">RazorPay</label>
@@ -1077,15 +1088,74 @@
                     // alert(response.error.reason);
                     // alert(response.error.metadata.order_id);
                     // alert(response.error.metadata.payment_id);
-                    // Swal.fire({
-                    //                 title: "Error",
-                    //                 text: "Payment verification failed",
-                    //                 icon: "error"
-                    //             }).then((result) => {
-                    //                 if (result.isConfirmed) {
-                    //                     window.location.href = "/";
-                    //                 }
-                    //             });
+                    rzp1.close(); // Close the Razorpay modal
+                    cleanUpRazorpay()
+                    Swal.fire({
+                        title: "Error",
+                        text: "Payment verification failed. Do you want to place the order without online payment?",
+                        icon: "error",
+                        showCancelButton: true,
+                        confirmButtonText: "Yes, place order",
+                        cancelButtonText: "No, go to homepage"
+                    }).then((result) => {
+                        if (result.isConfirmed) {
+                            console.log("Order placed without online payment");
+                            Swal.fire({
+                                title: "Order Placed",
+                                text: "Your order has been placed without online payment.",
+                                icon: "success"
+                            }).then(() => {
+                                fetch('/place-order', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        selectedAddressIndex: selectedAddressIndex,
+                                        selectedPaymentMethod: selectedPaymentMethod,
+                                        totalPrice: totalPrice,
+                                        couponApplied: couponApplied
+                                    })
+                                })
+                                .then(response => {
+                                    if (response.ok) {
+                                        return response.json(); // Parse the JSON from the response
+                                    } else {
+                                        throw new Error('Network response was not ok');
+                                    }
+                                })
+                                .then(data => {
+                                    console.log('Order Successful:', data.message);
+                                    Swal.fire({
+                                        title: 'Order Successful',
+                                        text: 'Your order has been placed successfully!',
+                                        icon: 'success',
+                                        confirmButtonText: 'OK'
+                                    }).then(result => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = '/'; // Replace 'index.html' with your home page URL
+                                        }
+                                    });
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire({
+                                        title: 'Order not placed',
+                                        text: 'Your order has not been placed!',
+                                        icon: 'error',
+                                        confirmButtonText: 'OK'
+                                    }).then(result => {
+                                        if (result.isConfirmed) {
+                                            window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                                        }
+                                    });
+                                });
+                                // window.location.href = '/'; // Redirect to homepage after order is placed
+                            });
+                        } else if (result.dismiss === Swal.DismissReason.cancel) {
+                            window.location.href = '/'; // Redirect to homepage
+                        }
+                    });
                 });
                 rzp1.open();
             }
@@ -1128,7 +1198,7 @@
                     confirmButtonText: 'OK'
                 }).then(result => {
                     if (result.isConfirmed) {
-                        window.location.href = '/cart'; // Replace 'index.html' with your home page URL
+                        window.location.href = '/'; // Replace 'index.html' with your home page URL
                     }
                 });
             })
@@ -1156,9 +1226,9 @@
     }
 }
 
-        let totalPrice = '<%= cartData.totalPrice %>';
+        let totalPrice = '<%= cartData.totalPriceGST %>';
         let couponApplied = 'x'
-        let oldTotalPrice = '<%= cartData.totalPrice %>';
+        let oldTotalPrice = '<%= cartData.totalPriceGST %>';
 
         document.getElementById('couponForm').addEventListener('submit', (event) => {
         event.preventDefault();
@@ -1170,7 +1240,7 @@
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({coupon: couponCode, payableAmount: oldTotalPrice})
+            body: JSON.stringify({coupon: couponCode, payableAmount: totalPrice})
         })
         .then(response => {
             if(response.ok){
@@ -1182,9 +1252,11 @@
         .then(data => {
             if(data.message === 'Success'){
                 console.log(data.discountPercentage)
-                totalPrice = '<%= cartData.totalPrice %>'
+                // totalPrice = '<%= cartData.totalPrice %>'
                 console.log(totalPrice)
                 totalPrice -= (data.discountPercentage/100) * totalPrice;
+                totalPrice = Number(totalPrice.toFixed(2))
+                console.log('after discount -- ', totalPrice)
                 document.getElementById('totalPrice').textContent = '₹'+totalPrice
                 document.getElementById('appliedMessage').innerText = `'${couponCode}' - Coupon Applied`
                 document.getElementById('couponDiv').style.display = 'none'
@@ -1211,6 +1283,22 @@
         document.getElementById('couponDiv').style.display = 'block'
         document.getElementById('couponMessageDiv').style.display = 'none'
 
+    }
+    function cleanUpRazorpay() {
+        // Remove Razorpay iframe and containers
+        var iframes = document.querySelectorAll('iframe');
+        iframes.forEach(function(iframe) {
+            if (iframe.src.includes('razorpay.com')) {
+                iframe.remove();
+            }
+        });
+
+        var razorpayContainers = document.querySelectorAll('div');
+        razorpayContainers.forEach(function(container) {
+            if (container.id.includes('razorpay') || container.className.includes('razorpay')) {
+                container.remove();
+            }
+        });
     }
     </script>
 </body>

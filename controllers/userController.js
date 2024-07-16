@@ -9,10 +9,13 @@ const strongPassword = require("../helpers/strongPassword");
 // const { newAddress } = require("./cartController");
 const fPassword = require("../helpers/forgotPassword");
 const crypto = require("crypto");
-const Wallet = require("../models/walletModel")
-const Offer = require("../models/offerModel")
-const Cart = require("../models/cartModel")
-const Wishlist = require("../models/wishlistModel")
+const Wallet = require("../models/walletModel");
+const Offer = require("../models/offerModel");
+const Cart = require("../models/cartModel");
+const Wishlist = require("../models/wishlistModel");
+const Coupon = require("../models/couponModel");
+const PDFDocument = require("pdfkit");
+const fs = require("fs");
 
 // Store tokens and expiry times
 const resetTokens = {};
@@ -248,7 +251,8 @@ const loginEnterPage = async (req, res) => {
 
 const signupEnterPage = async (req, res) => {
   try {
-    let { userName, email, phoneNo, password, confirmPassword } = req.body;
+    let { userName, email, phoneNo, password, referredBy } = req.body;
+    console.log(`referred by -- ${referredBy}`)
     const checkUser = await User.findOne({
       $or: [{ email: email }, { phoneNo: phoneNo }],
     });
@@ -262,12 +266,27 @@ const signupEnterPage = async (req, res) => {
       console.log(strongpass);
       const hashedPassword = await hashing.hashPassword(password);
       console.log("--password hashing");
-      const userData = {
-        userName: userName,
-        email: email,
-        phoneNo: phoneNo,
-        password: hashedPassword,
-      };
+      let referredData = await User.findOne({
+        referralCode: referredBy,
+        isActive: true,
+      });
+      let userData;
+      if (referredData) {
+        userData = {
+          userName: userName,
+          email: email,
+          phoneNo: phoneNo,
+          password: hashedPassword,
+          referredBy: referredData.userName,
+        };
+      } else {
+        userData = {
+          userName: userName,
+          email: email,
+          phoneNo: phoneNo,
+          password: hashedPassword,
+        };
+      }
 
       req.session.temp = userData;
       console.log(req.session.temp.email);
@@ -285,6 +304,16 @@ const signupEnterPage = async (req, res) => {
     console.log(err);
   }
 };
+
+const referralVerify = async (req, res) => {
+  let referralCode = req.body.referralCode;
+  console.log(referralCode)
+  let referralUserData = await User.findOne({referralCode: referralCode})
+  if(referralUserData){
+    return res.status(200).json({message: 'Success'})
+  }
+  res.status(500).json({message: "Not found"})
+}
 
 const OtpVerification = async (email) => {
   let otp = otpSender.generate();
@@ -321,24 +350,28 @@ const verificationPage = (req, res) => {
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
   // enteredOtp = parseInt(enteredOtp)
-  
+
   console.log(`Entered otp ${enteredOtp}`);
   console.log(`Stored otp in session: ${req.session.temp.otp}`);
   const expOtp = req.session.temp.otpExpire;
   if (enteredOtp === req.session.temp.otp && Date.now() < expOtp) {
     const userEnteredData = new User(req.session.temp);
+    userEnteredData.referralCode = await crypto
+      .randomBytes(3)
+      .toString("hex")
+      .toUpperCase();
     await userEnteredData.save();
 
     console.log("--user inserted to db--" + userEnteredData);
     req.session.user = userEnteredData;
     console.log(req.session.user);
-    let walletData = await Wallet.findOne({userId: req.session.user._id})
-    if(!walletData){
+    let walletData = await Wallet.findOne({ userId: req.session.user._id });
+    if (!walletData) {
       let newWallet = new Wallet({
         userId: req.session.user._id,
-        walletBalance: 0
-      })
-      await newWallet.save()
+        walletBalance: 0,
+      });
+      await newWallet.save();
     }
     res.redirect("/");
   } else {
@@ -351,19 +384,27 @@ const verifyEnter = async (req, res) => {
 };
 
 const homePage = async (req, res) => {
-  let productData = await Product.find({ isActive: { $eq: true } }).limit(4);
+  let productData = await Product.find({ isActive: { $eq: true } })
+    .limit(4)
+    .populate("offer");
   let categoryData = await Category.find({ isActive: true });
 
   if (req.session.user) {
     let userData = await User.findById(req.session.user._id);
-    let cartData = await Cart.findOne({userId: req.session.user._id})
-    let wishlistData = await Wishlist.findOne({userId: req.session.user._id})
-    let cartCount = cartData.product.length
-    let wishlistCount = wishlistData.products.length
-    console.log(`cart - ${cartCount} -- wishlist - ${wishlistCount}`)
+    let cartData = await Cart.findOne({ userId: req.session.user._id });
+    let wishlistData = await Wishlist.findOne({ userId: req.session.user._id });
+    wishlistCount = wishlistData?.products?.length ?? 0;
+    cartCount = cartData?.product?.length ?? 0;
+    console.log(`cart - ${cartCount} -- wishlist - ${wishlistCount}`);
     console.log(`UserData -- ${userData}`);
     req.session.user = userData;
-    res.render("index", { userData, productData, categoryData, cartCount, wishlistCount });
+    res.render("index", {
+      userData,
+      productData,
+      categoryData,
+      cartCount,
+      wishlistCount,
+    });
   } else {
     res.render("landing", { productData, categoryData });
   }
@@ -373,14 +414,30 @@ const productView = async (req, res) => {
   try {
     let id = req.params.id;
     console.log(id);
-    let productData = await Product.findById({ _id: id });
+    let productData = await Product.findById({ _id: id }).populate("offer");
     let relatedProductData = await Product.find({
       category: productData.category,
       _id: { $ne: productData._id },
-    }).limit(4);
+    })
+      .limit(4)
+      .populate("offer");
+    let wishlistCount, cartCount;
+    if (req.session?.user?._id) {
+      let wishlistData = await Wishlist.findOne({
+        userId: req.session.user._id,
+      });
+      let cartData = await Cart.findOne({ userId: req.session.user._id });
+      wishlistCount = wishlistData?.products?.length ?? 0;
+      cartCount = cartData?.product?.length ?? 0;
+    }
 
     console.log(`-productData - ${productData}`);
-    res.render("product-view", { productData, relatedProductData });
+    res.render("product-view", {
+      productData,
+      relatedProductData,
+      wishlistCount,
+      cartCount,
+    });
   } catch (err) {
     console.log(`--error in productView - ${err}`);
   }
@@ -394,16 +451,16 @@ const shop = async (req, res) => {
     let startIndex = (page - 1) * limit;
     let search = "";
     let categoryFilter = req.query.category || "";
-    console.log(`categoryFilter -- ${categoryFilter}`)
+    console.log(`categoryFilter -- ${categoryFilter}`);
     if (req.query.search) {
       search = req.query.search.trim();
       console.log(`Searched -- ${search}`);
-      searchQuery.productName = (new RegExp(search, "i"));
-    } 
-    if(req.query.category && req.query.category !== 'all-categories'){
+      searchQuery.productName = new RegExp(search, "i");
+    }
+    if (req.query.category && req.query.category !== "all-categories") {
       searchQuery.category = categoryFilter;
     }
-    console.log('SearchQuery' ,searchQuery)
+    console.log("SearchQuery", searchQuery);
     const sortOptions = {
       popularity: { orderCount: -1 },
       "price-low-high": { promo_price: 1 },
@@ -415,16 +472,27 @@ const shop = async (req, res) => {
       "zZ-aA": { productName: -1 },
     };
 
-    let sortBy = req.query.sort || "new-arrivals"; // Default to 'popularity' if no sort option is provided
+    let sortBy = req.query.sort || "new-arrivals";
     let sortCriteria = sortOptions[sortBy] || sortOptions["new-arrivals"]; // Fallback to 'popularity' if invalid sort option is provided
     console.log("sortCriteria --" + sortCriteria);
     let productData = await Product.find(searchQuery)
       .sort(sortCriteria)
       .skip(startIndex)
-      .limit(limit).populate('category')
-    let totalDocuments = await Product.countDocuments()
+      .limit(limit)
+      .populate("offer");
+    // .populate("category");
+    let totalDocuments = await Product.countDocuments(searchQuery);
     let totalPages = Math.ceil(totalDocuments / limit);
     let categoryData = await Category.find({ isActive: true });
+    let wishlistCount, cartCount;
+    if (req.session?.user?._id) {
+      let wishlistData = await Wishlist.findOne({
+        userId: req.session.user._id,
+      });
+      let cartData = await Cart.findOne({ userId: req.session.user._id });
+      wishlistCount = wishlistData?.products?.length ?? 0;
+      cartCount = cartData?.product?.length ?? 0;
+    }
     res.render("shop", {
       productData,
       categoryData,
@@ -433,6 +501,8 @@ const shop = async (req, res) => {
       sortBy,
       search,
       categoryFilter,
+      wishlistCount,
+      cartCount,
     });
   } catch (error) {
     console.log(`Error in shop -- ${error}`);
@@ -442,11 +512,22 @@ const shop = async (req, res) => {
 const userProfile = async (req, res) => {
   const addressData = await Address.findOne({ userId: req.session.user._id });
   const userData = await User.findById(req.session.user._id);
-  const walletData = await Wallet.findOne({userId: req.session.user._id})
+  const walletData = await Wallet.findOne({ userId: req.session.user._id });
+  const cartData = await Cart.findOne({ userId: req.session.user._id });
+  const wishlistData = await Wishlist.findOne({ userId: req.session.user._id });
+  wishlistCount = wishlistData?.products?.length ?? 0;
+  cartCount = cartData?.product?.length ?? 0;
   const orderData = await Order.find({ userId: req.session.user._id })
     .populate("products.productId")
     .sort({ orderDate: -1 });
-  res.render("user-profile", { userData, addressData, orderData, walletData });
+  res.render("user-profile", {
+    userData,
+    addressData,
+    orderData,
+    walletData,
+    cartCount,
+    wishlistCount,
+  });
 };
 
 const userProfileEdit = async (req, res) => {
@@ -606,6 +687,121 @@ const deleteAddress = async (req, res) => {
   }
 };
 
+const loadOrderDetails = async (req, res) => {
+  try {
+    let orderId = req.query.orderId;
+    let cartData = await Cart.findOne({ userId: req.session.user._id });
+    let wishlistData = await Wishlist.findOne({ userId: req.session.user._id });
+    wishlistCount = wishlistData?.products?.length ?? 0;
+    cartCount = cartData?.product?.length ?? 0;
+    let orderData = await Order.findOne({ orderId: orderId }).populate(
+      "products.productId"
+    );
+    let couponData;
+    if (orderData.coupon) {
+      couponData = await Coupon.findOne({ code: orderData.coupon });
+    }
+
+    res.render("order-details", {
+      orderData,
+      cartCount,
+      wishlistCount,
+      couponData,
+    });
+  } catch (error) {
+    console.log(`Error in loadOrderDetails - ${error}`);
+  }
+};
+
+const generateInvoice = async (req, res) => {
+  const { orderId } = req.body; // Extract orderId from request body
+
+  try {
+    // Fetch the order from the database
+    const order = await Order.findOne({ orderId })
+      .populate("products.productId")
+      .exec();
+
+    if (!order) {
+      return res.status(404).send("Order not found");
+    }
+
+    // Create a new PDF document
+    const doc = new PDFDocument();
+    const buffers = [];
+
+    // Collect PDF buffers
+    doc.on("data", buffers.push.bind(buffers));
+    doc.on("end", () => {
+      const pdfData = Buffer.concat(buffers);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=invoice_${orderId}.pdf`
+      );
+      res.send(pdfData);
+    });
+
+    // Set up PDF document
+    doc.fontSize(25).text("Invoice", { align: "center" });
+    doc.moveDown();
+
+    // Invoice Details
+    doc.fontSize(18).text("Invoice Details", { underline: true });
+    doc.moveDown();
+    doc.fontSize(12).text(`Order ID: ${order.orderId}`);
+    doc.text(`Order Date: ${order.orderDate}`);
+    doc.text(`Payment Method: ${order.paymentMethod}`);
+    doc.text(`Payment Status: ${order.paymentStatus}`);
+    doc.text(`Payable Amount: $${order.payableAmount}`);
+    doc.moveDown();
+
+    // Shipping Address
+    doc.fontSize(18).text("Shipping Address", { underline: true });
+    doc.moveDown();
+    const address = order.address;
+    doc.fontSize(12).text(`Full Name: ${address.fullName}`);
+    doc.text(`Address Line 1: ${address.addressLine1}`);
+    if (address.addressLine2)
+      doc.text(`Address Line 2: ${address.addressLine2}`);
+    doc.text(`City: ${address.city}`);
+    doc.text(`State: ${address.state}`);
+    doc.text(`Pincode: ${address.pincode}`);
+    doc.text(`Phone: ${address.phoneNo}`);
+    doc.text(`Email: ${address.email}`);
+    doc.moveDown();
+
+    // Products
+    doc.fontSize(18).text("Products", { underline: true });
+    doc.moveDown();
+
+    order.products.forEach((product, index) => {
+      if (product.productId) {
+        // Check for valid productId
+        const { productName } = product.productId;
+        const productDetails = `- ${productName} (Qty: ${product.quantity}) ${
+          product.size ? ` - Size: ${product.size}` : ""
+        }`;
+        const productPriceLine = product.productPrice
+          ? ` (₹${product.productPrice})`
+          : "";
+        doc.fontSize(12).text(`${productDetails}${productPriceLine}`); // Combine product details and price
+        doc.moveDown(5); // Add some spacing between products
+      } else {
+        console.error(
+          `Product at index ${index} does not have a valid productId`
+        );
+      }
+    });
+
+    // Finalize the PDF and end the stream
+    doc.end();
+  } catch (error) {
+    console.error("Error generating invoice:", error);
+    res.status(500).send("Internal Server Error");
+  }
+};
+
 const userLogout = (req, res) => {
   req.session.user = false;
   console.log("User logged out");
@@ -623,6 +819,7 @@ module.exports = {
   failureGoogle,
   signupPage,
   signupEnterPage,
+  referralVerify,
   verificationPage,
   verifyEnter,
   homePage,
@@ -636,4 +833,6 @@ module.exports = {
   deleteAddress,
   userLogout,
   sendOtpfromEmail,
+  loadOrderDetails,
+  generateInvoice,
 };

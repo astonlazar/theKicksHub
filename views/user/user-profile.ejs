@@ -85,13 +85,13 @@
                             <div class="header-action-icon-2">
                                 <a href="/wishlist">
                                     <img class="svgInject" alt="Evara" src="/user/assets/imgs/theme/icons/icon-heart.svg">
-                                    <span class="pro-count blue">4</span>
+                                    <span class="pro-count blue"><%= wishlistCount %></span>
                                 </a>
                             </div>
                             <div class="header-action-icon-2">
                                 <a class="mini-cart-icon" href="/cart">
                                     <img alt="Evara" src="/user/assets/imgs/theme/icons/icon-cart.svg">
-                                    <span class="pro-count blue">2</span>
+                                    <span class="pro-count blue"><%= cartCount %></span>
                                 </a>
                             </div>
                             <div class="header-action-icon d-block d-lg-none">
@@ -193,6 +193,9 @@
                                             <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
                                         </li>
                                         <li class="nav-item">
+                                            <a class="nav-link" id="referral-tab" data-bs-toggle="tab" href="#referral" role="tab" aria-controls="referral" aria-selected="true"><i class="fi-rs-share mr-10"></i>Referals</a>
+                                        </li>
+                                        <li class="nav-item">
                                             <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-money mr-10"></i>Wallet</a>
                                         </li>
                                         <li class="nav-item">
@@ -226,6 +229,7 @@
                                                                 <th>Order ID</th>
                                                                 <th>Date</th>
                                                                 <th>Products</th>
+                                                                <th>Details</th>
                                                                 <th>Total</th>
                                                             </tr>
                                                         </thead>
@@ -236,13 +240,14 @@
                                                                 <td><%= (order.orderDate).toISOString().split("T")[0] %></td>
                                                                 <td>
                                                                     <div class="card-header" style="cursor: pointer;" data-bs-toggle="collapse" data-bs-target="#collapse-<%= order.orderId %>">
-                                                                        <h5 class="mb-0">Products (Click to Expand)</h5>
+                                                                        <h5 class="mb-0">Products 👇🏽</h5>
                                                                     </div>
                                                                 </td>
-                                                                <td><%= order.payableAmount %></td>
+                                                                <td><a class="btn btn-dark" href="/order/details?orderId=<%= order.orderId %>">View</a></td>
+                                                                <td>₹<%= order.payableAmount %></td>
                                                             </tr>
                                                             <tr class="order-details">
-                                                                <td colspan="4">
+                                                                <td colspan="5">
                                                                     <div class="card">
                                                                         <div id="collapse-<%= order.orderId %>" class="collapse">
                                                                             <div class="card-body">
@@ -457,6 +462,18 @@
                                                     </div>
                                                 </form>
                                             </div> -->
+                                        </div>
+                                    </div>
+                                    <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
+                                        <div class="card">
+                                            <div class="card-header">
+                                                <h5 class="mb-0">Referal Code </h5>
+                                            </div>
+                                            <div class="card-body">
+                                                <% if(userData.referralCode){ %>
+                                                    <p><span style="font-weight: bolder;"><%= userData.referralCode %></span> - Invite your friends and get ₹100 each when they sign up to our shop.</p>
+                                                <% } %>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="tab-pane fade" id="wallet" role="tabpanel" aria-labelledby="wallet-tab">

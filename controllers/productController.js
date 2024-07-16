@@ -17,7 +17,8 @@ const addProduct = async (req, res) => {
 const addedProduct = async (req, res) => {
   try {
     let categories = await Category.find({ isActive: true });
-    let fileNames;
+    let fileNames = [];
+
     let {
       product_name,
       product_description,
@@ -35,30 +36,21 @@ const addedProduct = async (req, res) => {
       UK11: req.body.productSizeUK11,
     };
 
-    console.log(`Reached just before req.files if condition`);
-
-    // if (req.files) {
-    //   fileNames = req.files.map((file) => file.filename);
-    //   console.log("Uploaded filenames:", fileNames);
-    //   // res.json({ message: "Images uploaded successfully!", fileNames });
-    // } else {
-    //   console.error("Error uploading files");
-    //   // res.status(400).json({ message: "Error uploading files" });d
-    // }
+    console.log("Reached just before req.files if condition");
 
     if (req.files) {
-      fileNames = [
-        req.files.product_img1[0].filename,
-        req.files.product_img2[0].filename,
-        req.files.product_img3[0].filename,
-        req.files.product_img4[0].filename,
-      ];
-    } else {
-      console.log("Error uploading files");
-      res.status(400).json({ message: "Error uploading files" });
+      if (req.files.product_img1) fileNames.push(req.files.product_img1[0].filename);
+      if (req.files.product_img2) fileNames.push(req.files.product_img2[0].filename);
+      if (req.files.product_img3) fileNames.push(req.files.product_img3[0].filename);
+      if (req.files.product_img4) fileNames.push(req.files.product_img4[0].filename);
     }
 
-    console.log(`Reached just after req.files if condition`);
+    if (fileNames.length === 0) {
+      console.log("Error uploading files");
+      return res.status(400).json({ message: "Error uploading files" });
+    }
+
+    console.log("Reached just after req.files if condition");
 
     console.log(
       product_name,
@@ -68,18 +60,13 @@ const addedProduct = async (req, res) => {
       product_category
     );
 
-    // const categoryId = await Category.findById(product_category);
-    // console.log(`-- _id - ${categoryId._id}`);
-
     console.log(totalStock);
     let totalStockNew = {};
     for (const size in totalStock) {
       totalStockNew[size] = { quantity: parseInt(totalStock[size], 10) };
     }
 
-    let productCheck = await Product.find({
-      productName: product_name,
-    });
+    let productCheck = await Product.find({ productName: product_name });
 
     let productData = {
       productName: product_name,
@@ -90,18 +77,21 @@ const addedProduct = async (req, res) => {
       promo_price: productPromo_price,
       stock: totalStockNew,
     };
+
     console.log(productCheck);
     console.log(productData);
+
     if (productCheck.length !== 0) {
-      res.render();
-      console.log("product exists");
+      console.log("Product exists");
+      return res.status(400).json({ message: "Product already exists" });
     } else {
       await Product.insertMany(productData);
-      console.log("product inserted successfully");
+      console.log("Product inserted successfully");
+      return res.status(200).json({ message: "Product added successfully" });
     }
-    // res.redirect("/admin/add-product");
   } catch (err) {
-    console.log(`error in addedProduct ${err}`);
+    console.log(`Error in addedProduct: ${err}`);
+    return res.status(500).json({ message: "Internal server error" });
   }
 };
 
@@ -163,7 +153,7 @@ const editedProduct = async (req, res) => {
   try {
     let productId = req.params.id;
     console.log(`--productId - ${productId}`);
-    let fileNames;
+    let fileNames = [];
 
     let {
       product_name,
@@ -195,16 +185,23 @@ const editedProduct = async (req, res) => {
     for (const size in totalStock) {
       totalStockNew[size] = { quantity: parseInt(totalStock[size], 10) };
     }
+
     if (req.files) {
-      fileNames = [
-        req.files.product_img1[0].filename,
-        req.files.product_img2[0].filename,
-        req.files.product_img3[0].filename,
-        req.files.product_img4[0].filename,
-      ];
-    } else {
-      console.log("Error uploading files");
-      res.status(400).json({ message: "Error uploading files" });
+      if (req.files.product_img1) fileNames.push(req.files.product_img1[0].filename);
+      if (req.files.product_img2) fileNames.push(req.files.product_img2[0].filename);
+      if (req.files.product_img3) fileNames.push(req.files.product_img3[0].filename);
+      if (req.files.product_img4) fileNames.push(req.files.product_img4[0].filename);
+    }
+
+    if (fileNames.length === 0) {
+      // If no new files are uploaded, retain the existing product images
+      const product = await Product.findById(productId);
+      if (product) {
+        fileNames = product.productImage;
+      } else {
+        console.log("Error: Product not found");
+        return res.status(404).json({ message: "Product not found" });
+      }
     }
 
     console.log(fileNames);
@@ -222,12 +219,14 @@ const editedProduct = async (req, res) => {
     console.log(productData);
     let updatedProduct = await Product.findByIdAndUpdate(productId, {
       $set: productData,
-    });
+    }, { new: true });
+
     console.log("-- product updated successfully");
     console.log(updatedProduct);
-    // res.redirect("/admin/products");f
+    res.redirect("/admin/products")
   } catch (err) {
     console.log(`--error in editedProduct - ${err}`);
+    res.status(500).json({ message: "Internal server error" });
   }
 };
 

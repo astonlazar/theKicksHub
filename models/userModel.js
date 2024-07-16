@@ -23,11 +23,14 @@ const userSchema = new mongoose.Schema(
       type: Boolean,
       default: true,
     },
-    // walletAmount: {
-    //   type: Number,
-    //   required: true,
-    //   default: 0,
-    // },
+    referralCode: {
+      type: String,
+      unique: true,
+    },
+    referredBy: {
+      type: String,
+      default: 'none'
+    }
   },
   { timestamps: true }
 );

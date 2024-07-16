@@ -6,10 +6,10 @@ const categorySchema = new mongoose.Schema(
       type: String,
       required: true,
     },
-    // slug: {
-    //   type: String,
-    //   required: true,
-    // },
+    offer: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "offers",
+    },
     isActive: {
       type: Boolean,
       default: true,

@@ -24,6 +24,7 @@ const offerSchema = new mongoose.Schema(
     },
     offerType: {
       type: String,
+      enum: ["Product", "Category", "Referral"],
       required: true,
     },
     isActive: {

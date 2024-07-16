@@ -18,7 +18,8 @@ adminRoute.get("/", auth.isLogout, adminController.adminLoginPage);
 adminRoute.post("/", adminController.adminLoginInsert);
 
 adminRoute.get("/dashboard", auth.isLogin, adminController.adminDashboard);
-adminRoute.get("/download-sales-report", adminController.downloadSalesReport)
+adminRoute.put("/dashboard/chart", auth.isLogin, adminController.salesChart)
+adminRoute.put("/download-sales-report", adminController.downloadSalesReport)
 
 adminRoute.get(
   "/user-management",
@@ -148,6 +149,11 @@ adminRoute.post(
 );
 
 adminRoute.put("/offers/status", auth.isLogin, offerController.offerStatus);
+
+adminRoute.put("/offer/apply-product", offerController.applyOfferProduct)
+adminRoute.put("/offer/apply-category", offerController.applyOfferCategory)
+adminRoute.put("/offer/delete-product", offerController.deleteOfferProduct)
+adminRoute.put("/offer/delete-category", offerController.deleteOfferCategory)
 
 //route to logout
 adminRoute.get("/logout", adminController.adminLogout);
