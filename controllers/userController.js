@@ -447,7 +447,7 @@ const shop = async (req, res) => {
   try {
     let searchQuery = { isActive: true };
     let page = parseInt(req.query.page) || 1;
-    let limit = 9;
+    let limit = 2;
     let startIndex = (page - 1) * limit;
     let search = "";
     let categoryFilter = req.query.category || "";
