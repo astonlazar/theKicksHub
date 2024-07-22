@@ -207,9 +207,11 @@
               <div class="content-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="content-title card-title">Order detail</h2>
+                    <% if(orderData.paymentStatus === 'Success') { %>
                     <a id="pdfDownload" class="btn btn-primary">
                       Download Invoice
                     </a>
+                    <% } %>
                   </div>
                   
               </div>

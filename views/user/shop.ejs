@@ -197,6 +197,7 @@
                                 <input name="search" type="text" placeholder="Search for items..." value="<%= search %>">
                                 <input type="hidden" name="sort" id="sort" value="<%= sortBy %>">
                                 <input type="hidden" name="page" id="page" value="<%= page %>">
+                                <input type="hidden" name="category" id="category" value="<%= categoryFilter %>">
                             </form>
                         </div>
                         <div class="header-action-right">
@@ -626,14 +627,14 @@
                                     </div>
                                     <div class="sort-by-dropdown">
                                         <ul>
-                                            <li><a class="<%= (sortBy === 'new-arrivals')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=new-arrivals&&page=<%= page %>">New Arrivals</a></li>
-                                            <li><a class="<%= (sortBy === 'featured')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=featured&&page=<%= page %>">Featured</a></li>
-                                            <li><a class="<%= (sortBy === 'popularity')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=popularity&&page=<%= page %>">Popularity</a></li>
+                                            <li><a class="<%= (sortBy === 'new-arrivals')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=new-arrivals&&page=<%= page %>&&category=<%= categoryFilter %>">New Arrivals</a></li>
+                                            <li><a class="<%= (sortBy === 'featured')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=featured&&page=<%= page %>&&category=<%= categoryFilter %>">Featured</a></li>
+                                            <li><a class="<%= (sortBy === 'popularity')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=popularity&&page=<%= page %>&&category=<%= categoryFilter %>">Popularity</a></li>
                                             <li><a href="#">Average Ratings</a></li>
-                                            <li><a class="<%= (sortBy === 'price-high-low')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=price-high-low&&page=<%= page %>">Price: High to Low</a></li>
-                                            <li><a class="<%= (sortBy === 'price-low-high')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=price-low-high&&page=<%= page %>">Price: Low to High</a></li>
-                                            <li><a class="<%= (sortBy === 'aA-zZ')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=aA-zZ&&page=<%= page %>">Aa - Zz</a></li>
-                                            <li><a class="<%= (sortBy === 'zZ-aA')? 'active' : '' %>" href="/shop?search= <%= search %>&&sort=zZ-aA&&page=<%= page %>">Zz - Aa</a></li>
+                                            <li><a class="<%= (sortBy === 'price-high-low')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=price-high-low&&page=<%= page %>&&category=<%= categoryFilter %>">Price: High to Low</a></li>
+                                            <li><a class="<%= (sortBy === 'price-low-high')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=price-low-high&&page=<%= page %>&&category=<%= categoryFilter %>">Price: Low to High</a></li>
+                                            <li><a class="<%= (sortBy === 'aA-zZ')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=aA-zZ&&page=<%= page %>&&category=<%= categoryFilter %>">Aa - Zz</a></li>
+                                            <li><a class="<%= (sortBy === 'zZ-aA')? 'active' : '' %>" href="/shop?search=<%= search %>&&sort=zZ-aA&&page=<%= page %>&&category=<%= categoryFilter %>">Zz - Aa</a></li>
                                         </ul>
                                     </div>
                                 </div>
@@ -692,7 +693,7 @@
                             <nav aria-label="Page navigation example">
                                 <ul class="pagination justify-content-start">
                                     <% for(let i = 1; i <= totalPages; i++) { %>
-                                    <li class="page-item <%= page == i ? 'active' : '' %>"><a class="page-link" href="/shop?search= <%= search %>&&sort=new-arrivals&&page=<%= i %>"><%= i %></a></li>
+                                    <li class="page-item <%= page == i ? 'active' : '' %>"><a class="page-link" href="/shop?search=<%= search %>&&sort=<%= sortBy %>&&page=<%= i %>&&category=<%= categoryFilter %>"><%= i %></a></li>
                                     <% } %>
                                     <!-- <li class="page-item"><a class="page-link" href="#">02</a></li>
                                     <li class="page-item"><a class="page-link" href="#">03</a></li>
@@ -711,9 +712,9 @@
                         <div class="widget-category mb-30">
                             <h5 class="section-title style-1 mb-30 wow fadeIn animated">Category</h5>
                             <ul class="categories">
-                                <li><a href="/shop?search= <%= search %>&&sort=new-arrivals&&page=<%= page %>&&category=all-categories">- All Categories</a></li>
+                                <li><a href="/shop?search=<%= search %>&&sort=<%= sortBy %>&&page=<%= page %>&&category=all-categories">- All Categories</a></li>
                                 <% categoryData.forEach(category => { %>
-                                <li><a href="/shop?search= <%= search %>&&sort=new-arrivals&&page=<%= page %>&&category=<%= category._id %>">- <%= category.categoryName %></a></li>
+                                <li><a href="/shop?search=<%= search %>&&sort=<%= sortBy %>&&page=<%= page %>&&category=<%= category._id %>">- <%= category.categoryName %></a></li>
                                 <% }) %>
                                 <!-- <li><a href="shop-grid-right.html">Blouses & Shirts</a></li>
                                 <li><a href="shop-grid-right.html">Dresses</a></li>

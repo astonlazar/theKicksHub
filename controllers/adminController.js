@@ -173,7 +173,7 @@ const adminDashboard = async (req, res, next) => {
       },
     ];
     let topCategories = await Orders.aggregate(pipelineCat).exec();
-    console.log(`top categories -- ${topCategories}`)
+    console.log(`top categories -- ${topCategories}`);
     const pipelinePro = [
       // Match active products only (optional)
       {
@@ -220,10 +220,10 @@ const adminDashboard = async (req, res, next) => {
       },
     ];
     let topProducts = await Products.aggregate(pipelinePro).exec();
-    console.log(`top 10 products -- ${topProducts}`)
+    console.log(`top 10 products -- ${topProducts}`);
 
     res.render("dashboard", {
-      orderData,
+      orderData: JSON.stringify(orderData),
       revenue,
       totalOrders,
       totalProducts,
@@ -246,18 +246,18 @@ const salesChart = async (req, res) => {
         groupBy = {
           year: { $year: "$orderDate" },
           month: { $month: "$orderDate" },
-          day: { $dayOfMonth: "$orderDate" }
+          day: { $dayOfMonth: "$orderDate" },
         };
         break;
       case "month":
         groupBy = {
           year: { $year: "$orderDate" },
-          month: { $month: "$orderDate" }
+          month: { $month: "$orderDate" },
         };
         break;
       case "year":
         groupBy = {
-          year: { $year: "$orderDate" }
+          year: { $year: "$orderDate" },
         };
         break;
       default:
@@ -267,18 +267,18 @@ const salesChart = async (req, res) => {
     const pipeline = [
       {
         $match: {
-          paymentStatus: "Success"
-        }
+          paymentStatus: "Success",
+        },
       },
       {
         $group: {
           _id: groupBy,
-          totalSales: { $sum: "$payableAmount" }
-        }
+          totalSales: { $sum: "$payableAmount" },
+        },
       },
       {
-        $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 }
-      }
+        $sort: { "_id.year": 1, "_id.month": 1, "_id.day": 1 },
+      },
     ];
 
     const results = await Orders.aggregate(pipeline);
@@ -288,7 +288,6 @@ const salesChart = async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 };
-
 
 const downloadSalesReport = async (req, res) => {
   try {
@@ -508,7 +507,6 @@ const downloadSalesReport = async (req, res) => {
     res.status(500).send("Error generating sales report");
   }
 };
-
 
 const userManagement = async (req, res, next) => {
   try {

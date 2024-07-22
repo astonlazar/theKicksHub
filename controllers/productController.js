@@ -141,8 +141,8 @@ const editProduct = async (req, res) => {
   try {
     let productId = req.params.id;
     console.log(`--productId - ${productId}`);
-    let productData = await Product.findById(productId);
-    let categoryData = await Category.find();
+    let productData = await Product.findById(productId).populate('category')
+    let categoryData = await Category.find({isActive: true});
     res.render("edit-product", { productData, categoryData });
   } catch (err) {
     console.log(`--error in editProduct ${err}`);

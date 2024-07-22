@@ -291,47 +291,30 @@
                 </header>
                 <div class="card-body">
                     <div class="table-responsive">
-                        <!-- <div class="table-responsive"> -->
-                            <div style="max-height: 430px; overflow-y: auto;">
-                                <table class="table align-middle table-nowrap mb-0" style="table-layout: fixed; width: 100%;">
-                                    <thead class="table-light" style="display: block;">
-                                        <tr>
-                                            <th class="align-middle" scope="col" style="width: 15%;">Order ID</th>
-                                            <th class="align-middle" scope="col" style="width: 20%;">Billing Name</th>
-                                            <th class="align-middle" scope="col" style="width: 15%;">Date</th>
-                                            <th class="align-middle" scope="col" style="width: 15%;">Total</th>
-                                            <th class="align-middle" scope="col" style="width: 15%;">Payment Status</th>
-                                            <th class="align-middle" scope="col" style="width: 10%;">Payment Method</th>
-                                            <th class="align-middle" scope="col" style="width: 10%;">View Details</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody style="display: block; max-height: 350px; overflow-y: auto;">
-                                        <% orderData.forEach(data => { %>
-                                        <tr>
-                                            <td style="width: 15%;"><a href="#" class="fw-bold"> <%= data.orderId %></a> </td>
-                                            <td style="width: 20%;"><%= data.address.fullName %></td>
-                                            <td style="width: 15%;">
-                                                <%= data.orderDate.toISOString().split('T')[0] %>
-                                            </td>
-                                            <td style="width: 15%;">₹<%= data.payableAmount %></td>
-                                            <td style="width: 15%;">
-                                                <span class="badge badge-pill badge-soft-success"><%= data.paymentStatus %></span>
-                                            </td>
-                                            <td style="width: 10%;">
-                                                <i class="material-icons md-payment font-xxl text-muted mr-5"></i> <%= data.paymentMethod %>
-                                            </td>
-                                            <td style="width: 10%;">
-                                                <a href="/admin/orders/details?orderId=<%= data.orderId %>" class="btn btn-xs"> View details</a>
-                                            </td>
-                                        </tr>
-                                        <% }) %>
-                                    </tbody>
-                                </table>
-                            </div>
-                            
-                        <!-- </div> -->
-                    </div> <!-- table-responsive end// -->
+                        <table id="orderTable" class="table align-middle table-nowrap mb-0" style="table-layout: fixed; width: 100%;">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="align-middle" scope="col" style="width: 15%;">Order ID</th>
+                                    <th class="align-middle" scope="col" style="width: 20%;">Billing Name</th>
+                                    <th class="align-middle" scope="col" style="width: 15%;">Date</th>
+                                    <th class="align-middle" scope="col" style="width: 15%;">Total</th>
+                                    <th class="align-middle" scope="col" style="width: 15%;">Payment Status</th>
+                                    <th class="align-middle" scope="col" style="width: 10%;">Payment Method</th>
+                                    <th class="align-middle" scope="col" style="width: 10%;">View Details</th>
+                                </tr>
+                            </thead>
+                            <tbody id="orderTableBody">
+                                <!-- Order data will be inserted here by JavaScript -->
+                            </tbody>
+                        </table>
+                        <div class="pagination" style="margin-top: 10px; text-align: center;">
+                            <button id="prevPage" class="btn btn-sm btn-primary" style="margin-right: 10px;" onclick="prevPage()">Previous</button>
+                            <span id="pageInfo">Page 1</span>
+                            <button id="nextPage" class="btn btn-sm btn-primary" style="margin-left: 10px;" onclick="nextPage()">Next</button>
+                        </div>
+                    </div>
                 </div>
+                
             </div>
             <!-- <div class="pagination-area mt-30 mb-50">
                 <nav aria-label="Page navigation example">
@@ -370,6 +353,66 @@
     <!-- Main Script -->
     <script src="/admin/assets/js/main.js" type="text/javascript"></script>
     <script src="/admin/assets/js/custom-chart.js" type="text/javascript"></script>
+    <script>
+        // Parse the JSON string safely
+        function decodeHtmlEntities(text) {
+        const txt = document.createElement('textarea');
+        txt.innerHTML = text;
+        return txt.value;
+    }
+
+    const rawOrderData = "<%= orderData %>";
+
+    const decodedOrderData = decodeHtmlEntities(rawOrderData);
+    const orderData = JSON.parse(decodedOrderData);
+    console.log(typeof orderData);
+    console.log(orderData);
+
+const itemsPerPage = 10;
+let currentPage = 1;
+
+function renderTable(data, page = 1) {
+    const tableBody = document.getElementById('orderTableBody');
+    tableBody.innerHTML = '';
+
+    const start = (page - 1) * itemsPerPage;
+    const end = start + itemsPerPage;
+    const paginatedItems = data.slice(start, end);
+
+    paginatedItems.forEach(item => {
+        const row = `<tr>
+                        <td style="width: 15%;"><a href="#" class="fw-bold">${item.orderId}</a></td>
+                        <td style="width: 20%;">${item.address.fullName}</td>
+                        <td style="width: 15%;">${new Date(item.orderDate).toISOString().split('T')[0]}</td>
+                        <td style="width: 15%;">₹${item.payableAmount}</td>
+                        <td style="width: 15%;"><span class="badge badge-pill badge-soft-success">${item.paymentStatus}</span></td>
+                        <td style="width: 10%;"><i class="material-icons md-payment font-xxl text-muted mr-5"></i> ${item.paymentMethod}</td>
+                        <td style="width: 10%;"><a href="/admin/orders/details?orderId=${item.orderId}" class="btn btn-xs">View details</a></td>
+                     </tr>`;
+        tableBody.innerHTML += row;
+    });
+
+    document.getElementById('pageInfo').textContent = `Page ${page} of ${Math.ceil(data.length / itemsPerPage)}`;
+}
+
+function nextPage() {
+    if ((currentPage * itemsPerPage) < orderData.length) {
+        currentPage++;
+        renderTable(orderData, currentPage);
+    }
+}
+
+function prevPage() {
+    if (currentPage > 1) {
+        currentPage--;
+        renderTable(orderData, currentPage);
+    }
+}
+
+// Initial render
+renderTable(orderData);
+
+    </script>
     <script>
         document.getElementById("orderFilter").addEventListener("click", (e) => {
             e.preventDefault();
@@ -509,15 +552,28 @@
             });
             const data = await response.json();
 
-            const labels = data.map(d => {
-                if (period === "day") {
-                return new Date(d._id).toLocaleDateString();
-                } else if (period === "month") {
-                return `${d._id.year}-${String(d._id.month).padStart(2, '0')}`;
-                } else {
-                return d._id.year;
+            // const labels = data.map(d => {
+            //     if (period === "day") {
+            //     return new Date(d._id).toLocaleDateString();
+            //     } else if (period === "month") {
+            //     return `${d._id.year}-${String(d._id.month).padStart(2, '0')}`;
+            //     } else {
+            //     return d._id.year;
+            //     }
+            // });
+            let labels = [];
+            if (period === "day") {
+                const today = new Date();
+                for (let i = 4; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(today.getDate() - i);
+                    labels.push(date.toLocaleDateString());
                 }
-            });
+            } else if (period === "month") {
+                labels = data.map(d => `${d._id.year}-${String(d._id.month).padStart(2, '0')}`);
+            } else {
+                labels = data.map(d => d._id.year);
+            }
 
             const salesData = data.map(d => d.totalSales);
 

@@ -195,8 +195,11 @@
                                 <div class="col-sm-12 mb-3">
                                     <!-- <label class="form-label">Category</label> -->
                                     <select class="form-select" id="product_category" name="product_category">
+                                        <option value="<%= productData.category._id %>"><%= productData.category.categoryName%></option>  
                                       <% categoryData.forEach((cat) => { %>
-                                      <option value="<%=cat._id%>"><%= cat.categoryName %></option>
+                                        <% if(productData.category.categoryName !== cat.categoryName){ %>
+                                            <option value="<%=cat._id%>"><%= cat.categoryName %></option>
+                                        <% } %>
                                       <% }) %>
                                   </select>
                                     <!--  -->
