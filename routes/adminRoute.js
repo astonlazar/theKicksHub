@@ -20,6 +20,7 @@ adminRoute.post("/", adminController.adminLoginInsert);
 adminRoute.get("/dashboard", auth.isLogin, adminController.adminDashboard);
 adminRoute.put("/dashboard/chart", auth.isLogin, adminController.salesChart)
 adminRoute.put("/download-sales-report", adminController.downloadSalesReport)
+adminRoute.put("/download-sales-report-excel", adminController.downloadSalesReportExcel)
 
 adminRoute.get(
   "/user-management",

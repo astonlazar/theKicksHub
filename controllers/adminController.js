@@ -5,6 +5,7 @@ const Orders = require("../models/orderModel");
 const Products = require("../models/productModel");
 const Categories = require("../models/categoryModel");
 const PDFDocument = require("pdfkit");
+const ExcelJS = require('exceljs');
 
 const adminLoginPage = (req, res, next) => {
   try {
@@ -95,23 +96,16 @@ const adminDashboard = async (req, res, next) => {
       endDate.setHours(23, 59, 59, 999); // Ensure the end date includes the whole day
 
       console.log("Date range -- ", startDate, endDate);
-      orderData = await Orders.aggregate([
-        {
-          $match: {
-            orderDate: { $gte: startDate, $lte: endDate },
-          },
-        },
-        {
-          $sort: { orderDate: -1 },
-        },
-      ]);
+      orderData = await Orders.find({
+        orderDate: { $gte: startDate, $lte: endDate }
+      })
+      .sort({ orderDate: -1 })
+      // .populate('products.productId')
       console.log("--loading admin dashboard after filtering");
     } else {
-      orderData = await Orders.aggregate([
-        {
-          $sort: { orderDate: -1 },
-        },
-      ]);
+      orderData = await Orders.find()
+      .sort({ orderDate: -1 })
+      // .populate('products.productId')
       console.log("--loading admin dashboard without filtering");
     }
     let revenue = totalRevenue[0].totalPayableAmount;
@@ -508,6 +502,139 @@ const downloadSalesReport = async (req, res) => {
   }
 };
 
+const downloadSalesReportExcel = async (req, res) => {
+  try {
+    const { startDate, endDate } = req.body;
+
+    let dateFilter = {};
+    if (startDate && endDate) {
+      dateFilter = {
+        orderDate: {
+          $gte: new Date(startDate),
+          $lte: new Date(endDate),
+        },
+      };
+    }
+
+    const orders = await Orders.aggregate([
+      { $match: dateFilter },
+      {
+        $lookup: {
+          from: "products",
+          localField: "products.productId",
+          foreignField: "_id",
+          as: "productDetails",
+        },
+      },
+      { $unwind: "$products" },
+      { $unwind: "$productDetails" },
+      {
+        $addFields: {
+          "products.formattedDate": {
+            $function: {
+              body: `function(date) {
+                const options = { weekday: 'short', year: '2-digit', month: 'short', day: 'numeric' };
+                return new Date(date).toLocaleDateString('en-US', options);
+              }`,
+              args: ["$orderDate"],
+              lang: "js",
+            },
+          },
+        },
+      },
+      {
+        $group: {
+          _id: "$_id",
+          userId: { $first: "$userId" },
+          products: {
+            $push: {
+              productName: "$productDetails.productName",
+              productPrice: "$products.productPrice",
+              promo_price: "$productDetails.promo_price",
+              quantity: "$products.quantity",
+              productOrderStatus: "$products.status",
+              paymentStatus: "$products.paymentStatus",
+              paymentMethod: "$products.paymentMethod",
+              date: "$products.formattedDate",
+            },
+          },
+          payableAmount: { $first: "$payableAmount" },
+          address: { $first: "$address" },
+          orderDate: { $first: "$orderDate" },
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "userId",
+          foreignField: "_id",
+          as: "userDetails",
+        },
+      },
+      { $unwind: "$userDetails" },
+    ]);
+
+    if (!orders || orders.length === 0) {
+      console.log("Orders not found");
+      return res.status(404).send("No orders found");
+    }
+
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet('Order Report');
+
+    // Add headers
+    worksheet.columns = [
+      { header: 'Date', key: 'date', width: 15 },
+      { header: 'User', key: 'user', width: 20 },
+      { header: 'Product Name', key: 'productName', width: 25 },
+      { header: 'Product Price', key: 'productPrice', width: 15 },
+      { header: 'Discount', key: 'discount', width: 15 },
+      { header: 'Quantity', key: 'quantity', width: 10 },
+      { header: 'Total', key: 'total', width: 15 },
+      { header: 'Status', key: 'status', width: 15 },
+    ];
+
+    // Add data
+    orders.forEach((order) => {
+      order.products.forEach((product) => {
+        const productPrice = parseFloat(product.promo_price * product.quantity);
+        const discount = parseFloat(productPrice - product.productPrice);
+        const total = product.promo_price * product.quantity;
+
+        if (!product.productName || !product.promo_price || !product.quantity)
+          return;
+
+        worksheet.addRow({
+          date: product.date,
+          user: order.userDetails.userName,
+          productName: product.productName,
+          productPrice: product.promo_price.toFixed(2),
+          discount: discount.toFixed(2),
+          quantity: product.quantity.toString(),
+          total: total.toFixed(2),
+          status: product.productOrderStatus,
+        });
+      });
+    });
+
+    // Set response headers
+    const filename = `orders_report_${new Date().toISOString()}.xlsx`;
+    res.setHeader(
+      "Content-Disposition",
+      `attachment; filename="${filename}"`
+    );
+    res.setHeader("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+
+    // Write to response
+    await workbook.xlsx.write(res);
+    res.end();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send("Error generating sales report");
+  }
+};
+
+
 const userManagement = async (req, res, next) => {
   try {
     console.log(`--loading user management`);
@@ -586,6 +713,7 @@ module.exports = {
   adminDashboard,
   salesChart,
   downloadSalesReport,
+  downloadSalesReportExcel,
   userManagement,
   blockUser,
   unblockUser,

@@ -271,7 +271,8 @@
                             <button id="filterDate" class="btn btn-primary">Filter</button>
                         </div>
                         <div class="col-auto">
-                            <a id="pdfDownload" class="btn btn-primary"><i class="text-muted material-icons md-post_add"></i>Download Sales Report</a>
+                            <a id="pdfDownload" class="btn btn-primary">Download Sales Report PDF</a>
+                            <a id="excelDownload" class="btn btn-primary">Download Sales Report Excel</a>
                         </div>
                         <p id="filterError" class="text-danger"></p>
                     </div>
@@ -344,6 +345,8 @@
             </div>
         </footer>
     </main>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
     <script src="/admin/assets/js/vendors/jquery-3.6.0.min.js"></script>
     <script src="/admin/assets/js/vendors/bootstrap.bundle.min.js"></script>
     <script src="/admin/assets/js/vendors/select2.min.js"></script>
@@ -362,11 +365,11 @@
     }
 
     const rawOrderData = "<%= orderData %>";
-
+    // console.log(rawOrderData)
     const decodedOrderData = decodeHtmlEntities(rawOrderData);
     const orderData = JSON.parse(decodedOrderData);
     console.log(typeof orderData);
-    console.log(orderData);
+    // console.log(orderData);
 
 const itemsPerPage = 10;
 let currentPage = 1;
@@ -411,6 +414,7 @@ function prevPage() {
 
 // Initial render
 renderTable(orderData);
+
 
     </script>
     <script>
@@ -501,6 +505,42 @@ renderTable(orderData);
                         const a = document.createElement('a');
                         a.href = url;
                         a.download = 'sales_report.pdf';
+                        document.body.appendChild(a);
+                        a.click();
+                        a.remove();
+                        window.URL.revokeObjectURL(url);
+                    }else {
+                        console.error('Failed to download report');
+                    }
+                })
+                .catch(err => {
+                    console.log('Error -', err)
+                })
+            } else {
+                document.getElementById("filterError").textContent = 'Select dates to download the sales report'
+            }
+        })
+
+        document.getElementById('excelDownload').addEventListener('click', (e) => {
+            e.preventDefault();
+            let startDate = document.getElementById("startDate").value
+            let endDate = document.getElementById("endDate").value
+            console.log(startDate, endDate)
+            if(startDate && endDate){
+                fetch("/admin/download-sales-report-excel", {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': "application/json",
+                    },
+                    body: JSON.stringify({startDate: startDate, endDate: endDate})
+                })
+                .then(async response => {
+                    if(response.ok){
+                        const blob = await response.blob();
+                        const url = window.URL.createObjectURL(blob);
+                        const a = document.createElement('a');
+                        a.href = url;
+                        a.download = `orders_report_${new Date().toISOString()}.xlsx`;
                         document.body.appendChild(a);
                         a.click();
                         a.remove();
