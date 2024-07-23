@@ -410,15 +410,28 @@
                                                 </tr>
                                                 <tr>
                                                     <th>GST (12%)</th>
-                                                    <td class="product-subtotal" colspan="2">₹<%= (cartData.totalPrice * 0.12).toFixed(2) %></td>
+                                                    <td class="product-subtotal" colspan="2">₹<%= (cartData.totalPrice * 0.12).toFixed(2) %> <br>(Inclusive to the product price)</td>
                                                 </tr>
                                                 <tr>
                                                     <th>Shipping</th>
-                                                    <td colspan="2"><em>Free Shipping</em></td>
+                                                    <td colspan="2"><em>
+                                                        <% if(cartData.totalPrice < 10000){ %>
+                                                            ₹500
+                                                        <% } else { %>
+                                                        Free Shipping
+                                                        <% } %>
+                                                    </em></td>
                                                 </tr>
                                                 <tr>
                                                     <th>Total</th>
-                                                    <td colspan="2" class="product-subtotal"><span id="totalPrice" class="font-xl text-brand fw-900">₹<%= (cartData.totalPriceGST).toFixed(2) %></span></td>
+                                                    <td colspan="2" class="product-subtotal"><span id="totalPrice" class="font-xl text-brand fw-900">
+                                                        <% if(cartData.totalPrice < 10000){ %>
+                                                            ₹<%= (cartData.totalPrice + 500).toFixed(2) %>
+                                                        <% } else { %>
+                                                            ₹<%= (cartData.totalPrice).toFixed(2) %>
+                                                        <% } %>
+                                                        
+                                                    </span></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -1202,9 +1215,10 @@
     }
 }
 
-        let totalPrice = '<%= cartData.totalPriceGST %>';
+        let totalPrice = '<%= cartData.totalPrice < 10000 ? cartData.totalPrice + 500 : cartData.totalPrice %>';
         let couponApplied = 'x'
-        let oldTotalPrice = '<%= cartData.totalPriceGST %>';
+        let oldTotalPrice = '<%= cartData.totalPrice < 10000 ? cartData.totalPrice + 500 : cartData.totalPrice %>';
+        console.log('Total payable amount - ', totalPrice)
 
         document.getElementById('couponForm').addEventListener('submit', (event) => {
         event.preventDefault();

@@ -27,10 +27,14 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    referredByCode: {
+      type: String,
+      default: "none",
+    },
     referredBy: {
       type: String,
-      default: 'none'
-    }
+      default: "none",
+    },
   },
   { timestamps: true }
 );

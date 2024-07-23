@@ -131,7 +131,7 @@ const addToCart = async (req, res) => {
           },
         ],
         totalPrice: productPrice,
-        totalPriceGST: (productPrice + (productPrice * 0.12)).toFixed(2)
+        // totalPriceGST: (productPrice + (productPrice * 0.12)).toFixed(2)
       });
       await cart.save();
     } else {
@@ -160,7 +160,7 @@ const addToCart = async (req, res) => {
         0
       );
 
-      cart.totalPriceGST = (cart.totalPrice + (cart.totalPrice * 0.12))
+      // cart.totalPriceGST = (cart.totalPrice + (cart.totalPrice * 0.12))
 
       await cart.save();
     }
@@ -186,10 +186,10 @@ const removeFromCart = async (req, res) => {
     { $inc: { totalPrice: -productPrice } }
   );
 
-  let updateCartData = await Cart.findOne({userId: req.session.user._id})
+  // let updateCartData = await Cart.findOne({userId: req.session.user._id})
 
-  updateCartData.totalPriceGST -= productPrice * 0.12
-  await updateCartData.save()
+  // updateCartData.totalPriceGST -= productPrice * 0.12
+  // await updateCartData.save()
 
   if (!cartData) {
     console.log(`Cannot find cartData`);
@@ -230,14 +230,14 @@ const quantityUpdate = async (req, res) => {
             return res.json({
               message: "Max 10",
               total: cartData.totalPrice,
-              totalGST: cartData.totalPriceGST
+              // totalGST: cartData.totalPriceGST
             });
           }
         } else {
           return res.json({
             message: "product exceeded",
             total: cartData.totalPrice,
-            totalGST: cartData.totalPriceGST
+            // totalGST: cartData.totalPriceGST
           });
         }
       }
@@ -246,15 +246,15 @@ const quantityUpdate = async (req, res) => {
         (total, item) => total + item.productPrice * item.quantity,
         0
       );
-      cartData.totalPriceGST = (cartData.totalPrice + (cartData.totalPrice * 0.12))
+      // cartData.totalPriceGST = (cartData.totalPrice + (cartData.totalPrice * 0.12))
 
       let total = cartData.totalPrice;
-      let totalGST= cartData.totalPriceGST
+      // let totalGST= cartData.totalPriceGST
       await cartData.save();
       res.status(200).json({
         message: "quantity updated successfully",
         total: total,
-        totalGST: totalGST,
+        // totalGST: totalGST,
         products: cartData.product,
       });
     } else if (status === "DOWN") {
@@ -277,7 +277,7 @@ const quantityUpdate = async (req, res) => {
           return res.json({
             message: "Min 1",
             total: cartData.totalPrice,
-            totalGST: cartData.totalPriceGST
+            // totalGST: cartData.totalPriceGST
           });
         }
       }
@@ -287,13 +287,13 @@ const quantityUpdate = async (req, res) => {
         0
       );
 
-      cartData.totalPriceGST = (cartData.totalPrice + (cartData.totalPrice * 0.12))
+      // cartData.totalPriceGST = (cartData.totalPrice + (cartData.totalPrice * 0.12))
       let total = cartData.totalPrice;
-      let totalGST= cartData.totalPriceGST
+      // let totalGST= cartData.totalPriceGST
       await cartData.save();
       res
         .status(200)
-        .json({ message: "quantity updated successfully", total: total, totalGST: totalGST });
+        .json({ message: "quantity updated successfully", total: total });
     }
   } catch (error) {
     console.log(`Error in quantityUpdate -- ${error}`);
@@ -510,7 +510,7 @@ const placeOrder = async (req, res) => {
 
     cartData.product = [];
     cartData.totalPrice = 0;
-    cartData.totalPriceGST = 0
+    // cartData.totalPriceGST = 0
     await cartData.save();
 
     console.log(selectedAddress, orderedProducts);
@@ -622,7 +622,7 @@ const verifyPayment = async (req, res) => {
   
         cartData.product = [];
         cartData.totalPrice = 0;
-        cartData.totalPriceGST = 0
+        // cartData.totalPriceGST = 0
         await cartData.save();
 
       } else if(orderIdOfOrder) {

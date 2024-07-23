@@ -15,6 +15,8 @@ const Cart = require("../models/cartModel");
 const Wishlist = require("../models/wishlistModel");
 const Coupon = require("../models/couponModel");
 const PDFDocument = require("pdfkit");
+const PdfPrinter = require("pdfmake")
+const path = require("path")
 const fs = require("fs");
 
 // Store tokens and expiry times
@@ -277,6 +279,7 @@ const signupEnterPage = async (req, res) => {
           email: email,
           phoneNo: phoneNo,
           password: hashedPassword,
+          referredByCode: referredData.referralCode,
           referredBy: referredData.userName,
         };
       } else {
@@ -367,11 +370,29 @@ const verifyEnter = async (req, res) => {
     console.log(req.session.user);
     let walletData = await Wallet.findOne({ userId: req.session.user._id });
     if (!walletData) {
-      let newWallet = new Wallet({
-        userId: req.session.user._id,
-        walletBalance: 0,
-      });
-      await newWallet.save();
+      if(req.session.user.referredByCode !== 'none'){
+        let referredByUser = req.session.user.referredByCode;
+        let referredByUserData = await User.findOne({referralCode: referredByUser})
+        let walletDetails = await Wallet.findOne({userId: referredByUserData._id})
+        walletDetails.walletBalance += 100;
+        walletDetails.transactions.unshift({type: "credit", amount: 100})
+        await walletDetails.save()
+        let newWallet = new Wallet({
+          userId: req.session.user._id,
+          walletBalance: 100,
+          transactions: [{
+            type: "credit",
+            amount: 100,
+          }]
+        });
+        await newWallet.save();
+      } else {
+        let newWallet = new Wallet({
+          userId: req.session.user._id,
+          walletBalance: 0,
+        });
+        await newWallet.save();
+      }
     }
     res.redirect("/");
   } else {
@@ -713,6 +734,7 @@ const loadOrderDetails = async (req, res) => {
   }
 };
 
+
 const generateInvoice = async (req, res) => {
   const { orderId } = req.body; // Extract orderId from request body
 
@@ -726,76 +748,101 @@ const generateInvoice = async (req, res) => {
       return res.status(404).send("Order not found");
     }
 
-    // Create a new PDF document
-    const doc = new PDFDocument();
-    const buffers = [];
-
-    // Collect PDF buffers
-    doc.on("data", buffers.push.bind(buffers));
-    doc.on("end", () => {
-      const pdfData = Buffer.concat(buffers);
-      res.setHeader("Content-Type", "application/pdf");
-      res.setHeader(
-        "Content-Disposition",
-        `attachment; filename=invoice_${orderId}.pdf`
-      );
-      res.send(pdfData);
-    });
-
-    // Set up PDF document
-    doc.fontSize(25).text("Invoice", { align: "center" });
-    doc.moveDown();
-
-    // Invoice Details
-    doc.fontSize(18).text("Invoice Details", { underline: true });
-    doc.moveDown();
-    doc.fontSize(12).text(`Order ID: ${order.orderId}`);
-    doc.text(`Order Date: ${order.orderDate}`);
-    doc.text(`Payment Method: ${order.paymentMethod}`);
-    doc.text(`Payment Status: ${order.paymentStatus}`);
-    doc.text(`Payable Amount: $${order.payableAmount}`);
-    doc.moveDown();
-
-    // Shipping Address
-    doc.fontSize(18).text("Shipping Address", { underline: true });
-    doc.moveDown();
-    const address = order.address;
-    doc.fontSize(12).text(`Full Name: ${address.fullName}`);
-    doc.text(`Address Line 1: ${address.addressLine1}`);
-    if (address.addressLine2)
-      doc.text(`Address Line 2: ${address.addressLine2}`);
-    doc.text(`City: ${address.city}`);
-    doc.text(`State: ${address.state}`);
-    doc.text(`Pincode: ${address.pincode}`);
-    doc.text(`Phone: ${address.phoneNo}`);
-    doc.text(`Email: ${address.email}`);
-    doc.moveDown();
-
-    // Products
-    doc.fontSize(18).text("Products", { underline: true });
-    doc.moveDown();
-
-    order.products.forEach((product, index) => {
-      if (product.productId) {
-        // Check for valid productId
-        const { productName } = product.productId;
-        const productDetails = `- ${productName} (Qty: ${product.quantity}) ${
-          product.size ? ` - Size: ${product.size}` : ""
-        }`;
-        const productPriceLine = product.productPrice
-          ? ` (₹${product.productPrice})`
-          : "";
-        doc.fontSize(12).text(`${productDetails}${productPriceLine}`); // Combine product details and price
-        doc.moveDown(5); // Add some spacing between products
-      } else {
-        console.error(
-          `Product at index ${index} does not have a valid productId`
-        );
+    const fonts = {
+      Roboto: {
+        normal: 'Helvetica',
+        bold: 'Helvetica-Bold',
+        italics: 'Helvetica-Oblique',
+        bolditalics: 'Helvetica-BoldOblique'
       }
+    };
+
+       // Format the order date to "Tue Jul 16 2024"
+       const formattedOrderDate = new Date(order.orderDate).toDateString();
+
+    const printer = new PdfPrinter(fonts);
+
+    // Define the PDF document structure
+    const docDefinition = {
+      content: [
+        { text: 'Invoice', style: 'header', alignment: 'center' },
+        { text: 'Invoice Details', style: 'subheader' },
+        {
+          text: [
+            { text: 'Order ID: ', bold: true }, `${order.orderId}\n`,
+            { text: 'Order Date: ', bold: true }, `${formattedOrderDate}\n`,
+          ]
+        },
+        { text: 'Shipping Address', style: 'subheader' },
+        {
+          text: [
+            `${order.address.fullName}\n`,
+            `${order.address.addressLine1}\n`,
+            order.address.addressLine2 ? `${order.address.addressLine2 ? order.address.addressLine2 + '\n' : ''}`: '',
+            `${order.address.city}\n`,
+            `${order.address.state}\n`,
+            `${order.address.pincode}\n`,
+            { text: 'Phone: ', bold: true }, `${order.address.phoneNo}\n`,
+            { text: 'Email: ', bold: true }, `${order.address.email}\n`
+          ]
+        },
+        { text: 'Products', style: 'subheader' },
+        {
+          style: 'tableExample',
+          table: {
+            headerRows: 1,
+            body: [
+              ['Product Name', 'Quantity', 'Size', 'Price'],
+              ...order.products.map(product => {
+                const productName = product.productId ? product.productId.productName : 'Unknown';
+                const quantity = product.quantity;
+                const size = product.size || 'N/A';
+                const price = product.productPrice ? `₹${product.productPrice}` : 'N/A';
+                return [productName, quantity, size, price];
+              })
+            ]
+          }
+        },
+        { text: 'Payment Details', style: 'subheader' },
+        {
+          text: [
+            { text: 'Payment Method: ', bold: true }, `${order.paymentMethod}\n`,
+            { text: 'Payment Status: ', bold: true }, `${order.paymentStatus}\n`,
+            order.couponDiscount ? { text: 'Coupon Discount: ', bold: true } : '', `${order.couponDiscount ? `₹${order.couponDiscount}\n` : ''}`,
+            { text: 'Payable Amount: ', bold: true }, `₹${order.payableAmount}`
+          ]
+        }
+      ],
+      styles: {
+        header: {
+          fontSize: 25,
+          bold: true,
+          margin: [0, 20, 0, 10]
+        },
+        subheader: {
+          fontSize: 18,
+          bold: true,
+          margin: [0, 10, 0, 5]
+        },
+        tableExample: {
+          margin: [0, 5, 0, 15]
+        }
+      }
+    };
+
+    // Create the PDF document
+    const pdfDoc = printer.createPdfKitDocument(docDefinition);
+
+    const chunks = [];
+    pdfDoc.on('data', chunk => chunks.push(chunk));
+    pdfDoc.on('end', () => {
+      const result = Buffer.concat(chunks);
+      res.setHeader('Content-Type', 'application/pdf');
+      res.setHeader('Content-Disposition', `attachment; filename=invoice_${orderId}.pdf`);
+      res.send(result);
     });
 
-    // Finalize the PDF and end the stream
-    doc.end();
+    pdfDoc.end();
   } catch (error) {
     console.error("Error generating invoice:", error);
     res.status(500).send("Internal Server Error");

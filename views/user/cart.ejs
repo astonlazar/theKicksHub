@@ -576,21 +576,28 @@
                                                     </td>
                                                 </tr>
                                                 <tr>
-                                                    <td class="cart_total_label">GST (12%)</td>
-                                                    <td class="cart_total_amount">
-                                                        <span id="gstAmount" class="font-lg fw-900 text-brand">₹ <%= (cart.totalPrice * 0.12).toFixed(2) %></span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
                                                     <td class="cart_total_label">Shipping</td>
                                                     <td class="cart_total_amount">
-                                                        <i class="ti-gift mr-5"></i> Free Shipping
+                                                        <i class="ti-gift mr-5"></i>
+                                                        <span id="shippingDiv">
+                                                            <% if(cart.totalPrice < 10000) { %>
+                                                                ₹500
+                                                            <% }else{ %>
+                                                             Free Shipping
+                                                             <% } %>
+                                                        </span>
                                                     </td>
                                                 </tr>
                                                 <tr>
                                                     <td class="cart_total_label">Total</td>
                                                     <td class="cart_total_amount">
-                                                        <strong><span id="payTotalPrice" class="font-xl fw-900 text-brand">₹ <%= (cart.totalPriceGST).toFixed(2) %></span></strong>
+                                                        <strong><span id="payTotalPrice" class="font-xl fw-900 text-brand">
+                                                            <% if(cart.totalPrice < 10000) { %>
+                                                                ₹ <%= (cart.totalPrice + 500).toFixed(2) %>
+                                                            <% }else{ %>
+                                                                ₹ <%= (cart.totalPrice).toFixed(2) %>
+                                                             <% } %>
+                                                             </span></strong>
                                                     </td>
                                                 </tr>
                                             </tbody>
@@ -831,11 +838,16 @@
       })
       if(response.ok){
         let data = await response.json()
-        document.getElementById('totalPrice').innerText = (data.total).toFixed(2);
-        document.getElementById('gstAmount').innerText = (data.total * 0.12).toFixed(2)
-        document.getElementById('payTotalPrice').innerText = (data.totalGST).toFixed(2);
+        document.getElementById('totalPrice').innerText = '₹ '+(data.total).toFixed(2);
+        
+        if(data.total < 10000){
+            document.getElementById('shippingDiv').innerText = '₹500'
+            document.getElementById('payTotalPrice').innerText = '₹ '+(data.total + 500).toFixed(2);
+        } else {
+            document.getElementById('shippingDiv').innerText = 'Free Shipping'
+            document.getElementById('payTotalPrice').innerText = '₹ '+(data.total).toFixed(2);
+        }
         console.log(data.total)
-        console.log(data.totalGST)
         console.log(data.message)
         if(data.message === 'product exceeded'){
             await Swal.fire(

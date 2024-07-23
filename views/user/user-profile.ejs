@@ -193,7 +193,7 @@
                                             <a class="nav-link" id="account-detail-tab" data-bs-toggle="tab" href="#account-detail" role="tab" aria-controls="account-detail" aria-selected="true"><i class="fi-rs-user mr-10"></i>Account details</a>
                                         </li>
                                         <li class="nav-item">
-                                            <a class="nav-link" id="referral-tab" data-bs-toggle="tab" href="#referral" role="tab" aria-controls="referral" aria-selected="true"><i class="fi-rs-share mr-10"></i>Referals</a>
+                                            <a class="nav-link" id="referral-tab" data-bs-toggle="tab" href="#referral" role="tab" aria-controls="referral" aria-selected="true"><i class="fi-rs-share mr-10"></i>Referrals</a>
                                         </li>
                                         <li class="nav-item">
                                             <a class="nav-link" id="wallet-tab" data-bs-toggle="tab" href="#wallet" role="tab" aria-controls="wallet" aria-selected="true"><i class="fi-rs-money mr-10"></i>Wallet</a>
@@ -467,7 +467,10 @@
                                     <div class="tab-pane fade" id="referral" role="tabpanel" aria-labelledby="referral-tab">
                                         <div class="card">
                                             <div class="card-header">
-                                                <h5 class="mb-0">Referal Code </h5>
+                                                <h4 class="mb-0">Referral Code </h5>
+                                            </div>
+                                            <div>
+                                                <h6>Referred by <%=userData.referredBy %></h6>
                                             </div>
                                             <div class="card-body">
                                                 <% if(userData.referralCode){ %>
