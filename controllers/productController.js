@@ -83,11 +83,11 @@ const addedProduct = async (req, res) => {
 
     if (productCheck.length !== 0) {
       console.log("Product exists");
-      return res.status(400).json({ message: "Product already exists" });
+      return res.status(400);
     } else {
       await Product.insertMany(productData);
       console.log("Product inserted successfully");
-      return res.status(200).json({ message: "Product added successfully" });
+      return res.status(200);
     }
   } catch (err) {
     console.log(`Error in addedProduct: ${err}`);

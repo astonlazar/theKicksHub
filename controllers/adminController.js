@@ -360,6 +360,15 @@ const downloadSalesReport = async (req, res) => {
       return res.status(404).send("No orders found");
     }
 
+    // Calculate total revenue and number of orders
+    let totalRevenue = 0;
+    orders.forEach(order => {
+      order.products.forEach(product => {
+        totalRevenue += product.promo_price * product.quantity;
+      });
+    });
+    const totalOrders = orders.length;
+
     const doc = new PDFDocument({ margin: 30, size: "A4" });
     let filename = `orders_report_${new Date().toISOString()}.pdf`;
     filename = encodeURIComponent(filename);
@@ -376,6 +385,11 @@ const downloadSalesReport = async (req, res) => {
     // Header
     doc.fontSize(25).text("Order Report", { align: "center" }).moveDown(2);
 
+    // Summary
+    doc.fontSize(12).font("Helvetica-Bold").fill("#333");
+    doc.text(`Total Orders: ${totalOrders}`);
+    doc.text(`Total Revenue: ₹${totalRevenue.toFixed(2)}`).moveDown(2);
+
     // Table header
     doc.fontSize(12).font("Helvetica-Bold").fill("#333");
     const headers = [
@@ -389,7 +403,7 @@ const downloadSalesReport = async (req, res) => {
       "Status",
     ];
     const headerXPositions = [10, 60, 130, 230, 320, 390, 460, 530];
-    const headerYPosition = 150;
+    const headerYPosition = 250; // Moved down to accommodate summary
     const rowHeight = 50;
 
     headers.forEach((header, i) => {
@@ -502,6 +516,7 @@ const downloadSalesReport = async (req, res) => {
   }
 };
 
+
 const downloadSalesReportExcel = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -579,8 +594,22 @@ const downloadSalesReportExcel = async (req, res) => {
       return res.status(404).send("No orders found");
     }
 
+    // Calculate total revenue and number of orders
+    let totalRevenue = 0;
+    orders.forEach(order => {
+      order.products.forEach(product => {
+        totalRevenue += product.promo_price * product.quantity;
+      });
+    });
+    const totalOrders = orders.length;
+
     const workbook = new ExcelJS.Workbook();
     const worksheet = workbook.addWorksheet('Order Report');
+
+    // Add summary
+    worksheet.addRow(['Total Orders', totalOrders]);
+    worksheet.addRow(['Total Revenue', `₹${totalRevenue.toFixed(2)}`]);
+    worksheet.addRow([]); // Empty row for spacing
 
     // Add headers
     worksheet.columns = [

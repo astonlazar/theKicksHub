@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Evara - eCommerce HTML Template</title>
+    <title>theKicksHub</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -65,7 +65,7 @@
             <div class="container">
                 <div class="header-wrap">
                     <div class="logo logo-width-1">
-                        <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                        <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
                     </div>
                     <div class="header-right">
                         <div class="search-style-2">
@@ -113,7 +113,6 @@
                             </nav>
                         </div>
                     </div>
-                    <p class="mobile-promotion">Happy <span class="text-brand">Mother's Day</span>. Big Sale Up to 40%</p>
                     <div class="header-action-right d-block d-lg-none">
                         <div class="header-action-2">
                             <div class="header-action-icon-2">
@@ -207,10 +206,11 @@
               <div class="content-header">
                 <div class="d-flex justify-content-between align-items-center">
                     <h2 class="content-title card-title">Order detail</h2>
-                    <% if(orderData.paymentStatus === 'Success') { %>
-                    <a id="pdfDownload" class="btn btn-primary">
-                      Download Invoice
-                    </a>
+                    
+                    <% if(orderData.products.every(product => product['status'] === 'Delivered')) { %>
+                        <a id="pdfDownload" class="btn btn-primary">
+                            Download Invoice
+                          </a>
                     <% } %>
                   </div>
                   
@@ -286,7 +286,7 @@
                                         <% orderData.products.forEach(product => { %>
                                           <tr>
                                               <td>
-                                                  <a class="itemside" href="#">
+                                                  <a class="itemside" href="/product-view/<%= product.productId._id %>">
                                                       <div class="left">
                                                           <img src="/uploads/<%= product.productId.productImage[0] %>" width="40" height="40" class="img-xs" alt="Item">
                                                       </div>
@@ -311,18 +311,20 @@
                                                             <dt>Coupon:</dt>
                                                           <dd style="font-weight: bold;">Coupon not applied</dd>
                                                           <% } %>
-                                                    <!-- </dl>
-                                                    <% 
-  let couponAmt = couponData ? (orderData.payableAmount - orderData.payableAmount * (couponData.discountPercentage/100)) : 0;
-  let subtotal = (orderData.payableAmount + Number((orderData.payableAmount * 0.12).toFixed(2)) + couponAmt).toFixed(2);
-%>
-<dl class="dlist">
-  <dt>Subtotal:</dt>
-  <dd style="font-weight: bold;">₹<%= subtotal %></dd>
-</dl> -->
+                                                    </dl>
+                                                    <dl class="dlist">
+                                                        <dt>GST(12%):</dt>
+                                                        <dd style="font-weight: bold;">₹<%= (orderData.payableAmount * 0.12).toFixed(2) %></dd>
+                                                    </dl>
                                                       <dl class="dlist">
                                                           <dt>Shipping cost:</dt>
-                                                          <dd style="font-weight: bold;">Free Delivery</dd>
+                                                          <dd style="font-weight: bold;">
+                                                            <% if(orderData.freeShipping){ %>
+                                                                Free Delivery
+                                                            <% } else { %>
+                                                                ₹500
+                                                            <% } %>
+                                                        </dd>
                                                       </dl>
                                                       <dl class="dlist">
                                                           <dt>Grand total:</dt>
@@ -375,7 +377,7 @@
                     <div class="col-lg-4 col-md-6">
                         <div class="widget-about font-md mb-md-5 mb-lg-0">
                             <div class="logo logo-width-1 wow fadeIn animated">
-                                <a href="index.html"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
+                                <a href="/"><img src="/user/assets/imgs/theme/logo.svg" alt="logo"></a>
                             </div>
                             <h5 class="mt-20 mb-10 fw-600 text-grey-4 wow fadeIn animated">Contact</h5>
                             <p class="wow fadeIn animated">
@@ -481,6 +483,7 @@
     <script src=".//user/assets/js/main.js?v=3.4"></script>
     <script src=".//user/assets/js/shop.js?v=3.4"></script>
     <script>
+        
         document.getElementById("pdfDownload").addEventListener('click', (e) => {
           e.preventDefault();
       

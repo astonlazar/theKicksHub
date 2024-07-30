@@ -447,12 +447,14 @@ const placeOrder = async (req, res) => {
       selectedPaymentMethod,
       totalPrice,
       couponApplied,
+      freeShipping
     } = req.body;
     console.log(
       selectedAddressIndex,
       selectedPaymentMethod,
       totalPrice,
-      couponApplied
+      couponApplied,
+      freeShipping
     );
 
     const addressData = await Address.findOne({ userId: req.session.user._id });
@@ -487,6 +489,7 @@ const placeOrder = async (req, res) => {
       products: orderedProducts,
       address: selectedAddress,
       coupon: couponApplied,
+      freeShipping: freeShipping,
       payableAmount: totalPrice,
       paymentMethod: selectedPaymentMethod,
       paymentStatus: "Pending",
@@ -550,7 +553,8 @@ const verifyPayment = async (req, res) => {
       selectedPaymentMethod,
       totalPrice,
       couponApplied,
-      orderIdOfOrder
+      orderIdOfOrder,
+      freeShipping,
     } = req.body;
 
     const body = razorpay_order_id + "|" + razorpay_payment_id;
@@ -599,6 +603,7 @@ const verifyPayment = async (req, res) => {
           products: orderedProducts,
           address: selectedAddress,
           coupon: couponApplied,
+          freeShipping: freeShipping,
           payableAmount: totalPrice,
           paymentMethod: selectedPaymentMethod,
           paymentStatus: "Success",
@@ -649,10 +654,6 @@ const verifyPayment = async (req, res) => {
   }
 };
 
-
-const placeOrderWithoutPayment = (req, res) => {
-
-}
 module.exports = {
   loadCart,
   addToCart,

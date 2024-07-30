@@ -3,6 +3,7 @@ const GoogleStrategy = require("passport-google-oauth2").Strategy;
 require("dotenv").config();
 const User = require("../models/userModel");
 const hashing = require("../helpers/passwordHash");
+const crypto = require("crypto")
 
 passport.serializeUser((user, done) => {
   done(null, user);
@@ -30,6 +31,10 @@ passport.use(
         const newGenPassword = await hashing.hashPassword(
           Math.random().toString()
         );
+        const referralCode =  await crypto
+        .randomBytes(3)
+        .toString("hex")
+        .toUpperCase();
         console.log(newGenPassword);
         if (!user) {
           user = await User.create({
@@ -39,6 +44,7 @@ passport.use(
             isActive: true, // Assuming isBlocked is optional and default value is false
             password: newGenPassword,
             phoneNo: "", // Assuming mobile is optional and empty string
+            referralCode: referralCode,
           });
         } 
 

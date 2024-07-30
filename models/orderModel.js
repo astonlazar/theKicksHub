@@ -100,6 +100,10 @@ const orderSchema = new mongoose.Schema(
     coupon: {
       type: String,
     },
+    freeShipping: {
+      type: Boolean,
+      required: true,
+    },
     paymentMethod: {
       type: String,
       enum: ["COD", "RazorPay"],

@@ -18,6 +18,7 @@ const PDFDocument = require("pdfkit");
 const PdfPrinter = require("pdfmake")
 const path = require("path")
 const fs = require("fs");
+const referralSender = require("../helpers/referralSender")
 
 // Store tokens and expiry times
 const resetTokens = {};
@@ -58,12 +59,6 @@ const resetPassword = (req, res) => {
     return res.status(400).send("Token expired or invalid");
   }
   res.render("resetpassword", { token });
-  // res.send(`
-  //   <form action="/reset-password/${token}" method="POST">
-  //     <input type="password" name="password" placeholder="Enter new password" required>
-  //     <button type="submit">Reset Password</button>
-  //   </form>
-  // `);
 };
 
 const postResetPassword = async (req, res) => {
@@ -143,113 +138,6 @@ const loginEnterPage = async (req, res) => {
     console.log(err);
   }
 };
-
-// const signupEnterPage = async (req, res) => {
-//   try {
-//     let { userName, email, phoneNo, password, confirmPassword } = req.body;
-//     const checkUser = await User.findOne({
-//       $or: [{ email: email }, { phoneNo: phoneNo }],
-//     });
-//     console.log(checkUser);
-//     if (checkUser) {
-//       res.render("signup", {
-//         signupError: "User already exists!",
-//       });
-//     } else {
-//       const strongpass = await strongPassword.sPassword(password);
-//       console.log(strongpass);
-//       const hashedPassword = await hashing.hashPassword(password);
-//       console.log("--password hashing");
-//       const userData = {
-//         userName: userName,
-//         email: email,
-//         phoneNo: phoneNo,
-//         password: hashedPassword,
-//       };
-
-//       req.session.temp = userData;
-//       console.log(req.session.temp.email);
-//       console.log(`req.session.temp-- ${req.session.temp}`);
-//       // req.session.temp.otp = otpSender.generate();
-//       // await otpSender.sendEmail(userData.email, req.session.temp.otp);
-//       let otp = await OtpVerification(userData.email)
-//       req.session.temp.otpExpire = Date.now() + (60 * 1000);
-//       req.session.temp.email = userData.email;
-//       req.session.temp.otp = otp
-//       // console.log(req.session.temp.otp);
-//       console.log("--temporary session loading");
-//       res.redirect("/verification");
-//     }
-//     // }
-//   } catch (err) {
-//     console.log(err);
-//   }
-// };
-
-// const OtpVerification = async (email) => {
-
-//     let otp = otpSender.generate();
-
-//     await otpSender.sendEmail(email, otp);
-//     // req.session.temp.otp = otp;
-//     // req.session.temp.otpExpire = Date.now() + (60 * 1000);
-//     console.log('Otp send to mail - '+ email, otp);
-//     return otp;
-// }
-
-// const sendOtpfromEmail = async (req, res) => {
-//   try {
-//     let { email } = req.body;
-//     let otp = await OtpVerification(email)
-
-//     // let otp = otpSender.generate();
-//     req.session.temp.otp = null;
-//     console.log(req.session.temp.otp)
-//     // await otpSender.sendEmail(email, otp);
-//     req.session.temp.otp = otp;
-//     console.log(req.session.temp.otp)
-//     req.session.temp.otpExpire = Date.now() + (60 * 1000);
-//     // console.log('Otp send to mail - '+ email, req.session.temp.otp);
-//     res.status(200);
-//   } catch (err) {
-//     console.log(`Error in sendOtpfromEmail in userController -- ${err}`);
-//   }
-// };
-
-// const verificationPage = (req, res) => {
-//   res.render("verification", {
-//     otpError: "",
-//     userEmail: req.session.temp.email,
-//   });
-// };
-
-// const verifyEnter = async (req, res) => {
-//   const enteredOtp = req.body.otpCode;
-//   console.log(`Entered otp ${enteredOtp}`);
-//   const expOtp = req.session.temp.otpExpire;
-//   console.log(`the otp in verifyEnter -- ${req.session.temp.otp}`);
-//   if (enteredOtp === req.session.temp.otp && Date.now() < expOtp) {
-//     // const userData = req.session.temp;
-//     // const userEnteredData = await User.insertMany(req.session.temp)
-//     const userEnteredData = new User(req.session.temp);
-//     await userEnteredData.save();
-//     // console.log(`req.temp--- ${req.session.temp}`);
-//     // console.log(`userData--- ${userData}`);
-//     console.log("--user inserted to db--" + userEnteredData);
-//     req.session.user = userEnteredData;
-//     console.log(req.session.user);
-//     console.log(req.session.user.email);
-//     res.redirect('/')
-//   } else {
-//     console.log("Incorrect Otp");
-
-//     // res.status(500).json({otpError: "Incorrect OTP or Expired OTP", userEmail: req.session.temp.email})
-//     res.render("verification", {
-//       otpError: "Incorrect OTP or Expired OTP",
-//       userEmail: req.session.temp.email,
-//     });
-//   }
-// };
 
 const signupEnterPage = async (req, res) => {
   try {
@@ -468,7 +356,7 @@ const shop = async (req, res) => {
   try {
     let searchQuery = { isActive: true };
     let page = parseInt(req.query.page) || 1;
-    let limit = 6;
+    let limit = 9;
     let startIndex = (page - 1) * limit;
     let search = "";
     let categoryFilter = req.query.category || "";
@@ -708,6 +596,17 @@ const deleteAddress = async (req, res) => {
   }
 };
 
+const referralSend = async (req, res) => {
+  let { email,emailFrom, referralCode } = req.body;
+  console.log(`emailFriend - ${email}, emailFrom - ${emailFrom}, referralCode - ${referralCode}`)
+  let referralResponse = await referralSender.sendCodeEmail(email, emailFrom, referralCode)
+  if(referralResponse){
+    res.status(200).json({success: 'true',message: 'Success'})
+  } else {
+    res.status(500).json({message: 'Not Successfull'})
+  }
+}
+
 const loadOrderDetails = async (req, res) => {
   try {
     let orderId = req.query.orderId;
@@ -809,6 +708,8 @@ const generateInvoice = async (req, res) => {
             { text: 'Payment Method: ', bold: true }, `${order.paymentMethod}\n`,
             { text: 'Payment Status: ', bold: true }, `${order.paymentStatus}\n`,
             order.couponDiscount ? { text: 'Coupon Discount: ', bold: true } : '', `${order.couponDiscount ? `₹${order.couponDiscount}\n` : ''}`,
+            { text: 'Shipping: ', bold: true }, `${order.freeShipping ? `Free Shipping\n` : '₹500\n'}`,
+            { text: 'GST(12%)(Included): ', bold: true }, `₹${order.payableAmount * 0.12 +'\n'}`,
             { text: 'Payable Amount: ', bold: true }, `₹${order.payableAmount}`
           ]
         }
@@ -882,4 +783,5 @@ module.exports = {
   sendOtpfromEmail,
   loadOrderDetails,
   generateInvoice,
+  referralSend,
 };

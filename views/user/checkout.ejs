@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Evara - eCommerce HTML Template</title>
+    <title>theKicksHub</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -1051,7 +1051,8 @@
                                 selectedAddressIndex: selectedAddressIndex,
                                 selectedPaymentMethod: selectedPaymentMethod,
                                 totalPrice: totalPrice,
-                                couponApplied: couponApplied
+                                couponApplied: couponApplied,
+                                freeShipping: freeShipping,
                             }),
                         };
 
@@ -1103,7 +1104,8 @@
                                         selectedAddressIndex: selectedAddressIndex,
                                         selectedPaymentMethod: selectedPaymentMethod,
                                         totalPrice: totalPrice,
-                                        couponApplied: couponApplied
+                                        couponApplied: couponApplied,
+                                        freeShipping: freeShipping,
                                     })
                                 })
                                 .then(response => {
@@ -1168,7 +1170,8 @@
                     selectedAddressIndex: selectedAddressIndex,
                     selectedPaymentMethod: selectedPaymentMethod,
                     totalPrice: totalPrice,
-                    couponApplied: couponApplied
+                    couponApplied: couponApplied,
+                    freeShipping: freeShipping
                 })
             })
             .then(response => {
@@ -1216,9 +1219,11 @@
 }
 
         let totalPrice = '<%= cartData.totalPrice < 10000 ? cartData.totalPrice + 500 : cartData.totalPrice %>';
+        let freeShipping = '<%= cartData.totalPrice < 10000 ? false : true %>'
         let couponApplied = 'x'
         let oldTotalPrice = '<%= cartData.totalPrice < 10000 ? cartData.totalPrice + 500 : cartData.totalPrice %>';
         console.log('Total payable amount - ', totalPrice)
+        console.log('Free shipping - ', freeShipping)
 
         document.getElementById('couponForm').addEventListener('submit', (event) => {
         event.preventDefault();

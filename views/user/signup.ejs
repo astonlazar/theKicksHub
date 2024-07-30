@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Evara - eCommerce HTML Template</title>
+    <title>theKicksHub</title>
     <meta http-equiv="x-ua-compatible" content="ie=edge">
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -15,6 +15,8 @@
     <link rel="shortcut icon" type="image/x-icon" href="/user/assets/imgs/theme/favicon.svg">
     <!-- Template CSS -->
     <link rel="stylesheet" href="/user/assets/css/main.css?v=3.4">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 </head>
 
 <body>
@@ -93,9 +95,6 @@
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="/">Home</a>
                                 <ul class="dropdown">
                                     <li><a href="index.html">Home 1</a></li>
-                                    <li><a href="index-2.html">Home 2</a></li>
-                                    <li><a href="index-3.html">Home 3</a></li>
-                                    <li><a href="index-4.html">Home 4</a></li>
                                 </ul>
                             </li>
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="shop-grid-right.html">shop</a>
@@ -175,12 +174,6 @@
                                 </ul>
                             </li>
                             <li class="menu-item-has-children"><span class="menu-expand"></span><a href="#">Language</a>
-                                <ul class="dropdown">
-                                    <li><a href="#">English</a></li>
-                                    <li><a href="#">French</a></li>
-                                    <li><a href="#">German</a></li>
-                                    <li><a href="#">Spanish</a></li>
-                                </ul>
                             </li>
                         </ul>
                     </nav>
@@ -211,11 +204,6 @@
     <main class="main">
         <div class="page-header breadcrumb-wrap">
             <div class="container">
-                <div class="breadcrumb">
-                    <a href="/" rel="nofollow">Home</a>
-                    <span></span> Pages
-                    <span></span> Sign Up
-                </div>
             </div>
         </div>
         <section class="pb-150 pt-15 mt-30">
@@ -237,21 +225,27 @@
                             <p id="email-error" class="text-danger"></p>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="phoneNo" id="phoneNo" placeholder="Phone No." onkeypress="return isNumberKey(event)" onblur="validatePhoneNo()">
+                            <input type="text" name="phoneNo" id="phoneNo" placeholder="Phone No." onkeypress="return isNumberKey(event)" onblur="return validatePhoneNo()">
                             <p id="phoneno-error" class="text-danger"></p>
                         </div>
                         <div class="form-group">
-                            <input type="password" name="password" id="password" placeholder="Password" onblur="validatePassword()">
+                            <input type="password" name="password" id="password" placeholder="Password" onblur="return validatePassword()">
                             <p id="password-error" class="text-danger"></p>
                         </div>
                         <div class="form-group">
-                            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onblur="validateConfirmPassword()">
+                            <input type="password" name="confirmPassword" id="confirmPassword" placeholder="Confirm Password" onblur="return validateConfirmPassword()">
                             <p id="confirmPass-error" class="text-danger"></p>
                         </div>
                         <div class="form-group">
-                            <input type="text" name="referredBy" id="referredBy" placeholder="Referal Code (if any)" oninput="toUppercaseAndValidate()">
+                            <div class="input-group d-flex align-items-center">
+                                <input type="text" class="form-control" name="referredBy" id="referredBy" placeholder="Referral Code (if any)" oninput="toUppercaseAndValidate()">
+                                <div class="input-group-append">
+                                    <button class="btn-sm btn-dark" type="button" id="verifyReferralButton">Verify</button>
+                                </div>
+                            </div>
                             <p id="referral-error" class="text-danger"></p>
                         </div>
+                        
                         <p id="error-message" class="text-danger"><%= signupError %></p>
                         <div class="form-group text-center">
                             <button type="submit" class="btn btn-fill-out btn-block hover-up" name="login">Submit &amp; Register</button>
@@ -374,6 +368,8 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
     <!-- Vendor JS-->
     <script src="/user/assets/js/vendor/modernizr-3.6.0.min.js"></script>
     <script src="/user/assets/js/vendor/jquery-3.6.0.min.js"></script>
@@ -448,20 +444,6 @@
             }
         }
 
-        // function validatePassword() {
-        //     const password = document.getElementById("password").value;
-        //     console.log(password)
-        //     const errorDiv = document.getElementById("password-error");
-        //     const passwordPattern = /^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])[A-Za-z\d]{8,}$/;
-        //     if(!passwordPattern.test(password)){
-        //         errorDiv.textContent = "Password must be at least 8 characters long with at least one uppercase, one lowercase and one number";
-        //         return false;
-        //     } else {
-        //         errorDiv.textContent = "";
-        //         return true;
-        //     }
-        // }
-
         function validatePassword() {
             const password = document.getElementById('password').value;
             const errorDiv = document.getElementById("password-error");
@@ -495,21 +477,6 @@
             }
         }
 
-
-        // function validatePassword() {
-        //     const password = document.getElementById('password').value;
-        //     console.log(password)
-        //     const errorDiv = document.getElementById('password-error');
-        //     const passwordPattern = /^(?=.\d)(?=.[a-z])(?=.*[A-Z]).{8,}$/;
-        //     if (!passwordPattern.test(password)) {
-        //         errorDiv.textContent = 'Password must be at least 8 characters with at least one uppercase letter, one lowercase letter, and one number.';
-        //         return false;
-        //     } else {
-        //         errorDiv.textContent = '';
-        //         return true;
-        //     }
-        // }
-
         function validateConfirmPassword() {
             const confirmPassword= document.getElementById("confirmPassword").value;
             const password = document.getElementById("password").value;
@@ -524,52 +491,115 @@
         }
 
         function validateReferral() {
-            const referralInputElement = document.getElementById('referredBy');
-            let referralInput = referralInputElement.value.toUpperCase(); // Convert to uppercase
-            referralInputElement.value = referralInput; // Update the input field with uppercase value
-            const errorMessageElement = document.getElementById('referral-error');
+    const referralInputElement = document.getElementById('referredBy');
+    let referralInput = referralInputElement.value.toUpperCase(); // Convert to uppercase
+    referralInputElement.value = referralInput; // Update the input field with uppercase value
+    const errorMessageElement = document.getElementById('referral-error');
 
-            if (referralInput === '') {
-                errorMessageElement.textContent = '';
+    if (referralInput === '') {
+        errorMessageElement.textContent = ''; // Clear error message if referral code is empty
+        return true;
+    } else {
+         fetch('/referralverify', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ referralCode: referralInput })
+        })
+        .then(response => {
+            if(response.ok) {
+                errorMessageElement.textContent = ''; // Clear any previous error messages
                 return true;
+            } else {
+                errorMessageElement.textContent = 'Referral Not Available';
+                return false;
             }
-            console.log(referralInput)
-            fetch('/referralverify', {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({referralCode: referralInput})
-            })
-            .then(response => {
-                if(response.ok){
-                    console.log('Success')
-                    errorMessageElement.textContent = '';
-                    return true
-                } else {
-                    errorMessageElement.textContent = 'Referral Not Available';
-                    return false
-                }
-            })
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            errorMessageElement.textContent = 'An error occurred while verifying the referral code.';
+            return false;
+        });
+    }
+}
 
-        }
 
-        function validateForm() {
-            let username = validateUsername();
-            let email = validateEmail();
-            let phoneNo = validatePhoneNo();
-            let password = validatePassword();
-            let confirmPassword = validateConfirmPassword();
-            let referral = validateReferral();
+    async function validateForm() {
+        let username = validateUsername();
+        let email = validateEmail();
+        let phoneNo = validatePhoneNo();
+        let password = validatePassword();
+        let confirmPassword = validateConfirmPassword();
+        let referral = await validateReferral(); // Await the result of the async function
 
-            return username && email && phoneNo && password && confirmPassword && referral;
-        }
+        // All validations must be true to allow form submission
+        return username && email && phoneNo && password && confirmPassword && referral;
+    }
+
 
         function toUppercaseAndValidate() {
             const referralInputElement = document.getElementById('referredBy');
             let referralInput = referralInputElement.value.toUpperCase(); // Convert to uppercase
             referralInputElement.value = referralInput; // Update the input field with uppercase value
         }
+
+
+        document.getElementById('verifyReferralButton').addEventListener('click', (e) => {
+    e.preventDefault();
+    let referralCode = document.getElementById('referredBy').value;
+    let referralMessage = document.getElementById('referral-error');
+
+    if (!referralCode) {
+        // referralMessage.textContent = 'Enter Referral Code to verify (if any)';
+        document.getElementById('verifyReferralButton').innerText = 'Verify'
+        Toastify({
+            text: "Please enter a referral code.",
+            backgroundColor: "orange",
+            duration: 3000
+        }).showToast();
+    } else {
+        fetch('/referralverify', {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ referralCode: referralCode })
+        })
+        .then(response => {
+            if (response.ok) {
+                // referralMessage.textContent = '';
+                document.getElementById('verifyReferralButton').innerText = 'Verified'
+                Toastify({
+                    text: "Referral code verified successfully!",
+                    backgroundColor: "green",
+                    duration: 3000
+                }).showToast();
+                return true;
+            } else {
+                // referralMessage.textContent = 'Referral Not Available';
+                document.getElementById('verifyReferralButton').innerText = 'Verify'
+                Toastify({
+                    text: "Referral code not available.",
+                    backgroundColor: "red",
+                    duration: 3000
+                }).showToast();
+                return false;
+            }
+        })
+        .catch(error => {
+            // referralMessage.textContent = 'An error occurred while verifying the referral code.';
+            document.getElementById('verifyReferralButton').innerText = 'Verify'
+            Toastify({
+                text: "An error occurred. Please try again later.",
+                backgroundColor: "orange",
+                duration: 3000
+            }).showToast();
+            console.error('Error:', error);
+        });
+    }
+});
+
     </script>
 </body>
 

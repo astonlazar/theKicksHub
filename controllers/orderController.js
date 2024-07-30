@@ -3,14 +3,22 @@ const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const Wallet = require("../models/walletModel");
 
-
 const loadOrderPage = async (req, res) => {
   try {
+    let page = parseInt(req.query.page) || 1;
+    let limit = 10;
+    let startIndex = (page - 1) * limit;
     const orderData = await Order.find()
+      .skip(startIndex)
+      .limit(limit)
       .populate("userId")
       .populate("products.productId")
       .sort({ orderDate: -1 });
-    res.render("orders", { orderData });
+
+    let totalDocuments = await Order.countDocuments();
+
+    let totalPages = Math.ceil(totalDocuments / limit);
+    res.render("orders", { orderData, totalPages, page });
   } catch (error) {
     console.log(`Error in order page - ${error}`);
   }
@@ -75,22 +83,27 @@ const cancelOrder = async (req, res) => {
     let productId = req.body.productId;
     console.log(orderId, productId);
     let orderData = await Order.findOne({ _id: orderId });
-    if(orderData.paymentMethod === 'RazorPay'){
-      let walletData = await Wallet.findOne({userId: req.session.user._id})
-      if(!walletData){
+    if (orderData.paymentMethod === "RazorPay") {
+      let walletData = await Wallet.findOne({ userId: req.session.user._id });
+      if (!walletData) {
         let newWallet = new Wallet({
           userId: req.session.user._id,
           walletBalance: orderData.payableAmount,
-          transactions: [{
-            type: "credit",
-            amount: orderData.payableAmount,
-          }]
-        })
-        await newWallet.save()
+          transactions: [
+            {
+              type: "credit",
+              amount: orderData.payableAmount,
+            },
+          ],
+        });
+        await newWallet.save();
       } else {
         walletData.walletBalance += orderData.payableAmount;
-        let updateWallet = walletData.transactions.unshift({type: "credit", amount: orderData.payableAmount})
-        await walletData.save()
+        let updateWallet = walletData.transactions.unshift({
+          type: "credit",
+          amount: orderData.payableAmount,
+        });
+        await walletData.save();
       }
     }
 
@@ -114,7 +127,6 @@ const cancelOrder = async (req, res) => {
       );
     });
     await orderData.save();
-
 
     res.status(200).json({ message: "Successfully Cancelled" });
   } catch (error) {

@@ -75,6 +75,7 @@ userRoute.post("/place-order", auth.isLogin, cartController.placeOrder);
 userRoute.post("/payment/razorpay", auth.isLogin, cartController.razorPayment);
 userRoute.post("/verifypayment", auth.isLogin, cartController.verifyPayment);
 
+userRoute.put("/send-referral", auth.isLogin, userController.referralSend)
 userRoute.get("/profile", auth.isLogin, userController.userProfile);
 userRoute.put("/profile/edit", auth.isLogin, userController.userProfileEdit);
 userRoute.put(

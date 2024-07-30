@@ -14,6 +14,9 @@ const sendEmail = (email, otp) => {
       user: process.env.EMAIL,
       pass: process.env.PASSWORD,
     },
+    tls: {
+      rejectUnauthorized: false // Accept self-signed certificates
+    }
   });
 
   const mailOptions = {
