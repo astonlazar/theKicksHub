@@ -3,7 +3,11 @@ const Cart = require("../models/cartModel")
 
 const loadWishlistPage = async (req, res) => {
   try {
-    let wishlistData = await Wishlist.findOne({userId: req.session.user._id}).populate("products.productId");
+    let wishlistData = await Wishlist.findOne({ userId: req.session.user._id })
+    .populate("products.productId")
+    .populate("products.productId.offer")
+    .populate("products.productId.category")
+    .populate("products.productId.category.offer");
     let cartData = await Cart.findOne({userId: req.session.user._id})
     wishlistCount = wishlistData?.products?.length ?? 0;
     cartCount = cartData?.product?.length ?? 0;

@@ -10,11 +10,13 @@ const Razorpay = require("razorpay");
 const crypto = require("crypto");
 require("dotenv").config();
 
+//To create an instance of RazorPay to do payments
 const RazorPayInstance = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+//to load the cart and show the products
 const loadCart = async (req, res) => {
   try {
     const userData = await User.findById(req.session.user._id);
@@ -33,73 +35,20 @@ const loadCart = async (req, res) => {
   }
 };
 
-// const addToCart = async (req, res) => {
-//   try {
-//     let { productId, selectedSize } = req.body;
-//     console.log(
-//       `productId -- ${productId} and selectedSize -- ${selectedSize}`
-//     );
-//     const productData = await Product.findById(productId);
-//     const userData = await User.findById(req.session.user._id);
-//     console.log(productData);
-//     console.log(userData);
-//     let cartCheck = await Cart.find();
-//     if (!cartCheck) {
-//       let cartData = await Cart.insertMany([
-//         {
-//           userId: userData,
-//           product: [
-//             {
-//               productId: productData,
-//               size: selectedSize,
-//               productPrice: productData.promo_price
-//             },
-//           ],
-//           // totalPrice: productData.promo_price,
-//         },
-//       ]);
-//       console.log(cartData);
-//     } else {
-//       let cartData = await Cart.updateOne(
-//         { userId: userData },
-//         { $push: { product: { productId: productData, size: selectedSize, productPrice: productData.promo_price } } }
-//       );
-//       console.log(cartData)
-//       const pipeline = [
-//         {
-//           $match: { // Filter for the specific cart
-//             _id:  mongoose.Types.ObjectId(cartData._id)
-//           }
-//         },
-//         {
-//           $unwind: '$product' // Deconstruct the product array into separate documents
-//         },
-//         {
-//           $project: {
-//             _id: 0, // Exclude _id from the result
-//             totalPrice: { $sum: { $multiply: ['$productPrice', '$quantity'] } } // Calculate total price
-//           }
-//         }
-//       ];
-//       console.log(pipeline)
-//       cartData = await Cart.aggregate(pipeline)
-//       console.log(`Total Price in cart -- ${cartData}`)
-//     }
-//     // let cartTotalPrice = await Cart.aggregate([{ $project: { _id: 0, totalPrice: {$sum: "$"}}}])
-
-//   } catch (error) {
-//     console.log(`-Error in addToCart - ${error}`);
-//   }
-// };
-
+//To add products to cart
 const addToCart = async (req, res) => {
   try {
     const { productId, selectedSize } = req.body;
     console.log(`productId -- ${productId} and selectedSize -- ${selectedSize}`);
 
     // Fetch product data
-    let productData = await Product.findById(productId).populate("offer");
-    
+    let productData = await Product.findById(productId)
+    .populate("offer")
+    .populate("category")
+        .populate({
+            path: 'category',
+            populate: { path: 'offer' }
+        });
     if (!productData) {
       return res.status(404).json({ success: false, message: "Product not found" });
     }
@@ -115,7 +64,7 @@ const addToCart = async (req, res) => {
     // Calculate product price based on offer
     const productPrice = productData.offer 
       ? Math.ceil(productData.price - (productData.offer.discount / 100) * productData.price)
-      : productData.promo_price;
+      : productData.category.offer ? Math.ceil(productData.price - (productData.category.offer.discount / 100) * productData.price) : productData.promo_price;
 
     // Find or create the cart for the user
     let cart = await Cart.findOne({ userId: userData._id });
@@ -173,6 +122,7 @@ const addToCart = async (req, res) => {
   }
 };
 
+//To remove the products from the cart
 const removeFromCart = async (req, res) => {
   const { selectedSize, productId, productPrice } = req.body;
   console.log(`cartId -- ${selectedSize}, productId -- ${productId}`);
@@ -186,11 +136,6 @@ const removeFromCart = async (req, res) => {
     { $inc: { totalPrice: -productPrice } }
   );
 
-  // let updateCartData = await Cart.findOne({userId: req.session.user._id})
-
-  // updateCartData.totalPriceGST -= productPrice * 0.12
-  // await updateCartData.save()
-
   if (!cartData) {
     console.log(`Cannot find cartData`);
     return res.status(404).send("Cart not found");
@@ -200,6 +145,7 @@ const removeFromCart = async (req, res) => {
   res.status(200).json("Successfully removed from cart");
 };
 
+//Here the quantity of the products will be updated from cart
 const quantityUpdate = async (req, res) => {
   try {
     console.log("cart qty");
@@ -300,6 +246,7 @@ const quantityUpdate = async (req, res) => {
   }
 };
 
+//To load the checkout page
 const loadCheckout = async (req, res) => {
   try {
     const cartData = await Cart.findOne({
@@ -314,6 +261,7 @@ const loadCheckout = async (req, res) => {
   }
 };
 
+//New address can be added from checkout page
 const newAddress = async (req, res) => {
   try {
     let {
@@ -378,68 +326,7 @@ const newAddress = async (req, res) => {
   }
 };
 
-// const placeOrder = async (req, res) => {
-//   let {
-//     selectedAddressIndex,
-//     selectedPaymentMethod,
-//     totalPrice,
-//     couponApplied,
-//   } = req.body;
-//   console.log(
-//     selectedAddressIndex,
-//     selectedPaymentMethod,
-//     totalPrice,
-//     couponApplied
-//   );
-//   const addressData = await Address.findOne({ userId: req.session.user._id });
-//   // const productData = await Address.find();
-//   const cartData = await Cart.findOne({
-//     userId: req.session.user._id,
-//   }).populate("product.productId");
-//   let selectedAddress = addressData.address[selectedAddressIndex];
-//   let orderedProducts = cartData.product;
-//   let payableAmount = cartData.totalPrice;
-//   let order = Order.findOne({ userId: req.session.user._id });
-//   if(couponApplied !== 'x'){
-//     let couponData = await Coupon.findOne({code: couponApplied});
-//     console.log(couponData)
-//     if(new Date(couponData.expiryDate) <= new Date.now){
-//       return res.status(500).json({message: "Coupon Expired"})
-//     }
-//     couponData.limitedQuantity--
-//     await couponData.save()
-//   }
-//   order = new Order({
-//     userId: req.session.user._id,
-//     cartId: cartData._id,
-//     products: orderedProducts,
-//     address: selectedAddress,
-//     payableAmount: totalPrice,
-//   });
-//   await order.save();
-
-//   let updateProductData = cartData.product.forEach(async (products) => {
-//     let update = {
-//       [`stock.${products.size}.quantity`]: -products.quantity,
-//       orderCount: products.quantity,
-//     };
-//     let product = await Product.findByIdAndUpdate(
-//       products.productId,
-//       { $inc: update },
-//       { new: true, useFindAndModify: false }
-//     );
-//     await product.save();
-//   });
-
-//   cartData.product = [];
-//   cartData.totalPrice = 0;
-//   await cartData.save();
-
-//   console.log(selectedAddress, orderedProducts);
-//   console.log(updateProductData);
-//   res.status(200).json({ data: "Success" });
-// };
-
+//The order will be placed
 const placeOrder = async (req, res) => {
   try {
     let {
@@ -544,6 +431,7 @@ const razorPayment = (req, res) => {
   });
 };
 
+//Here the razorpay payment will be verified and the order will be placed
 const verifyPayment = async (req, res) => {
   try {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =

@@ -7,6 +7,8 @@ const Categories = require("../models/categoryModel");
 const PDFDocument = require("pdfkit");
 const ExcelJS = require('exceljs');
 
+
+//To lead the admin login page
 const adminLoginPage = (req, res, next) => {
   try {
     res.render("admin-login", { adminError: "" });
@@ -16,36 +18,9 @@ const adminLoginPage = (req, res, next) => {
   }
 };
 
+//To check for password and credentials
 const adminLoginInsert = async (req, res, next) => {
   try {
-    // const admin = {
-    //   username: "admin",
-    //   password: "password",
-    // };
-    // let { adminId, adminPassword } = req.body;
-    // console.log(adminId + " -- " + adminPassword);
-    // if (admin.username === adminId) {
-    //   console.log("usernamatch match  ");
-    //   if (admin.password === adminPassword) {
-    //     console.log("password match");
-    //     const hash = await hashing.hashPassword(adminPassword);
-    //     const adminData = await Admin.create({
-    //       adminId: adminId,
-    //       adminPassword: hash,
-    //     });
-    //     const adminsave = await adminData.save();
-    //     if (adminsave) {
-    //       console.log("saved");
-    //       res.redirect("/admin/dashboard");
-    //     } else {
-    //       console.log("not savedd");
-    //     }
-    //   } else {
-    //     console.log("password dosend match");
-    //   }
-    // } else {
-    //   console.log("username doesent match");
-    // }
 
     let { adminId, adminPassword } = req.body;
     adminId = adminId.trim();
@@ -71,6 +46,7 @@ const adminLoginInsert = async (req, res, next) => {
   }
 };
 
+//To lead the dashboard 
 const adminDashboard = async (req, res, next) => {
   try {
     const { start, end } = req.query;
@@ -231,6 +207,7 @@ const adminDashboard = async (req, res, next) => {
   }
 };
 
+//Function to show the sales chart
 const salesChart = async (req, res) => {
   try {
     let { period } = req.body;
@@ -283,6 +260,7 @@ const salesChart = async (req, res) => {
   }
 };
 
+//To download teh sales report in pdf format
 const downloadSalesReport = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -516,7 +494,7 @@ const downloadSalesReport = async (req, res) => {
   }
 };
 
-
+//To download the sales report in excel format
 const downloadSalesReportExcel = async (req, res) => {
   try {
     const { startDate, endDate } = req.body;
@@ -663,7 +641,7 @@ const downloadSalesReportExcel = async (req, res) => {
   }
 };
 
-
+//To show the users 
 const userManagement = async (req, res, next) => {
   try {
     console.log(`--loading user management`);
@@ -691,6 +669,7 @@ const userManagement = async (req, res, next) => {
   }
 };
 
+//To block the active users
 const blockUser = async (req, res, next) => {
   try {
     const id = req.query.id;
@@ -705,6 +684,7 @@ const blockUser = async (req, res, next) => {
   }
 };
 
+//To unblock the blocked users
 const unblockUser = async (req, res, next) => {
   try {
     const id = req.query.id;
@@ -718,14 +698,7 @@ const unblockUser = async (req, res, next) => {
   }
 };
 
-const transactions = (req, res) => {
-  res.render("transactions");
-};
-
-const transactionDetails = (req, res) => {
-  res.render("transaction-details");
-};
-
+//To logout the admin
 const adminLogout = (req, res, next) => {
   try {
     req.session.admin = false;
@@ -746,7 +719,5 @@ module.exports = {
   userManagement,
   blockUser,
   unblockUser,
-  transactions,
-  transactionDetails,
   adminLogout,
 };

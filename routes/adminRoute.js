@@ -92,13 +92,6 @@ adminRoute.put(
   orderController.orderStatusChange
 );
 
-adminRoute.get("/transactions", auth.isLogin, adminController.transactions);
-
-adminRoute.get(
-  "/transactionDetails",
-  auth.isLogin,
-  adminController.transactionDetails
-);
 
 adminRoute.get("/coupons", auth.isLogin, couponController.loadCouponPage);
 adminRoute.post("/coupons", auth.isLogin, couponController.addCoupon);

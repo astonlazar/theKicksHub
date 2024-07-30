@@ -243,6 +243,10 @@
                                                     <ins><span class="text-brand">₹ <%= Math.ceil(productData.price - ((productData.offer.discount / 100)* productData.price)) %></span></ins>
                                                     <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
                                                     <span class="save-price  font-md color3 ml-15"><%= productData.offer.discount %> % Off</span>
+                                                <% } else if(productData.category.offer){ %>
+                                                    <ins><span class="text-brand">₹ <%= Math.ceil(productData.price - ((productData.category.offer.discount / 100)* productData.price)) %></span></ins>
+                                                    <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
+                                                    <span class="save-price  font-md color3 ml-15"><%= productData.category.offer.discount %> % Off</span>
                                                 <% } else { %>
                                                     <ins><span class="text-brand">₹ <%= productData.promo_price %></span></ins>
                                                     <ins><span class="old-price font-md ml-15">₹ <%= productData.price %></span></ins>
@@ -355,18 +359,26 @@
                                                         </a>
                                                     </div>
                                                     <div class="product-action-1">
-                                                        <a aria-label="Add To Wishlist" class="action-btn small hover-up" href="shop-wishlist.html" tabindex="0"><i class="fi-rs-heart"></i></a>
+                                                        <!-- <a aria-label="Add To Wishlist" class="action-btn small hover-up" href="shop-wishlist.html" tabindex="0"><i class="fi-rs-heart"></i></a> -->
                                                     </div>
                                                 </div>
                                                 <div class="product-content-wrap">
-                                                    <h2><a href="shop-product-right.html" tabindex="0"><%= relProData.productName %></a></h2>
+                                                    <h2><a href="/product-view/<%= relProData._id %>" tabindex="0"><%= relProData.productName %></a></h2>
                                                     <div class="rating-result" title="90%">
                                                         <span>
                                                         </span>
                                                     </div>
                                                     <div class="product-price">
-                                                        <span>₹ <%= relProData.promo_price %></span>
-                                                        <span class="old-price">₹ <%= relProData.price %></span>
+                                                        <% if(relProData.offer) { %>
+                                                            <span>₹ <%= Math.ceil(relProData.price - ((relProData.offer.discount / 100)* relProData.price)) %></span>
+                                                            <span class="old-price">₹ <%= relProDataprice %></span>
+                                                            <% } else if(relProData.category.offer) { %>
+                                                                <span>₹ <%= Math.ceil(relProData.price - ((relProData.category.offer.discount / 100)* relProData.price)) %></span>
+                                                                <span class="old-price">₹ <%= relProData.price %></span>
+                                                            <% } else { %>
+                                                            <span>₹ <%= relProData.promo_price %></span>
+                                                            <span class="old-price">₹ <%= relProData.price %></span>
+                                                        <% } %>
                                                     </div>
                                                 </div>
                                             </div>

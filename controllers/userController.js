@@ -323,13 +323,24 @@ const productView = async (req, res) => {
   try {
     let id = req.params.id;
     console.log(id);
-    let productData = await Product.findById({ _id: id }).populate("offer");
+    let productData = await Product.findById({ _id: id })
+    .populate("offer")
+    .populate("category")
+        .populate({
+            path: 'category',
+            populate: { path: 'offer' }
+        });
     let relatedProductData = await Product.find({
       category: productData.category,
       _id: { $ne: productData._id },
     })
       .limit(4)
-      .populate("offer");
+      .populate("offer")
+      .populate("category")
+        .populate({
+            path: 'category',
+            populate: { path: 'offer' }
+        });
     let wishlistCount, cartCount;
     if (req.session?.user?._id) {
       let wishlistData = await Wishlist.findOne({
@@ -385,11 +396,16 @@ const shop = async (req, res) => {
     let sortCriteria = sortOptions[sortBy] || sortOptions["new-arrivals"]; // Fallback to 'popularity' if invalid sort option is provided
     console.log("sortCriteria --" + sortCriteria);
     let productData = await Product.find(searchQuery)
-      .sort(sortCriteria)
-      .skip(startIndex)
-      .limit(limit)
-      .populate("offer");
-    // .populate("category");
+        .sort(sortCriteria)
+        .skip(startIndex)
+        .limit(limit)
+        .populate("offer")
+        .populate("category")
+        .populate({
+            path: 'category',
+            populate: { path: 'offer' }
+        });
+
     let totalDocuments = await Product.countDocuments(searchQuery);
     let totalPages = Math.ceil(totalDocuments / limit);
     let categoryData = await Category.find({ isActive: true });

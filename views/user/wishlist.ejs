@@ -100,10 +100,6 @@
                                 <ul>
                                     <li><a href="/">Home</a></li>
                                     <li><a href="/shop">Shop</a></li>
-                                    <li><a href="page-about.html">About</a></li>
-                                    <li>
-                                        <a href="page-contact.html">Contact</a>
-                                    </li>
                                 </ul>
                             </nav>
                         </div>
@@ -214,8 +210,31 @@
                                                     <!-- <p class="font-xs">Maboriosam in a tonto nesciung eget<br> distingy magndapibus.
                                                     </p> -->
                                                 </td>
-                                                <td class="price" data-title="Price"><span>₹<%= data.productId.promo_price %></span></td>
-                                                <td class="text-center" data-title="Stock">
+                                                <td class="price" data-title="Price">
+                                                    <span>₹
+                                                        <%
+                                                        // Initialize discounted price with the original price or promo price
+                                                        let finalPrice = data.productId.price;
+                                                
+                                                        // Check if a product-level offer exists and calculate the discount
+                                                        if (data.productId.offer && !isNaN(data.productId.offer.discount)) {
+                                                            finalPrice = Math.ceil(data.productId.price - (data.productId.offer.discount / 100) * data.productId.price);
+                                                        } 
+                                                        // If no product-level offer, check for a category-level offer
+                                                        else if (data.productId.category && data.productId.category.offer && !isNaN(data.productId.category.offer.discount)) {
+                                                            finalPrice = Math.ceil(data.productId.price - (data.productId.category.offer.discount / 100) * data.productId.price);
+                                                        } 
+                                                        // If neither offer exists, check for a promo price
+                                                        else if (!isNaN(data.productId.promo_price)) {
+                                                            finalPrice = data.productId.promo_price;
+                                                        }
+                                                
+                                                        // Render the final price
+                                                        %>
+                                                        <%= finalPrice %>
+                                                    </span>
+                                                </td>
+                                                                                                <td class="text-center" data-title="Stock">
                                                     <span class="color3 font-weight-bold">In Stock</span>
                                                 </td>
                                                 <td class="text-right" data-title="Cart">
