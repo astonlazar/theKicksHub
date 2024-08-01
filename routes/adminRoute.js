@@ -14,14 +14,15 @@ adminRoute.set("views", "./views/admin");
 
 //routes
 adminRoute.get("/", auth.isLogout, adminController.adminLoginPage);
-
 adminRoute.post("/", adminController.adminLoginInsert);
 
+//dashboard
 adminRoute.get("/dashboard", auth.isLogin, adminController.adminDashboard);
 adminRoute.put("/dashboard/chart", auth.isLogin, adminController.salesChart)
 adminRoute.put("/download-sales-report", adminController.downloadSalesReport)
 adminRoute.put("/download-sales-report-excel", adminController.downloadSalesReportExcel)
 
+//usermanagement
 adminRoute.get(
   "/user-management",
   auth.isLogin,
@@ -32,6 +33,7 @@ adminRoute.get(
 adminRoute.get("/block", auth.isLogin, adminController.blockUser);
 adminRoute.get("/unblock", auth.isLogin, adminController.unblockUser);
 
+//categories
 adminRoute.get("/categories", auth.isLogin, categoryController.categories);
 adminRoute.post("/categories", auth.isLogin, categoryController.categoryInsert);
 adminRoute.get(
@@ -50,6 +52,7 @@ adminRoute.put(
   categoryController.statusUpdate
 );
 
+//add products
 adminRoute.get("/add-product", auth.isLogin, productController.addProduct);
 adminRoute.post(
   "/add-product",
@@ -57,7 +60,10 @@ adminRoute.post(
   productController.addedProduct
 );
 
+//products page
 adminRoute.get("/products", auth.isLogin, productController.productsList);
+
+//products status update
 adminRoute.put(
   "/products/status",
   auth.isLogin,
@@ -80,6 +86,7 @@ adminRoute.delete(
   productController.removeImage
 );
 
+//orders
 adminRoute.get("/orders", auth.isLogin, orderController.loadOrderPage);
 adminRoute.get(
   "/orders/details",
@@ -92,11 +99,13 @@ adminRoute.put(
   orderController.orderStatusChange
 );
 
-
+//coupons
 adminRoute.get("/coupons", auth.isLogin, couponController.loadCouponPage);
 adminRoute.post("/coupons", auth.isLogin, couponController.addCoupon);
 adminRoute.put("/coupons/status", auth.isLogin, couponController.couponStatus)
 
+
+//offers
 adminRoute.get("/offers", auth.isLogin, offerController.loadOffersPage);
 adminRoute.get(
   "/offers/product/add",
@@ -143,7 +152,6 @@ adminRoute.post(
 );
 
 adminRoute.put("/offers/status", auth.isLogin, offerController.offerStatus);
-
 adminRoute.put("/offer/apply-product", offerController.applyOfferProduct)
 adminRoute.put("/offer/apply-category", offerController.applyOfferCategory)
 adminRoute.put("/offer/delete-product", offerController.deleteOfferProduct)

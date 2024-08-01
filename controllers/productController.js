@@ -3,6 +3,7 @@ const Category = require("../models/categoryModel");
 const fs = require("fs");
 const path = require("path");
 
+//to load add product page in admin side
 const addProduct = async (req, res) => {
   try {
     let categories = await Category.find({ isActive: true });
@@ -14,6 +15,7 @@ const addProduct = async (req, res) => {
   }
 };
 
+//post method fucntion to add the product
 const addedProduct = async (req, res) => {
   try {
     let categories = await Category.find({ isActive: true });
@@ -95,6 +97,7 @@ const addedProduct = async (req, res) => {
   }
 };
 
+//To load the list of all the products in admin side
 const productsList = async (req, res) => {
   try {
     let query = {};
@@ -117,6 +120,7 @@ const productsList = async (req, res) => {
   }
 };
 
+//To change the status of the product, block or unblock
 const productStatus = async (req, res) => {
   try {
     const productId = req.body.productId;
@@ -137,6 +141,7 @@ const productStatus = async (req, res) => {
   }
 };
 
+//load the edit product page
 const editProduct = async (req, res) => {
   try {
     let productId = req.params.id;
@@ -149,6 +154,7 @@ const editProduct = async (req, res) => {
   }
 };
 
+//post method the edit the details of the product
 const editedProduct = async (req, res) => {
   try {
     let productId = req.params.id;
@@ -230,6 +236,7 @@ const editedProduct = async (req, res) => {
   }
 };
 
+//Function to remove the product image from its path and database
 const removeImage = async (req, res) => {
   try {
     let { productId, image } = req.body;

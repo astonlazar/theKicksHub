@@ -1,5 +1,6 @@
 const Coupon = require("../models/couponModel");
 
+//To load coupon page in admin side
 const loadCouponPage = async (req, res) => {
   try {
     let couponData = await Coupon.find();
@@ -13,6 +14,7 @@ const loadCouponPage = async (req, res) => {
   }
 };
 
+//To add new coupon
 const addCoupon = async (req, res) => {
   try {
     let {
@@ -52,6 +54,7 @@ const addCoupon = async (req, res) => {
   }
 };
 
+//To change the status of the coupon
 const couponStatus = async (req, res) => {
   try {
     let couponId = req.body.couponId;
@@ -68,6 +71,7 @@ const couponStatus = async (req, res) => {
   }
 }
 
+//This function is to apply the coupon in the user side when checkout
 const applyCoupon = async (req, res) => {
   try {
     let couponCode = req.body.coupon;

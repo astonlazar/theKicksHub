@@ -23,14 +23,17 @@ const referralSender = require("../helpers/referralSender")
 // Store tokens and expiry times
 const resetTokens = {};
 
+//To render login page
 const loginPage = (req, res) => {
   res.render("login", { loginError: "" });
 };
 
+//To render forgot password page
 const forgotPassword = (req, res) => {
   res.render("forgotpassword");
 };
 
+//Here the entered email will be checked and mail will be send
 const postForgotPassword = async (req, res) => {
   let { email } = req.body;
   console.log(email);
@@ -51,6 +54,7 @@ const postForgotPassword = async (req, res) => {
   res.render("email-sent");
 };
 
+//Reset password page will be loaded
 const resetPassword = (req, res) => {
   const { token } = req.params;
   const data = resetTokens[token];
@@ -61,6 +65,7 @@ const resetPassword = (req, res) => {
   res.render("resetpassword", { token });
 };
 
+//The new password should be entered and be done within required time
 const postResetPassword = async (req, res) => {
   const { token } = req.params;
   console.log(`token in postResetPassword -- ${token}`);
@@ -79,10 +84,12 @@ const postResetPassword = async (req, res) => {
   res.redirect("/login");
 };
 
+//Load signup page
 const signupPage = (req, res) => {
   res.render("signup", { signupError: "" });
 };
 
+//To check if the google authentication is success
 const successGoogle = async (req, res) => {
   try {
     if (!req.user) {
@@ -96,6 +103,7 @@ const successGoogle = async (req, res) => {
   }
 };
 
+//Google authentication failure check
 const failureGoogle = async (req, res) => {
   try {
     res.status(404).render("login", { loginError: "User is blocked" });
@@ -104,6 +112,7 @@ const failureGoogle = async (req, res) => {
   }
 };
 
+//The email and password will be checked for login
 const loginEnterPage = async (req, res) => {
   try {
     let { email, password } = req.body;
@@ -139,6 +148,7 @@ const loginEnterPage = async (req, res) => {
   }
 };
 
+//Here all the credentials will be checked and a new user will be created after otp verification
 const signupEnterPage = async (req, res) => {
   try {
     let { userName, email, phoneNo, password, referredBy } = req.body;
@@ -196,6 +206,7 @@ const signupEnterPage = async (req, res) => {
   }
 };
 
+//To verify the referral, if any
 const referralVerify = async (req, res) => {
   let referralCode = req.body.referralCode;
   console.log(referralCode)
@@ -206,6 +217,7 @@ const referralVerify = async (req, res) => {
   res.status(500).json({message: "Not found"})
 }
 
+//Function to create an OTP and send the mail
 const OtpVerification = async (email) => {
   let otp = otpSender.generate();
   await otpSender.sendEmail(email, otp);
@@ -231,6 +243,7 @@ const sendOtpfromEmail = async (req, res) => {
   }
 };
 
+//To lead teh verification page
 const verificationPage = (req, res) => {
   res.render("verification", {
     otpError: "",
@@ -238,6 +251,7 @@ const verificationPage = (req, res) => {
   });
 };
 
+//Checking the entered otp
 const verifyEnter = async (req, res) => {
   const enteredOtp = req.body.otpCode;
   // enteredOtp = parseInt(enteredOtp)
@@ -292,6 +306,7 @@ const verifyEnter = async (req, res) => {
   }
 };
 
+//load the homepage with products
 const homePage = async (req, res) => {
   let productData = await Product.find({ isActive: { $eq: true } })
     .limit(4)
@@ -319,6 +334,7 @@ const homePage = async (req, res) => {
   }
 };
 
+//here the selected product will be shown with the help of its id
 const productView = async (req, res) => {
   try {
     let id = req.params.id;
@@ -363,6 +379,7 @@ const productView = async (req, res) => {
   }
 };
 
+//In this function, all the products will be shown, with pagination, filter, search
 const shop = async (req, res) => {
   try {
     let searchQuery = { isActive: true };
@@ -434,6 +451,7 @@ const shop = async (req, res) => {
   }
 };
 
+//In the user profile, all the datas are send,
 const userProfile = async (req, res) => {
   const addressData = await Address.findOne({ userId: req.session.user._id });
   const userData = await User.findById(req.session.user._id);
@@ -455,6 +473,7 @@ const userProfile = async (req, res) => {
   });
 };
 
+//In this function, the user can edit the details of the user
 const userProfileEdit = async (req, res) => {
   try {
     let { fullName, phoneNo } = req.body;
@@ -477,6 +496,7 @@ const userProfileEdit = async (req, res) => {
   }
 };
 
+//In the user profile, the user can change the password
 const changePassword = async (req, res) => {
   let { oldPassword, newPassword } = req.body;
   console.log(`oldPass - ${oldPassword} - newPass - ${newPassword}`);
@@ -559,6 +579,7 @@ const addNewAddress = async (req, res) => {
   }
 };
 
+//To edit the address, from user profile page
 const editAddress = async (req, res) => {
   let { address, addressId } = req.body;
   console.log(`Req.body - ${req.body}`);
@@ -596,6 +617,7 @@ const editAddress = async (req, res) => {
   }
 };
 
+//To delete the address
 const deleteAddress = async (req, res) => {
   let { addressId } = req.body;
   console.log(`addressId -- ${addressId}`);
@@ -612,6 +634,7 @@ const deleteAddress = async (req, res) => {
   }
 };
 
+//To send the referral code through mail
 const referralSend = async (req, res) => {
   let { email,emailFrom, referralCode } = req.body;
   console.log(`emailFriend - ${email}, emailFrom - ${emailFrom}, referralCode - ${referralCode}`)
@@ -623,6 +646,7 @@ const referralSend = async (req, res) => {
   }
 }
 
+//To load the order details
 const loadOrderDetails = async (req, res) => {
   try {
     let orderId = req.query.orderId;
@@ -649,7 +673,7 @@ const loadOrderDetails = async (req, res) => {
   }
 };
 
-
+//Function to generate the invoice of the product
 const generateInvoice = async (req, res) => {
   const { orderId } = req.body; // Extract orderId from request body
 
@@ -766,6 +790,7 @@ const generateInvoice = async (req, res) => {
   }
 };
 
+//With this the session will be changed and the user will be logged off.
 const userLogout = (req, res) => {
   req.session.user = false;
   console.log("User logged out");

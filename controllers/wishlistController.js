@@ -1,6 +1,7 @@
 const Wishlist = require("../models/wishlistModel");
 const Cart = require("../models/cartModel")
 
+//To load the wishlist page
 const loadWishlistPage = async (req, res) => {
   try {
     let wishlistData = await Wishlist.findOne({ userId: req.session.user._id })
@@ -17,6 +18,7 @@ const loadWishlistPage = async (req, res) => {
   }
 };
 
+//Function to add the product to wishlist
 const addToWishlist = async (req, res) => {
   try {
     let productId = req.body.productId;
@@ -56,6 +58,7 @@ const addToWishlist = async (req, res) => {
   }
 };
 
+//Function to remove the product from wishlist
 const removeFromWishlist = async (req, res) => {
   let productId = req.body.productId;
   console.log(`ProductId -- ${productId}`)

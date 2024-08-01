@@ -3,6 +3,7 @@ const crypto = require('crypto')
 require("dotenv").config();
 
 
+//To send the mail to reset the password
 const sendEmail = (email, token) => {
 
   

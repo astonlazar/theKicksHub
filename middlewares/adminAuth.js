@@ -1,3 +1,5 @@
+
+//To check for the session of the admin, if not will be redirected to login
 const isLogin = (req, res, next) => {
   try {
     if (req.session.admin) {
@@ -12,6 +14,7 @@ const isLogin = (req, res, next) => {
   }
 };
 
+//To check for the session of the admin, if yes, then will be redirected to dashboard
 const isLogout = (req, res, next) => {
   try {
     if (req.session.admin) {

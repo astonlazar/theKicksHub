@@ -2,11 +2,13 @@ const nodemailer = require("nodemailer");
 const generateOtp = require("generate-otp");
 require("dotenv").config();
 
+//function to generate an otp
 const generate = () => {
   const otp = generateOtp.generate(4);
   return otp;
 };
 
+//To send the otp through mail
 const sendEmail = (email, otp) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",

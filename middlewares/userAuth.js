@@ -1,5 +1,6 @@
 const User = require("../models/userModel");
 
+//To check for the session of the user, if yes, then checks for if the user is blocked.
 const isLogin = async (req, res, next) => {
   try {
     if (req.session?.user) {
@@ -24,6 +25,7 @@ const isLogin = async (req, res, next) => {
   }
 };
 
+//To check for the session of the user
 const isLogout = (req, res, next) => {
   try {
     if (req.session.user) {

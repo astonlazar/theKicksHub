@@ -2,6 +2,7 @@ const Offer = require("../models/offerModel");
 const Products = require("../models/productModel");
 const Categories = require("../models/categoryModel");
 
+//To load the offers page
 const loadOffersPage = async (req, res) => {
   try {
     let offerData = await Offer.find().populate("product").populate("category");
@@ -14,6 +15,7 @@ const loadOffersPage = async (req, res) => {
   }
 };
 
+//To add new product offer
 const addProductOffer = async (req, res) => {
   try {
     let productData = await Products.find({ isActive: true });
@@ -23,6 +25,7 @@ const addProductOffer = async (req, res) => {
   }
 };
 
+//POST method to add new offer
 const addingProductOffer = async (req, res) => {
   try {
     let productData = await Products.find({ isActive: true });
@@ -60,6 +63,7 @@ const addingProductOffer = async (req, res) => {
   }
 };
 
+//To add new category offer
 const addCategoryOffer = async (req, res) => {
   try {
     let categoryData = await Categories.find({ isActive: true });
@@ -69,6 +73,7 @@ const addCategoryOffer = async (req, res) => {
   }
 };
 
+//Post method to add new category offer
 const addingCategoryOffer = async (req, res) => {
   try {
     let categoryData = await Categories.find({ isActive: true });
@@ -106,6 +111,7 @@ const addingCategoryOffer = async (req, res) => {
   }
 };
 
+//To edit the product offer
 const editProductOffer = async (req, res) => {
   try {
     let offerId = req.params.id;
@@ -118,6 +124,7 @@ const editProductOffer = async (req, res) => {
   }
 };
 
+//Put method to edit the product offer
 const editedProductOffer = async (req, res) => {
   try {
     let { product, offerName, description, offerPercentage, offerType } =
@@ -148,6 +155,7 @@ const editedProductOffer = async (req, res) => {
   }
 };
 
+//To edit category offer
 const editCategoryOffer = async (req, res) => {
   try {
     let offerId = req.params.id;
@@ -160,6 +168,7 @@ const editCategoryOffer = async (req, res) => {
   }
 };
 
+//Put method to edit category offer
 const editedCategoryOffer = async (req, res) => {
   try {
     let { category, offerName, description, offerPercentage, offerType } =
@@ -190,6 +199,7 @@ const editedCategoryOffer = async (req, res) => {
   }
 };
 
+//To change the status of the offer
 const offerStatus = async (req, res) => {
   let { offerId } = req.body;
   let offerData = await Offer.findById(offerId);
@@ -202,6 +212,7 @@ const offerStatus = async (req, res) => {
   }
 };
 
+//function to apply the offer to the product
 const applyOfferProduct = async (req, res) => {
   let productId = req.body.productId
   let offerId = req.body.offerId
@@ -214,6 +225,7 @@ const applyOfferProduct = async (req, res) => {
   }
 }
 
+//function nto apply the offer to the category
 const applyOfferCategory = async (req, res) => {
   let categoryId = req.body.categoryId
   let offerId = req.body.offerId
@@ -226,6 +238,7 @@ const applyOfferCategory = async (req, res) => {
   }
 }
 
+//to remove the offer from the product
 const deleteOfferProduct = async (req,res) => {
   let productId = req.body.productId
   let offerId = req.body.offerId
@@ -236,6 +249,7 @@ const deleteOfferProduct = async (req,res) => {
   }
 }
 
+//to remove the offer from the category
 const deleteOfferCategory = async (req, res) => {
   let categoryId = req.body.categoryId
   let offerId = req.body.offerId

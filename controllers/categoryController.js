@@ -1,5 +1,6 @@
 const Category = require("../models/categoryModel");
 
+//To load the categories page in admin side
 const categories = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
@@ -25,6 +26,7 @@ const categories = async (req, res) => {
   }
 };
 
+//function to add new category
 const categoryInsert = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
@@ -65,6 +67,7 @@ const categoryInsert = async (req, res) => {
   }
 };
 
+//To update the status of the category, to block or unblock
 const statusUpdate = async (req, res) => {
   let { categoryId } = req.body;
   console.log(`-- category id- ${categoryId}`);
@@ -84,6 +87,7 @@ const statusUpdate = async (req, res) => {
   // res.redirect("/categories");
 };
 
+//To edit the category if needed
 const editCategory = async (req, res) => {
   try {
     let id = req.params.id;
@@ -96,6 +100,7 @@ const editCategory = async (req, res) => {
   }
 };
 
+//POST method to change the category
 const editedCategory = async (req, res) => {
   let id = req.params.id;
   let { category_name, category_slug } = req.body;

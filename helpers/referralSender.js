@@ -2,6 +2,7 @@ const nodemailer = require("nodemailer");
 const User = require("../models/userModel")
 require("dotenv").config();
 
+//To sned the referral code
 const sendCodeEmail = async (email, emailFrom, referralCode) => {
   const transporter = nodemailer.createTransport({
     service: "gmail",

@@ -3,6 +3,7 @@ const Order = require("../models/orderModel");
 const User = require("../models/userModel");
 const Wallet = require("../models/walletModel");
 
+//To load the order page
 const loadOrderPage = async (req, res) => {
   try {
     let page = parseInt(req.query.page) || 1;
@@ -24,6 +25,7 @@ const loadOrderPage = async (req, res) => {
   }
 };
 
+//To load the order details page
 const orderDetailsPage = async (req, res) => {
   try {
     let orderId = req.query.orderId;
@@ -36,6 +38,7 @@ const orderDetailsPage = async (req, res) => {
   }
 };
 
+//To change the order status
 const orderStatusChange = async (req, res) => {
   try {
     let { selectedValue, orderId, productId, index } = req.body;
@@ -77,6 +80,7 @@ const orderStatusChange = async (req, res) => {
   }
 };
 
+//To cancel the order
 const cancelOrder = async (req, res) => {
   try {
     let orderId = req.body.orderId;
@@ -134,6 +138,7 @@ const cancelOrder = async (req, res) => {
   }
 };
 
+//To return the delivered order
 const returnOrder = async (req, res) => {
   try {
     const { orderId, productId, reason } = req.body;
